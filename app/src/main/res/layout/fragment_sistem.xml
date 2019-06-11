@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="?pageBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/llTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/_8">
+
+        <TextView
+            android:id="@+id/tvSelectTheme"
+            style="?textLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_text_select_theme" />
+
+        <Spinner
+            android:id="@+id/spThemes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tvSelectTheme"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/spinner_margin_left"
+            android:layout_marginLeft="@dimen/spinner_margin_left"
+            android:layout_toRightOf="@+id/tvSelectTheme"
+            android:layout_toEndOf="@+id/tvSelectTheme"
+            android:entries="@array/theme_array"
+            android:spinnerMode="dropdown" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlTitleApp"
+        style="?whiteBackground"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/llTheme"
+        android:layout_marginTop="@dimen/_16">
+
+        <TextView
+            android:id="@+id/tvCredentials"
+            style="?textSubheader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Judul App" />
+
+
+
+        <EditText
+            android:id="@+id/tvUsername"
+            style="?textRegular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvCredentials"
+            android:hint="@string/text"
+            android:inputType="text"
+            android:lines="1" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/bSimpan"
+        style="?button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_16"
+        android:text="@string/title_simpan"
+        android:layout_below="@id/rlTitleApp"/>
+
+</RelativeLayout>

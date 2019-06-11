@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Resto Kab Malang</string>
+    <string name="title_home">Home</string>
+    <string name="title_rekap_harian">R. Harian</string>
+    <!--<string name="title_rekap_bulanan">R. Bulanan</string>-->
+    <string name="title_daftar_produk">Daftar Produk</string>
+    <string name="title_proses">Proses</string>
+    <string name="title_total">Total</string>
+    <string name="title_diskon">Diskon</string>
+    <string name="title_refresh">Refresh</string>
+    <string name="title_sistem">Sistem</string>
+    <string name="title_app">Judul App</string>
+    <string name="title_simpan">Simpan</string>
+
+    <string name="judul">Judul</string>
+    <string name="lanjut">Lanjut</string>
+    <string name="text">Text</string>
+
+    <!--theme example-->
+    <string name="settings_text_select_theme">Select Theme:</string>
+    <string name="settings_text_credentials">Credentials</string>
+    <string name="settings_text_username_hint">username</string>
+    <string name="settings_text_password_hint">password</string>
+    <string name="settings_text_sync_automatically">Sync automatically</string>
+    <string name="settings_text_location">Location</string>
+    <string name="settings_text_state_on">On</string>
+    <string name="settings_text_state_off">Off</string>
+    <string name="settings_text_clear_data">Clear Data</string>
+
+    <string-array name="theme_array">
+
+        <item>Material-Light</item>
+
+        <item>YOUR-CUSTOM-THEME-NAME</item>
+
+    </string-array>
+
+</resources>

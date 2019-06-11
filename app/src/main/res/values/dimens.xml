@@ -1,0 +1,83 @@
+<resources>
+
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="_256">256dp</dimen>
+    <dimen name="_248">248dp</dimen>
+    <dimen name="_240">240dp</dimen>
+    <dimen name="_225">225dp</dimen>
+    <dimen name="_216">216dp</dimen>
+    <dimen name="_200">200dp</dimen>
+    <dimen name="_192">192dp</dimen>
+    <dimen name="_164">164dp</dimen>
+    <dimen name="_144">144dp</dimen>
+    <dimen name="_128">128dp</dimen>
+    <dimen name="_124">124dp</dimen>
+    <dimen name="_123">123dp</dimen>
+    <dimen name="_120">120dp</dimen>
+    <dimen name="_96">96dp</dimen>
+    <dimen name="_78">78dp</dimen>
+    <dimen name="_72">72dp</dimen>
+    <dimen name="_68">68dp</dimen>
+    <dimen name="_64">64dp</dimen>
+    <dimen name="_60">60dp</dimen>
+    <dimen name="_56">56dp</dimen>
+    <dimen name="_50">50dp</dimen>
+    <dimen name="_48">48dp</dimen>
+    <dimen name="_40">40dp</dimen>
+    <dimen name="_36">36dp</dimen>
+    <dimen name="_32">32dp</dimen>
+    <dimen name="_28">28dp</dimen>
+    <dimen name="_24">24dp</dimen>
+    <dimen name="_20">20dp</dimen>
+    <dimen name="_16">16dp</dimen>
+    <dimen name="_15">15dp</dimen>
+    <dimen name="_12">12dp</dimen>
+    <dimen name="_10">10dp</dimen>
+    <dimen name="_8">8dp</dimen>
+    <dimen name="_5">5dp</dimen>
+    <dimen name="_4">4dp</dimen>
+    <dimen name="_2">2dp</dimen>
+    <dimen name="_1">1dp</dimen>
+    <dimen name="_min1">-1dp</dimen>
+    <dimen name="_min3">-3dp</dimen>
+    <dimen name="_min8">-8dp</dimen>
+    <dimen name="_min30">-30dp</dimen>
+
+    <!--font-->
+    <dimen name="f_10">10sp</dimen>
+    <dimen name="f_12">12sp</dimen>
+    <dimen name="f_14">14sp</dimen>
+    <dimen name="f_16">16sp</dimen>
+    <dimen name="f_18">18sp</dimen>
+    <dimen name="f_22">22sp</dimen>
+    <dimen name="f_24">24sp</dimen>
+    <dimen name="f_28">28sp</dimen>
+    <dimen name="f_36">36sp</dimen>
+
+    <!--theme example-->
+    <dimen name="activity_horizontal_padding">16dp</dimen>
+
+    <dimen name="content_left_margin_wh">8sp</dimen>
+
+    <dimen name="text_large_margin_top">40dp</dimen>
+
+    <dimen name="text_large_text_size">18sp</dimen>
+
+    <dimen name="text_subheader_text_size">16sp</dimen>
+
+    <dimen name="text_regular_text_size">15sp</dimen>
+
+    <dimen name="view_margin">20dp</dimen>
+
+    <dimen name="white_background_padding">20dp</dimen>
+
+    <dimen name="edittext_margin_top">10dp</dimen>
+
+    <dimen name="spinner_margin_left">10dp</dimen>
+
+    <dimen name="card_margin_top">40dp</dimen>
+</resources>

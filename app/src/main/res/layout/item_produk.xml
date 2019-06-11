@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    >
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageview_cover_art"
+            android:src="@drawable/img_food_example"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_72"
+            android:scaleType="fitXY"/>
+
+        <ImageView
+            android:id="@+id/imageview_favorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/star_disabled"
+            android:layout_gravity="bottom|end"/>
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_4"
+        android:paddingLeft="@dimen/_8"
+        android:paddingRight="@dimen/_8"
+        android:paddingBottom="@dimen/_4"
+        android:gravity="center_horizontal"
+        android:background="@color/blackTransparent50" >
+
+        <TextView
+            android:id="@+id/textview_book_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            tools:text="Judul"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textview_book_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_4"
+        android:paddingLeft="@dimen/_8"
+        android:paddingRight="@dimen/_8"
+        android:paddingBottom="@dimen/_4"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="12sp"
+        tools:text="Rp 0"
+        android:layout_gravity="start"/>
+
+</LinearLayout>
