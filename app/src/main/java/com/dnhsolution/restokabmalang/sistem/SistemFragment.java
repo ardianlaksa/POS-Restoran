@@ -13,9 +13,7 @@ import com.dnhsolution.restokabmalang.Utils;
 public class SistemFragment extends AppCompatActivity {
 
     private Spinner spThemes;
-
     // Here we set the theme for the activity
-
     // Note `Utils.onActivityCreateSetTheme` must be called before `setContentView`
 
     @Override
@@ -29,8 +27,6 @@ public class SistemFragment extends AppCompatActivity {
         setContentView(R.layout.fragment_sistem);
         setupSpinnerItemSelection();
     }
-
-
 
     private void setupSpinnerItemSelection() {
         spThemes = findViewById(R.id.spThemes);
