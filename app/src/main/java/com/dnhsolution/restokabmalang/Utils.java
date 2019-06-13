@@ -4,16 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 
 public class Utils {
-
     private static int sTheme;
-
-
-
-    public final static int THEME_MATERIAL_LIGHT = 0;
-
-    public final static int THEME_YOUR_CUSTOM_THEME = 1;
-
-
+    public final static int THEME_FIRST = 0;
+    public final static int THEME_SECOND = 1;
 
     public static void changeToTheme(Activity activity, int theme) {
 
@@ -32,23 +25,14 @@ public class Utils {
 
 
     public static void onActivityCreateSetTheme(Activity activity) {
-
         switch (sTheme) {
-
             default:
-
-            case THEME_MATERIAL_LIGHT:
-
-                activity.setTheme(R.style.Theme_Material_Light);
-
+            case THEME_FIRST:
+                activity.setTheme(R.style.Theme_First);
                 break;
-
-            case THEME_YOUR_CUSTOM_THEME:
-
-                activity.setTheme(R.style.Theme_YOUR_CUSTOM_THEME);
-
+            case THEME_SECOND:
+                activity.setTheme(R.style.Theme_Second);
                 break;
-
         }
 
     }
