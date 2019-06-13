@@ -7,6 +7,7 @@ public class Utils {
     private static int sTheme;
     public final static int THEME_FIRST = 0;
     public final static int THEME_SECOND = 1;
+    public final static int THEME_THIRD = 2;
 
     public static void changeToTheme(Activity activity, int theme) {
 
@@ -24,6 +25,9 @@ public class Utils {
                 activity.setTheme(R.style.Theme_First);
                 break;
             case THEME_SECOND:
+                activity.setTheme(R.style.Theme_Second);
+                break;
+            case THEME_THIRD:
                 activity.setTheme(R.style.Theme_Second);
                 break;
         }
