@@ -11,18 +11,11 @@ public class Utils {
     public static void changeToTheme(Activity activity, int theme) {
 
         sTheme = theme;
-
         activity.finish();
-
         activity.startActivity(new Intent(activity, activity.getClass()));
-
         activity.overridePendingTransition(android.R.anim.fade_in,
-
                 android.R.anim.fade_out);
-
     }
-
-
 
     public static void onActivityCreateSetTheme(Activity activity) {
         switch (sTheme) {
@@ -34,7 +27,5 @@ public class Utils {
                 activity.setTheme(R.style.Theme_Second);
                 break;
         }
-
     }
-
 }

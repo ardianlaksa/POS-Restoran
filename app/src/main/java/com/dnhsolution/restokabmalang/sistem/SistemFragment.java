@@ -23,23 +23,17 @@ public class SistemFragment extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
         // MUST BE SET BEFORE setContentView
-
         Utils.onActivityCreateSetTheme(this);
-
         // AFTER SETTING THEME
-
         setContentView(R.layout.fragment_sistem);
-
         setupSpinnerItemSelection();
-
     }
 
 
 
     private void setupSpinnerItemSelection() {
-        spThemes = (Spinner) findViewById(R.id.spThemes);
+        spThemes = findViewById(R.id.spThemes);
         spThemes.setSelection(ThemeApplication.currentPosition);
         ThemeApplication.currentPosition = spThemes.getSelectedItemPosition();
         spThemes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -58,5 +52,4 @@ public class SistemFragment extends AppCompatActivity {
             }
         });
     }
-
 }
