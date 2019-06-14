@@ -28,11 +28,9 @@
     <string name="settings_text_clear_data">Clear Data</string>
 
     <string-array name="theme_array">
-
-        <item>Material-Light</item>
-
-        <item>YOUR-CUSTOM-THEME-NAME</item>
-
+        <item>Default</item>
+        <item>Biru</item>
+        <item>Merah</item>
     </string-array>
 
 </resources>

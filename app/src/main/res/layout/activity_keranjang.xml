@@ -127,6 +127,8 @@
                 android:text="@string/title_proses"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
+                android:background="@android:color/holo_blue_dark"
+                android:textColor="@android:color/white"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

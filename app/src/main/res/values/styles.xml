@@ -73,14 +73,14 @@
     <color name="actionbar_bg_wh">#AFAFAF</color>
     <color name="actionbar_bg_blue">#3F51B5</color>
 
-    <style name="action_bar_wh" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <!--<style name="actionbar_wh" >
+        <item name="android:background">@color/blackTransparent50</item>
+        <item name="background">@color/blackTransparent50</item>
+    </style>-->
+
+    <style name="actionbar_wh" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/actionbar_bg_wh</item>
         <item name="background">@color/actionbar_bg_wh</item>
-    </style>
-
-    <style name="action_bar_blue" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/actionbar_bg_blue</item>
-        <item name="background">@color/actionbar_bg_blue</item>
     </style>
 
 </resources>

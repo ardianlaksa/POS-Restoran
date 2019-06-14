@@ -2,7 +2,7 @@ package com.dnhsolution.restokabmalang.keranjang;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
@@ -12,19 +12,19 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
     private final TextView judul,price,jumlahProduk;
     private final View view;
     private final Activity activity;
-    private final Button minus,plus;
+    private final ImageButton minus,plus;
 
     static KeranjangProdukListHolder newInstance(View parent, Activity activity) {
         TextView tvJudul = parent.findViewById(R.id.tvJudul);
         TextView tvPrice = parent.findViewById(R.id.tvPrice);
         TextView tvJumlahProduk = parent.findViewById(R.id.tvJumlahProduk);
-        Button bMinus = parent.findViewById(R.id.bMinus);
-        Button bPlus = parent.findViewById(R.id.bPlus);
+        ImageButton bMinus = parent.findViewById(R.id.bMinus);
+        ImageButton bPlus = parent.findViewById(R.id.bPlus);
         return new KeranjangProdukListHolder(parent, activity, tvJudul, tvPrice, tvJumlahProduk, bMinus, bPlus);
     }
 
     private KeranjangProdukListHolder(final View parent, final Activity activity, TextView judul
-            , final TextView price, final TextView jumlahProduk, final Button minus, final Button plus) {
+            , final TextView price, final TextView jumlahProduk, final ImageButton minus, final ImageButton plus) {
         super(parent);
         this.activity = activity;
         this.price = price;

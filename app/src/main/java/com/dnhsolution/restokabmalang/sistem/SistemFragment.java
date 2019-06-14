@@ -17,9 +17,7 @@ public class SistemFragment extends AppCompatActivity {
     // Note `Utils.onActivityCreateSetTheme` must be called before `setContentView`
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         // MUST BE SET BEFORE setContentView
         Utils.onActivityCreateSetTheme(this);
