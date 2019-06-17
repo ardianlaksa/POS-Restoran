@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".keranjang.KeranjangActivity">
+    tools:context=".keranjang.KeranjangActivity"
+    android:background="@android:color/white">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -15,13 +16,14 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
+            tools:targetApi="lollipop"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
             android:elevation="@dimen/_4"
             android:overScrollMode="always"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,11 +37,15 @@
             android:id="@+id/tvTitleDaftarProduk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8"
+            android:layout_marginLeft="@dimen/_8"
+            android:textStyle="bold"
             android:paddingTop="@dimen/_8"
             android:paddingBottom="@dimen/_8"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:text="@string/title_daftar_produk"/>
+            android:text="@string/title_daftar_produk"
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -55,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/recyclerView"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bProses"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent">
 
@@ -63,48 +69,54 @@
                 android:id="@+id/tvTitleTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvTotal"
-                android:layout_marginTop="@dimen/_8"
+                android:layout_marginEnd="@dimen/_8"
+                android:layout_marginRight="@dimen/_8"
+                app:layout_constraintTop_toTopOf="@id/tvTotal"
+                app:layout_constraintBottom_toBottomOf="@id/tvTotal"
+                app:layout_constraintRight_toLeftOf="@id/tvTotal"
                 android:text="@string/title_total"
-                android:textColor="@android:color/holo_green_light"/>
+                android:textColor="@color/colorPrimary"/>
 
             <TextView
                 android:id="@+id/tvTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/tvTitleTotal"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:text="0"
+                android:layout_marginTop="@dimen/_8"
+                android:layout_marginLeft="@dimen/_4"
+                android:layout_marginStart="@dimen/_4"
+                android:layout_marginEnd="@dimen/_8"
+                android:layout_marginRight="@dimen/_8"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/rp_0"
                 android:textStyle="bold"
-                android:textColor="@android:color/holo_orange_dark"
-                android:textSize="@dimen/f_18"/>
-
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="@dimen/f_22"/>
 
             <TextView
                 android:id="@+id/tvTitleDiskon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/bProses"
-                app:layout_constraintLeft_toLeftOf="@id/etDiskon"
-                android:layout_marginTop="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
                 android:layout_marginEnd="@dimen/_8"
+                app:layout_constraintTop_toTopOf="@id/etDiskon"
+                app:layout_constraintRight_toLeftOf="@id/etDiskon"
+                app:layout_constraintBottom_toBottomOf="@id/etDiskon"
                 android:text="@string/title_diskon"
-                android:textColor="@android:color/holo_green_light"/>
+                android:textColor="@color/colorPrimaryDark"/>
 
             <EditText
+                tools:targetApi="o"
                 android:id="@+id/etDiskon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/tvTitleDiskon"
+                android:textSize="@dimen/f_22"
+                app:layout_constraintTop_toBottomOf="@id/tvTotal"
                 app:layout_constraintRight_toLeftOf="@id/tvTitlePersen"
                 android:inputType="numberDecimal"
                 android:gravity="center"
-                android:text="0"
+                android:autofillHints="@string/_0"
+                android:hint="@string/_0"
                 android:ems="2" />
 
             <TextView
@@ -113,25 +125,26 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="@id/etDiskon"
                 app:layout_constraintBottom_toBottomOf="@id/etDiskon"
-                app:layout_constraintRight_toLeftOf="@id/bProses"
+                app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginRight="@dimen/_8"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginBottom="@dimen/_2"
-                android:text="%"
-                android:textColor="@android:color/holo_green_light"/>
-
-            <Button
-                android:id="@+id/bProses"
-                android:layout_width="@dimen/_128"
-                android:layout_height="@dimen/_64"
-                android:text="@string/title_proses"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:background="@android:color/holo_blue_dark"
-                android:textColor="@android:color/white"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="@string/_sym_percent"
+                android:textColor="@color/colorPrimary"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/bProses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_8"
+            android:text="@string/title_proses"
+            app:layout_constraintTop_toBottomOf="@id/clBottom"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@android:color/holo_blue_dark"
+            android:textColor="@android:color/white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

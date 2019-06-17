@@ -1,64 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/_8"
     android:paddingBottom="@dimen/_8">
 
-    <TextView
-        android:id="@+id/tvJudul"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
+    <ImageView
+        tools:ignore="ContentDescription"
+        android:id="@+id/ivItem"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHorizontal_weight="0.2"
+        android:src="@drawable/img_no_image"
+        android:scaleType="fitXY"
         app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@android:color/black"
-        android:text="@string/judul"/>
-
-    <TextView
-        android:id="@+id/tvPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvJudul"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_orange_dark"
-        android:textSize="@dimen/f_18"
-        android:text="@string/judul"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/ll1"/>
 
     <LinearLayout
-        android:id="@+id/ll"
-        android:layout_width="wrap_content"
+        android:id="@+id/ll1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHorizontal_weight="0.4"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/ivItem"
+        app:layout_constraintRight_toLeftOf="@id/ll2"
+        android:layout_marginStart="@dimen/_4"
+        android:layout_marginLeft="@dimen/_4"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvJudul"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="@string/judul"/>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_4"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_red_light"
+            android:textSize="@dimen/f_22"
+            android:text="@string/rp_0"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:orientation="horizontal">
+        app:layout_constraintLeft_toRightOf="@id/ll1"
+        app:layout_constraintHorizontal_weight="0.4"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/bMinus"
-            android:layout_width="@dimen/_36"
-            android:layout_height="@dimen/_36"
-            android:background="@drawable/ic_minus_64px"
-            android:text="-"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="horizontal">
+
+            <ImageButton
+                tools:ignore="ContentDescription"
+                android:id="@+id/bMinus"
+                android:layout_width="@dimen/_36"
+                android:layout_height="@dimen/_36"
+                android:background="@drawable/ic_minus_64px" />
+
+            <TextView
+                android:id="@+id/tvJumlahProduk"
+                android:layout_width="@dimen/_36"
+                android:layout_height="@dimen/_36"
+                android:text="@string/_1"
+                android:gravity="center"
+                android:ems="3"
+                android:background="@drawable/btlm_line_shape" />
+
+            <ImageButton
+                tools:ignore="ContentDescription"
+                android:id="@+id/bPlus"
+                android:layout_width="@dimen/_36"
+                android:layout_height="@dimen/_36"
+                android:background="@drawable/ic_plus_64px" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvJumlahProduk"
-            android:layout_width="@dimen/_36"
-            android:layout_height="@dimen/_36"
-            android:text="1"
-            android:gravity="center"
-            android:ems="3"
-            android:background="@drawable/btlm_line_shape" />
-
-        <ImageButton
-            android:id="@+id/bPlus"
-            android:layout_width="@dimen/_36"
-            android:layout_height="@dimen/_36"
-            android:background="@drawable/ic_plus_64px" />
+            android:id="@+id/tvTotalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_4"
+            android:layout_marginRight="@dimen/_8"
+            android:layout_marginEnd="@dimen/_8"
+            android:layout_gravity="end"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_red_light"
+            android:textSize="@dimen/f_22"
+            android:text="@string/rp_0"/>
 
     </LinearLayout>
 

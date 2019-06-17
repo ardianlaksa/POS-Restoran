@@ -36,7 +36,7 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
         val intent = intent
         val args = intent.getBundleExtra("BUNDLE")
         obyek = args.getSerializable("ARRAYLIST") as ArrayList<ProdukSerializable>
-        val name = obyek.get(1).name
+//        val name = obyek.get(1).name
 
         val produkAdapter = KeranjangProdukListAdapter(obyek, this,this)
         recyclerView.adapter = produkAdapter
@@ -76,6 +76,7 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
         }
         val valueDiskon = etDiskon.text.toString().toInt()
         valueTotalPrice = valueTotalPrice-(valueTotalPrice*valueDiskon/100)
-        tvTotal.text = valueTotalPrice.toString()
+        val rupiahValue = "Rp ${valueTotalPrice.toString()}"
+        tvTotal.text = rupiahValue
     }
 }

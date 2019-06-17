@@ -15,6 +15,10 @@
     <string name="judul">Judul</string>
     <string name="lanjut">Lanjut</string>
     <string name="text">Text</string>
+    <string name="rp_0">Rp. 0</string>
+    <string name="_0">0</string>
+    <string name="_1">1</string>
+    <string name="_sym_percent">%</string>
 
     <!--theme example-->
     <string name="settings_text_select_theme">Select Theme:</string>

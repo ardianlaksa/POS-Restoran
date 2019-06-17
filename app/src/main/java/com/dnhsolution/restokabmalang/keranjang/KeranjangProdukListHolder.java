@@ -3,35 +3,45 @@ package com.dnhsolution.restokabmalang.keranjang;
 import android.app.Activity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.ProdukSerializable;
 
 class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
-    private final TextView judul,price,jumlahProduk;
+    private final ImageView ivItem;
+    private final TextView judul,price,jumlahProduk,totalPrice;
     private final View view;
     private final Activity activity;
     private final ImageButton minus,plus;
 
+    private int priceValueTotal = 0;
+
     static KeranjangProdukListHolder newInstance(View parent, Activity activity) {
+        ImageView ivItem = parent.findViewById(R.id.ivItem);
         TextView tvJudul = parent.findViewById(R.id.tvJudul);
         TextView tvPrice = parent.findViewById(R.id.tvPrice);
         TextView tvJumlahProduk = parent.findViewById(R.id.tvJumlahProduk);
         ImageButton bMinus = parent.findViewById(R.id.bMinus);
         ImageButton bPlus = parent.findViewById(R.id.bPlus);
-        return new KeranjangProdukListHolder(parent, activity, tvJudul, tvPrice, tvJumlahProduk, bMinus, bPlus);
+        TextView tvTotalPrice = parent.findViewById(R.id.tvTotalPrice);
+        return new KeranjangProdukListHolder(parent, activity, ivItem, tvJudul, tvPrice, tvJumlahProduk
+                , bMinus, bPlus, tvTotalPrice);
     }
 
-    private KeranjangProdukListHolder(final View parent, final Activity activity, TextView judul
-            , final TextView price, final TextView jumlahProduk, final ImageButton minus, final ImageButton plus) {
+    private KeranjangProdukListHolder(final View parent, final Activity activity, ImageView ivItem, TextView judul
+            , final TextView price, final TextView jumlahProduk, final ImageButton minus, final ImageButton plus,
+                                      final TextView totalPrice) {
         super(parent);
         this.activity = activity;
+        this.ivItem = ivItem;
         this.price = price;
         this.judul = judul;
         this.jumlahProduk = jumlahProduk;
         this.minus = minus;
         this.plus = plus;
+        this.totalPrice = totalPrice;
         view = parent;
 
         parent.setOnClickListener(new View.OnClickListener() {
@@ -47,7 +57,8 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         judul.setText(obyek.getName());
         final String priceValue = obyek.getPrice();
         if (priceValue == null) return;
-        price.setText(priceValue);
+        String rupiahPrice = "Rp "+priceValue;
+        price.setText(rupiahPrice);
 
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +67,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
                 if (jumlah > 1) {
                     jumlah--;
                     jumlahProduk.setText(String.valueOf(jumlah));
-                    int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                    priceValueTotal = Integer.parseInt(priceValue)*jumlah;
                     onTask.keranjangProdukItemOnTask(position,priceValueTotal);
                 }
             }
@@ -68,9 +79,11 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
                 int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
                 jumlah++;
                 jumlahProduk.setText(String.valueOf(jumlah));
-                int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                priceValueTotal = Integer.parseInt(priceValue)*jumlah;
                 onTask.keranjangProdukItemOnTask(position,priceValueTotal);
             }
         });
+
+        totalPrice.setText(String.valueOf(priceValueTotal));
     }
 }
