@@ -74,9 +74,11 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
         for (valueTotal in obyek) {
             valueTotalPrice += valueTotal.totalPrice
         }
-        val valueDiskon = etDiskon.text.toString().toInt()
+
+        var valueDiskon = 0
+        if (!etDiskon.text.toString().isEmpty()) valueDiskon = etDiskon.text.toString().toInt()
         valueTotalPrice = valueTotalPrice-(valueTotalPrice*valueDiskon/100)
-        val rupiahValue = "Rp ${valueTotalPrice.toString()}"
+        val rupiahValue = "Rp ${valueTotalPrice}"
         tvTotal.text = rupiahValue
     }
 }

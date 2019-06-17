@@ -17,7 +17,7 @@
         android:src="@drawable/img_no_image"
         android:scaleType="fitXY"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/ll2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/ll1"/>
 
@@ -48,7 +48,7 @@
             android:layout_marginTop="@dimen/_4"
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light"
-            android:textSize="@dimen/f_22"
+            android:textSize="@dimen/f_18"
             android:text="@string/rp_0"/>
 
     </LinearLayout>
@@ -109,5 +109,19 @@
             android:text="@string/rp_0"/>
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/vBorderBottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1"
+        app:layout_constraintTop_toBottomOf="@id/ll2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="@dimen/_8"
+        android:layout_marginStart="@dimen/_12"
+        android:layout_marginLeft="@dimen/_12"
+        android:layout_marginEnd="@dimen/_12"
+        android:layout_marginRight="@dimen/_12"
+        android:background="@color/colorAccent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

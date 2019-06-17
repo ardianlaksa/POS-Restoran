@@ -16,8 +16,6 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
     private final Activity activity;
     private final ImageButton minus,plus;
 
-    private int priceValueTotal = 0;
-
     static KeranjangProdukListHolder newInstance(View parent, Activity activity) {
         ImageView ivItem = parent.findViewById(R.id.ivItem);
         TextView tvJudul = parent.findViewById(R.id.tvJudul);
@@ -59,6 +57,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         if (priceValue == null) return;
         String rupiahPrice = "Rp "+priceValue;
         price.setText(rupiahPrice);
+        totalPrice.setText(rupiahPrice);
 
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,8 +66,10 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
                 if (jumlah > 1) {
                     jumlah--;
                     jumlahProduk.setText(String.valueOf(jumlah));
-                    priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                    int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
                     onTask.keranjangProdukItemOnTask(position,priceValueTotal);
+                    String sPriceValueTotal = "Rp "+priceValueTotal;
+                    totalPrice.setText(sPriceValueTotal);
                 }
             }
         });
@@ -79,11 +80,11 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
                 int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
                 jumlah++;
                 jumlahProduk.setText(String.valueOf(jumlah));
-                priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
                 onTask.keranjangProdukItemOnTask(position,priceValueTotal);
+                String sPriceValueTotal = "Rp "+priceValueTotal;
+                totalPrice.setText(sPriceValueTotal);
             }
         });
-
-        totalPrice.setText(String.valueOf(priceValueTotal));
     }
 }
