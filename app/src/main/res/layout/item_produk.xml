@@ -12,7 +12,6 @@
 
         <ImageView
             android:id="@+id/imageview_cover_art"
-            android:src="@drawable/img_food_example"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_72"
             android:scaleType="fitXY"/>
@@ -21,7 +20,6 @@
             android:id="@+id/imageview_favorite"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/star_disabled"
             android:layout_gravity="bottom|end"/>
 
     </FrameLayout>
@@ -61,3 +59,7 @@
         android:layout_gravity="start"/>
 
 </LinearLayout>
+
+    <!--android:src="@drawable/img_food_example"
+
+            android:src="@drawable/star_disabled"-->
