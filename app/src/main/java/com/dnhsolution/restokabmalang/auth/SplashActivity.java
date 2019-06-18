@@ -26,11 +26,11 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                if(status.equalsIgnoreCase("0")){
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                }else{
+//                if(status.equalsIgnoreCase("0")){
+//                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+//                }else{
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                }
+//                }
 
                 finish();
 

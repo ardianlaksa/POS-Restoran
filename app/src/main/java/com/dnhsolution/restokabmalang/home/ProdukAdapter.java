@@ -82,16 +82,17 @@ public class ProdukAdapter extends BaseAdapter {
       final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
       convertView = layoutInflater.inflate(R.layout.item_produk, parent,false);
 
+      final ImageView imageViewCoverArt = convertView.findViewById(R.id.imageview_cover_art);
       final TextView nameTextView = convertView.findViewById(R.id.textview_book_name);
       final TextView authorTextView = convertView.findViewById(R.id.textview_book_author);
       final ImageView imageViewFavorite = convertView.findViewById(R.id.imageview_favorite);
 
-      final ViewHolder viewHolder = new ViewHolder(nameTextView, authorTextView, imageViewFavorite);
+      final ViewHolder viewHolder = new ViewHolder(nameTextView, authorTextView, imageViewCoverArt, imageViewFavorite);
       convertView.setTag(viewHolder);
     }
 
     final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
-//    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
+    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
     viewHolder.nameTextView.setText(book.getName());
     viewHolder.authorTextView.setText(book.getPrice());
     viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.star_enabled : R.drawable.star_disabled);
@@ -104,11 +105,13 @@ public class ProdukAdapter extends BaseAdapter {
   private class ViewHolder {
     private final TextView nameTextView;
     private final TextView authorTextView;
+    private final ImageView imageViewCoverArt;
     private final ImageView imageViewFavorite;
 
-    ViewHolder(TextView nameTextView, TextView authorTextView, ImageView imageViewFavorite) {
+    ViewHolder(TextView nameTextView, TextView authorTextView, ImageView imageViewCoverArt, ImageView imageViewFavorite) {
       this.nameTextView = nameTextView;
       this.authorTextView = authorTextView;
+      this.imageViewCoverArt = imageViewCoverArt;
       this.imageViewFavorite = imageViewFavorite;
     }
   }
