@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Resto Kab Malang</string>
     <string name="title_home">Home</string>
-    <string name="title_rekap_harian">R. Harian</string>
+    <string name="title_data">Data</string>
     <!--<string name="title_rekap_bulanan">R. Bulanan</string>-->
     <string name="title_daftar_produk">Daftar Produk</string>
     <string name="title_proses">Proses</string>
@@ -11,6 +11,10 @@
     <string name="title_sistem">Sistem</string>
     <string name="title_app">Judul App</string>
     <string name="title_simpan">Simpan</string>
+    <string name="title_nama">Nama</string>
+    <string name="title_harga">Harga</string>
+    <string name="title_qty">Qty</string>
+    <string name="title_dic">Disc</string>
 
     <string name="judul">Judul</string>
     <string name="lanjut">Lanjut</string>

@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.dnhsolution.restokabmalang.data.DataFragment
 import com.dnhsolution.restokabmalang.home.HomeFragment
 import com.dnhsolution.restokabmalang.sistem.SistemFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -13,15 +14,20 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var textMessage: TextView
+//    private lateinit var textMessage: TextView
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                textMessage.setText(R.string.title_home)
+//                textMessage.setText(R.string.title_home)
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, HomeFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_rekap_harian -> {
-                textMessage.setText(R.string.title_rekap_harian)
+            R.id.navigation_data -> {
+//                textMessage.setText(R.string.title_data)
+
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, DataFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
 

@@ -60,7 +60,7 @@
         android:paddingLeft="@dimen/_8"
         android:paddingRight="@dimen/_8"
         android:paddingBottom="@dimen/_4"
-        android:textColor="@android:color/holo_orange_dark"
+        android:textColor="@android:color/holo_red_light"
         android:textSize="12sp"
         tools:text="Rp 0"
         android:layout_gravity="start"/>
