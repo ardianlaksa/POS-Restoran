@@ -76,16 +76,16 @@ public class LoginActivity extends AppCompatActivity {
         if(bvisible) {
             etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bPassword.setBackground(getResources().getDrawable(R.mipmap.ic_visibility_off,null));
+                bPassword.setBackground(getResources().getDrawable(R.drawable.ic_visibility_off,null));
             }else
-                bPassword.setBackgroundDrawable(getResources().getDrawable(R.mipmap.ic_visibility_off));
+                bPassword.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_visibility_off));
             bvisible = false;
         }else {
             etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bPassword.setBackground(getResources().getDrawable(R.mipmap.ic_visibility,null));
+                bPassword.setBackground(getResources().getDrawable(R.drawable.ic_visibility,null));
             }else
-                bPassword.setBackgroundDrawable(getResources().getDrawable(R.mipmap.ic_visibility));
+                bPassword.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_visibility));
             bvisible = true;
         }
         etPassword.setSelection(etPassword.length());
