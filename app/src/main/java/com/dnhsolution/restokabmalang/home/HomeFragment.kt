@@ -113,35 +113,66 @@ class HomeFragment:Fragment() {
     }
 
     private val produks = arrayOf(
+//        ProdukElement(
+//            1, "Judul", "10", R.drawable.abc,
+//            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
+//        ), ProdukElement(
+//            2, "Judul", "20", R.drawable.areyoumymother,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/areyoumymother.jpg"
+//        ), ProdukElement(
+//            3, "Judul", "30", R.drawable.whereisbabysbellybutton,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/whereisbabysbellybutton.jpg"
+//        ), ProdukElement(
+//            4, "Judul", "40", R.drawable.onthenightyouwereborn,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/onthenightyouwereborn.jpg"
+//        ), ProdukElement(
+//            5, "Judul", "50", R.drawable.handhandfingersthumb,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/handhandfingersthumb.jpg"
+//        ), ProdukElement(
+//            6, "Judul", "60", R.drawable.theveryhungrycaterpillar,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/theveryhungrycaterpillar.jpg"
+//        ), ProdukElement(
+//            7, "Judul", "70", R.drawable.thegoingtobedbook,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/thegoingtobedbook.jpg"
+//        ), ProdukElement(
+//            8, "Judul", "80", R.drawable.ohbabygobaby,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/ohbabygobaby.jpg"
+//        ), ProdukElement(
+//            9, "Judul", "90", R.drawable.thetoothbook,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/thetoothbook.jpg"
+//        ), ProdukElement(
+//            10, "Judul", "100", R.drawable.onefish,
+//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/onefish.jpg"
+//        )
         ProdukElement(
-            1, "Judul", "10", R.drawable.abc,
+            1, "Judul", "10", R.drawable.abc_ic_star_half_black_48dp,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
         ,""), ProdukElement(
-            2, "Judul", "20", R.drawable.areyoumymother,
+            2, "Judul", "20", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/areyoumymother.jpg"
             ,""), ProdukElement(
-            3, "Judul", "30", R.drawable.whereisbabysbellybutton,
+            3, "Judul", "30", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/whereisbabysbellybutton.jpg"
             ,""), ProdukElement(
-            4, "Judul", "40", R.drawable.onthenightyouwereborn,
+            4, "Judul", "40", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/onthenightyouwereborn.jpg"
             ,""), ProdukElement(
-            5, "Judul", "50", R.drawable.handhandfingersthumb,
+            5, "Judul", "50", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/handhandfingersthumb.jpg"
             ,""), ProdukElement(
-            6, "Judul", "60", R.drawable.theveryhungrycaterpillar,
+            6, "Judul", "60", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/theveryhungrycaterpillar.jpg"
             ,""), ProdukElement(
-            7, "Judul", "70", R.drawable.thegoingtobedbook,
+            7, "Judul", "70", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/thegoingtobedbook.jpg"
             ,""), ProdukElement(
-            8, "Judul", "80", R.drawable.ohbabygobaby,
+            8, "Judul", "80", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/ohbabygobaby.jpg"
             ,""), ProdukElement(
-            9, "Judul", "90", R.drawable.thetoothbook,
+            9, "Judul", "90", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/thetoothbook.jpg"
             ,""), ProdukElement(
-            10, "Judul", "100", R.drawable.onefish,
+            10, "Judul", "100", R.drawable.abc_ic_star_half_black_48dp,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/onefish.jpg"
             ,"")
     )
