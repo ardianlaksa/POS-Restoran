@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".auth.LoginActivity"
-    android:background="@drawable/bg_login"
     android:padding="20dp"
     android:gravity="center">
 
@@ -56,7 +55,7 @@
 
             <Button
                 android:id="@+id/bPassword"
-                android:background="@mipmap/ic_visibility"
+                android:background="@drawable/ic_visibility"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
@@ -76,7 +75,6 @@
             android:clickable="true"
             android:textColor="#fff"
             android:id="@+id/btnLogin"
-            android:background="@drawable/btn_login"
             android:layout_height="40dp" />
     </LinearLayout>
 

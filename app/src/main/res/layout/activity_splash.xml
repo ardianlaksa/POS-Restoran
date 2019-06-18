@@ -4,13 +4,12 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_splash"
     android:gravity="center"
     tools:context=".auth.SplashActivity">
 
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="@mipmap/ic_logo"/>
+        android:background="@drawable/ic_logo"/>
 
 </LinearLayout>
