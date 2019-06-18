@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnhsolution.restokabmalang.R
@@ -19,7 +20,7 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
             R.id.bProses -> {
                 val valueDiskon = etDiskon.text.toString()
                 if ( valueDiskon == "") return
-                else Toast.makeText(this,"Diskon tidak kosong",Toast.LENGTH_SHORT).show()
+                else showDialog("Konfirmasi","Apakan anda ingin memproses?")
             }
         }
     }
@@ -80,5 +81,29 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
         valueTotalPrice = valueTotalPrice-(valueTotalPrice*valueDiskon/100)
         val rupiahValue = "Rp ${valueTotalPrice}"
         tvTotal.text = rupiahValue
+    }
+
+    fun showDialog(title:String,message:String){
+        val builder = AlertDialog.Builder(this)
+
+        // Set the alert dialog title
+        builder.setTitle(title)
+
+        // Display a message on alert dialog
+        builder.setMessage(message)
+//            builder.setPositiveButton("Lanjut"){dialog, which ->
+//            }
+
+        builder.setNegativeButton("Ok"){dialog, which ->
+            // Do something when user press the positive button
+            dialog.dismiss()
+        }
+
+
+        // Finally, make the alert dialog using builder
+        val dialog: AlertDialog = builder.create()
+
+        // Display the alert dialog on app interface
+        dialog.show()
     }
 }
