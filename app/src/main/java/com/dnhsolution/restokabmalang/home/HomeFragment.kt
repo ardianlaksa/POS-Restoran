@@ -147,33 +147,33 @@ class HomeFragment:Fragment() {
         ProdukElement(
             1, "Judul", "10", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-        ,""), ProdukElement(
+        ,"Diskripsi"), ProdukElement(
             2, "Judul", "20", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             3, "Judul", "30", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             4, "Judul", "40", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             5, "Judul", "50", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             6, "Judul", "60", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             7, "Judul", "70", R.drawable.img_food_example,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/thegoingtobedbook.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             8, "Judul", "80", R.drawable.img_food_example,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/ohbabygobaby.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             9, "Judul", "90", R.drawable.img_food_example,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/thetoothbook.jpg"
-            ,""), ProdukElement(
+            ,"Diskripsi"), ProdukElement(
             10, "Judul", "100", R.drawable.img_food_example,
             "http://www.raywenderlich.com/wp-content/uploads/2016/03/onefish.jpg"
-            ,"")
+            ,"Diskripsi")
     )
 }

@@ -86,17 +86,20 @@ public class ProdukAdapter extends BaseAdapter {
       final TextView nameTextView = convertView.findViewById(R.id.textview_book_name);
       final TextView authorTextView = convertView.findViewById(R.id.textview_book_author);
       final ImageView imageViewFavorite = convertView.findViewById(R.id.imageview_favorite);
+      final TextView descriptionTextView = convertView.findViewById(R.id.tvDescription);
 
-      final ViewHolder viewHolder = new ViewHolder(nameTextView, authorTextView, imageViewCoverArt, imageViewFavorite);
+      final ViewHolder viewHolder = new ViewHolder(nameTextView, authorTextView, imageViewCoverArt, imageViewFavorite
+              ,descriptionTextView);
       convertView.setTag(viewHolder);
     }
 
     final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
     viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
     viewHolder.nameTextView.setText(book.getName());
-    viewHolder.authorTextView.setText(book.getPrice());
+    String priceValue = "Rp. "+book.getPrice();
+    viewHolder.authorTextView.setText(priceValue);
     viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.star_enabled : R.drawable.star_disabled);
-
+    viewHolder.descriptionTextView.setText(book.getDescription());
 //    Picasso.get().load(book.getImageUrl()).into(viewHolder.imageViewCoverArt);
 
     return convertView;
@@ -107,12 +110,15 @@ public class ProdukAdapter extends BaseAdapter {
     private final TextView authorTextView;
     private final ImageView imageViewCoverArt;
     private final ImageView imageViewFavorite;
+    private final TextView descriptionTextView;
 
-    ViewHolder(TextView nameTextView, TextView authorTextView, ImageView imageViewCoverArt, ImageView imageViewFavorite) {
+    ViewHolder(TextView nameTextView, TextView authorTextView
+            , ImageView imageViewCoverArt, ImageView imageViewFavorite, TextView descriptionTextView) {
       this.nameTextView = nameTextView;
       this.authorTextView = authorTextView;
       this.imageViewCoverArt = imageViewCoverArt;
       this.imageViewFavorite = imageViewFavorite;
+      this.descriptionTextView = descriptionTextView;
     }
   }
 
