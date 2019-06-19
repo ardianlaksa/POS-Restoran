@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                     if(pesan.equalsIgnoreCase("0")){
                         Toast.makeText(LoginActivity.this, "Gagal Login. Username atau Password salah !", Toast.LENGTH_SHORT).show();
                     }else if(pesan.equalsIgnoreCase("1")){
-                        String username = json.getString("username");
+                        //String username = json.getString("username");
 //                        String dptb1 = json.getString("dptb_1");
 //                        String dptb2 = json.getString("dptb_2");
 //                        String dpph = json.getString("dpph");
@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
                         //menambah data ke editor
-                        editor.putString(Url.SESSION_USERNAME, username);
+                        editor.putString(Url.SESSION_USERNAME, etUsername.getText().toString());
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
 
                         //menyimpan data ke editor
