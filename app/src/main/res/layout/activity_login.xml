@@ -76,7 +76,8 @@
             android:clickable="true"
             android:textColor="#fff"
             android:id="@+id/btnLogin"
-            android:background=""
+            android:focusable="true"
+            android:background="@drawable/btn_login"
             android:layout_height="40dp" />
     </LinearLayout>
 
