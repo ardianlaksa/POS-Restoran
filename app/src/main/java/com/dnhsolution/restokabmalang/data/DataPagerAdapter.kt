@@ -1,19 +1,19 @@
 package com.dnhsolution.restokabmalang.data
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.dnhsolution.restokabmalang.data.rekap_harian.RekapHarianFragment
 
 class DataPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> {
-                RekapHarianFragment()
+                RekapFragment.newInstance("0")
             }
             else -> {
-                return RekapHarianFragment()
+                return RekapFragment.newInstance("1")
             }
         }
     }
