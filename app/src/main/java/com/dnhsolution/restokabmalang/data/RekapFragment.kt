@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dnhsolution.restokabmalang.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.RekapBulananListAdapter
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.RekapBulananListElement
@@ -36,6 +38,18 @@ class RekapFragment : Fragment() {
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
+        val tvTotal = view.findViewById(R.id.tvTotal) as TextView
+        var totalValue = 0.0
+        if (params == "0")
+            for(ttl in itemsHarian) {
+                totalValue += ttl.total
+            }
+        else
+            for(ttl in itemsBulanan) {
+                totalValue += ttl.total
+            }
+        tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+
         val recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
         if (params == "0") {
             val adapterList = context?.let {
@@ -45,7 +59,7 @@ class RekapFragment : Fragment() {
                 )
             }
             recyclerView.adapter = adapterList
-            recyclerView.layoutManager = (LinearLayoutManager(context))
+            recyclerView.layoutManager = LinearLayoutManager(context)
         } else {
             val adapterList = context?.let {
                 RekapBulananListAdapter(

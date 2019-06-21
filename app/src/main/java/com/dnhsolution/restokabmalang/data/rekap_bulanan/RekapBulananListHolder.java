@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.dnhsolution.restokabmalang.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.data.rekap_harian.RekapHarianListElement;
 
@@ -47,11 +48,11 @@ class RekapBulananListHolder extends RecyclerView.ViewHolder {
 
     void setValues(String number,RekapBulananListElement itemText) {
         numItem.setText(number);
-        String omzetValue = "Rp "+itemText.getOmzet();
+        String omzetValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getOmzet());
         omzet.setText(omzetValue);
         tgl.setText(itemText.getTgl());
         disc.setText(String.valueOf(itemText.getDisc()));
-        String totalValue = "Rp "+itemText.getTotal();
+        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
         total.setText(totalValue);
     }
 }

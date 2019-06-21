@@ -22,21 +22,19 @@ public class SplashActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         final String status = sharedPreferences.getString(Url.SESSION_STS_LOGIN, "0");
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if(status.equalsIgnoreCase("0")){
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                }else{
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                if(status.equalsIgnoreCase("0")){
+//                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+//                }else{
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                }
-
-                finish();
-
-            }
-        },2000);
-
-
+//                }
+//
+//                finish();
+//
+//            }
+//        },2000);
     }
 }
