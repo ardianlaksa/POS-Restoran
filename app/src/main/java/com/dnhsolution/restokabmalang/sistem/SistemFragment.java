@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.ThemeApplication;
-import com.dnhsolution.restokabmalang.Utils;
+import com.dnhsolution.restokabmalang.utilities.ThemeApplication;
+import com.dnhsolution.restokabmalang.utilities.Utils;
 
 public class SistemFragment extends AppCompatActivity {
 

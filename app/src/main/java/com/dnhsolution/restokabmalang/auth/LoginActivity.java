@@ -18,7 +18,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.Url;
+import com.dnhsolution.restokabmalang.utilities.Url;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

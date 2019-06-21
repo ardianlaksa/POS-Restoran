@@ -25,10 +25,33 @@
         android:visibility="invisible"/>
 
     <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spinBln"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+
+        <Spinner
+            android:id="@+id/spinThn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll1"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="@dimen/_4"
         android:layout_marginRight="@dimen/_4"
@@ -45,6 +68,8 @@
             android:id="@+id/tvTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
             android:textSize="@dimen/f_24"
             android:text="@string/rp_0"/>
 

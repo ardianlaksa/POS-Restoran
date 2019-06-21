@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang
+package com.dnhsolution.restokabmalang.keranjang
 
 import java.io.Serializable
 

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-import com.dnhsolution.restokabmalang.AddingIDRCurrency;
+import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.R;
 
 class RekapHarianListHolder extends RecyclerView.ViewHolder {

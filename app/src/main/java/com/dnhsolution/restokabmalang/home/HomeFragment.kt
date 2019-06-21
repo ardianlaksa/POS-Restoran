@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import com.dnhsolution.restokabmalang.ProdukSerializable
-import com.dnhsolution.restokabmalang.Url
+import com.dnhsolution.restokabmalang.keranjang.ProdukSerializable
+import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.keranjang.KeranjangActivity
 import kotlinx.android.synthetic.main.home_fragment.*
 import com.dnhsolution.restokabmalang.R
@@ -67,7 +67,7 @@ class HomeFragment:Fragment() {
                         arrayProdukSerialization.add(
                             ProdukSerializable(
                                 value.idItem, value.name, value.price
-                                , value.imageResource, value.imageUrl,value.price.toInt()
+                                , value.imageResource, value.imageUrl, value.price.toInt()
                             )
                         )
 //                        produkSerializable?.idItem = value.idItem

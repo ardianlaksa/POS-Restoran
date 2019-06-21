@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.ProdukSerializable;
 
 class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
     private final ImageView ivItem;

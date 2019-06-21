@@ -4,9 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-import com.dnhsolution.restokabmalang.AddingIDRCurrency;
+import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.data.rekap_harian.RekapHarianListElement;
 
 class RekapBulananListHolder extends RecyclerView.ViewHolder {
     private final TextView numItem,omzet,tgl,disc,total;
