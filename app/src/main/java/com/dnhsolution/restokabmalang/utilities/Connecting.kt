@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang
+package com.dnhsolution.restokabmalang.utilities
 
 import android.util.Log
 import java.io.*

@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang
+package com.dnhsolution.restokabmalang.utilities
 
 object Url {
     const val serverPdrd = "http://devdeenha.ddns.net:8080/pdrd/"

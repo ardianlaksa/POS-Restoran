@@ -24,21 +24,35 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="invisible"/>
 
-    <Spinner
-        android:id="@+id/spinTgl"
+    <LinearLayout
+        android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spinBln"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+
+        <Spinner
+            android:id="@+id/spinThn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/spinTgl"
+        app:layout_constraintTop_toBottomOf="@id/ll1"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="@dimen/_4"
         android:layout_marginEnd="@dimen/_4"
         android:layout_marginRight="@dimen/_4"
         android:orientation="horizontal">

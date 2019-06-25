@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.ProdukSerializable
 
 class KeranjangProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private val activity: Activity
                                  , private val onTask: KeranjangProdukItemOnTask) :

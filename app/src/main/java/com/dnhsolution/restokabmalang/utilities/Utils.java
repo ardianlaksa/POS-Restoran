@@ -1,7 +1,8 @@
-package com.dnhsolution.restokabmalang;
+package com.dnhsolution.restokabmalang.utilities;
 
 import android.app.Activity;
 import android.content.Intent;
+import com.dnhsolution.restokabmalang.R;
 
 public class Utils {
     private static int sTheme;
