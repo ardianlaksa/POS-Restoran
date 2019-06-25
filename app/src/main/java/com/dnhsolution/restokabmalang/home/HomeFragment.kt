@@ -1,14 +1,24 @@
 package com.dnhsolution.restokabmalang.home
 
+import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.android.volley.*
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.ProdukSerializable
 import com.dnhsolution.restokabmalang.Url
 import com.dnhsolution.restokabmalang.keranjang.KeranjangActivity
 import kotlinx.android.synthetic.main.home_fragment.*
 import com.dnhsolution.restokabmalang.R
+import org.json.JSONException
+import org.json.JSONObject
+import java.util.HashMap
 
 class HomeFragment:Fragment() {
 
@@ -110,6 +120,74 @@ class HomeFragment:Fragment() {
                 }
             }
         }
+    }
+
+    fun getdata() {
+
+        val progressDialog = ProgressDialog(context)
+        progressDialog.setMessage("Loading...")
+        progressDialog.show()
+        val queue = Volley.newRequestQueue(context)
+        val url = Url.serverPos + "Auth"
+        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
+        val stringRequest = object : StringRequest(Request.Method.POST, url,
+            Response.Listener { response ->
+                try {
+                    val jsonObject = JSONObject(response)
+                    val jsonArray = jsonObject.getJSONArray("result")
+                    val json = jsonArray.getJSONObject(0)
+                    val pesan = json.getString("pesan")
+                    if (pesan.equals("0", ignoreCase = true)) {
+                        Toast.makeText(
+                            context,
+                            "Gagal Login. Username atau Password salah !",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (pesan.equals("1", ignoreCase = true)) {
+
+                    } else {
+                        Toast.makeText(context, "Jaringan masih sibuk !", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+
+                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss()
+            }, Response.ErrorListener { error ->
+                progressDialog.dismiss()
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+            }) {
+            @Throws(AuthFailureError::class)
+            override fun getParams(): Map<String, String> {
+                val params = HashMap<String, String>()
+//                val sharedPreference =  getSharedPreferences("PREFERENCE_NAME",Context.MODE_PRIVATE)
+//                var editor = sharedPreference.edit()
+//                editor.putString("username","Anupam")
+//                editor.putLong("l",100L)
+//                editor.commit()
+                params["username"] = ""
+
+                return params
+            }
+        }
+        stringRequest.retryPolicy = object : RetryPolicy {
+            override fun getCurrentTimeout(): Int {
+                return 50000
+            }
+
+            override fun getCurrentRetryCount(): Int {
+                return 50000
+            }
+
+            @Throws(VolleyError::class)
+            override fun retry(error: VolleyError) {
+
+            }
+        }
+
+        queue.add(stringRequest)
+
     }
 
     private val produks = arrayOf(
