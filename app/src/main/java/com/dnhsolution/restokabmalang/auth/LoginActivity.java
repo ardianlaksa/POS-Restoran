@@ -128,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
                 if(et4.getText().toString().length()==1){
                     et4.requestFocus();
                 }
-
             }
 
             @Override
@@ -186,9 +185,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
             }
         });
-
-
-
     }
 
     @SuppressLint("ResourceAsColor")

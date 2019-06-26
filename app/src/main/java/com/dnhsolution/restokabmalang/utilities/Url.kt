@@ -7,4 +7,8 @@ object Url {
     const val SESSION_PASSWORD = "password"
     const val SESSION_STS_LOGIN = "status"
     const val SESSION_NAME = "pos"
+    const val setKeranjangTransaksi = "${serverPos}setKeranjangTransaksi"
+    const val getProduk = "${serverPos}getProduk"
+    const val getRekapHarian = "${serverPos}getRekapHarian"
+    const val getRekapBulanan = "${serverPos}getRekapBulanan"
 }

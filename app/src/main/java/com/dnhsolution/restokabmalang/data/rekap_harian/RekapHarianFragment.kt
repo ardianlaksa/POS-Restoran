@@ -1,20 +1,26 @@
 package com.dnhsolution.restokabmalang.data.rekap_harian
 
 import android.content.Context
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.Url
 
-class RekapHarianFragment : Fragment() {
+class RekapHarianFragment : Fragment(), RekapHarianOnTask {
 
     companion object {
         @JvmStatic
@@ -25,6 +31,8 @@ class RekapHarianFragment : Fragment() {
         }
     }
 
+    private val _tag = javaClass.simpleName
+    private var jsonTask: AsyncTask<String, Void, String?>? = null
     private var params = ""
     private var tempItemsHarian = ArrayList<RekapHarianListElement>()
     private var spinTglArray = ArrayList<String>()
@@ -44,6 +52,14 @@ class RekapHarianFragment : Fragment() {
         val spiTgl = view.findViewById(R.id.spinTgl) as Spinner
         val tvTotal = view.findViewById(R.id.tvTotal) as TextView
         val recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
+
+        if(CheckNetwork().checkingNetwork(context!!)) {
+            val stringUrl = "${Url.getRekapHarian}?value=1"
+            Log.i(_tag,stringUrl)
+            jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
+        } else {
+            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+        }
 
         for (item in itemsHarian) {
             val tgl = item.tgl
@@ -104,6 +120,18 @@ class RekapHarianFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         return view
+    }
+
+    override fun rekapHarianOnTask(result: String?) {
+        if (result == null) {
+            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            return
+        } else if (result == "") {
+            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Log.e("Debug", "Response from url:$result")
     }
 
     private val itemsHarian = arrayListOf(

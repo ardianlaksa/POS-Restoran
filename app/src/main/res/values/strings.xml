@@ -18,6 +18,17 @@
     <string name="title_omzet">Omzet</string>
     <string name="title_tgl">Tgl</string>
 
+    <!--Notif-->
+    <string name="check_network">Please check your connection</string>
+    <string name="check_input_data">Please check your input data</string>
+    <string name="empty_data">Empty Data</string>
+    <string name="error_data">Error Data</string>
+    <string name="error_get_data">Error Get Data</string>
+    <string name="error_validating_email">Error validating email</string>
+    <string name="error_validating_password">Error validating password</string>
+    <string name="please_wait">Please Wait&#8230;</string>
+    <string name="refresh">Refresh</string>
+
     <string name="judul">Judul</string>
     <string name="lanjut">Lanjut</string>
     <string name="text">Text</string>

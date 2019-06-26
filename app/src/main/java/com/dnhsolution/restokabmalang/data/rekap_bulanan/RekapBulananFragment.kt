@@ -1,20 +1,26 @@
 package com.dnhsolution.restokabmalang.data.rekap_bulanan
 
 import android.content.Context
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.Url
 
-class RekapBulananFragment : Fragment() {
+class RekapBulananFragment : Fragment(),RekapBulananOnTask {
 
     companion object {
         @JvmStatic
@@ -45,6 +51,8 @@ class RekapBulananFragment : Fragment() {
 
     private var params = ""
 
+    private val _tag = javaClass.simpleName
+    private var jsonTask: AsyncTask<String, Void, String?>? = null
     private var tempItemsBulanan = ArrayList<RekapBulananListElement>()
     private var spinThnArray = ArrayList<String>()
     private var spinBlnArray = ArrayList<RekapBulananBlnSpinElement>()
@@ -66,6 +74,14 @@ class RekapBulananFragment : Fragment() {
         val spiBln = view.findViewById(R.id.spinBln) as Spinner
         val spiThn = view.findViewById(R.id.spinThn) as Spinner
         val recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
+
+        if(CheckNetwork().checkingNetwork(context!!)) {
+            val stringUrl = "${Url.getRekapBulanan}?value=1"
+            Log.i(_tag,stringUrl)
+            jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
+        } else {
+            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+        }
 
         for (index in itemsBulanan.indices) {
             val tgl = (itemsBulanan[index].tgl).split("/")
@@ -186,6 +202,18 @@ class RekapBulananFragment : Fragment() {
         recyclerView.layoutManager = (LinearLayoutManager(context))
 
         return view
+    }
+
+    override fun rekapBulananOnTask(result: String?) {
+        if (result == null) {
+            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            return
+        } else if (result == "") {
+            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Log.e("Debug", "Response from url:$result")
     }
 
     private val itemsBulanan = arrayListOf(

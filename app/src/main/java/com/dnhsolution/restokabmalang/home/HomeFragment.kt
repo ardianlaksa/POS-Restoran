@@ -1,17 +1,24 @@
 package com.dnhsolution.restokabmalang.home
 
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.dnhsolution.restokabmalang.ProdukOnTask
 import com.dnhsolution.restokabmalang.keranjang.ProdukSerializable
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.keranjang.KeranjangActivity
 import kotlinx.android.synthetic.main.home_fragment.*
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 
-class HomeFragment:Fragment() {
+class HomeFragment:Fragment(), ProdukOnTask {
 
+    private val _tag = javaClass.simpleName
+    private var jsonTask: AsyncTask<String, Void, String?>? = null
     private val favoritedBookNamesKey = "favoritedBookNamesKey"
     var produkSerializable: ProdukSerializable? = null
 
@@ -24,6 +31,14 @@ class HomeFragment:Fragment() {
 
         setHasOptionsMenu(true)
 
+        if(CheckNetwork().checkingNetwork(context!!)) {
+            val stringUrl = "${Url.getProduk}?idTmpUsaha=1"
+            Log.i(_tag,stringUrl)
+            jsonTask = ProdukJsonTask(this).execute(stringUrl)
+        } else {
+            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+        }
+
         val produkAdapter = ProdukAdapter(context, produks)
         gvMainActivity.adapter = produkAdapter
 
@@ -32,6 +47,18 @@ class HomeFragment:Fragment() {
             produk.toggleFavorite()
             produkAdapter.notifyDataSetChanged()
         }
+    }
+
+    override fun produkOnTask(result: String?) {
+        if (result == null) {
+            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            return
+        } else if (result == "") {
+            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Log.e("Debug", "Response from url:$result")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -67,7 +94,7 @@ class HomeFragment:Fragment() {
                         arrayProdukSerialization.add(
                             ProdukSerializable(
                                 value.idItem, value.name, value.price
-                                , value.imageResource, value.imageUrl,value.price.toInt()
+                                , value.imageResource, value.imageUrl,value.price.toInt(), 1
                             )
                         )
 //                        produkSerializable?.idItem = value.idItem
@@ -113,37 +140,6 @@ class HomeFragment:Fragment() {
     }
 
     private val produks = arrayOf(
-//        ProdukElement(
-//            1, "Judul", "10", R.drawable.abc,
-//            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-//        ), ProdukElement(
-//            2, "Judul", "20", R.drawable.areyoumymother,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/areyoumymother.jpg"
-//        ), ProdukElement(
-//            3, "Judul", "30", R.drawable.whereisbabysbellybutton,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/whereisbabysbellybutton.jpg"
-//        ), ProdukElement(
-//            4, "Judul", "40", R.drawable.onthenightyouwereborn,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/onthenightyouwereborn.jpg"
-//        ), ProdukElement(
-//            5, "Judul", "50", R.drawable.handhandfingersthumb,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/handhandfingersthumb.jpg"
-//        ), ProdukElement(
-//            6, "Judul", "60", R.drawable.theveryhungrycaterpillar,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/theveryhungrycaterpillar.jpg"
-//        ), ProdukElement(
-//            7, "Judul", "70", R.drawable.thegoingtobedbook,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/thegoingtobedbook.jpg"
-//        ), ProdukElement(
-//            8, "Judul", "80", R.drawable.ohbabygobaby,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/ohbabygobaby.jpg"
-//        ), ProdukElement(
-//            9, "Judul", "90", R.drawable.thetoothbook,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/thetoothbook.jpg"
-//        ), ProdukElement(
-//            10, "Judul", "100", R.drawable.onefish,
-//            "http://www.raywenderlich.com/wp-content/uploads/2016/03/onefish.jpg"
-//        )
         ProdukElement(
             1, "Judul", "10", R.drawable.img_food_example,
             "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
