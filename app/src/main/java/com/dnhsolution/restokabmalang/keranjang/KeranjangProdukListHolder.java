@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.Url;
+import com.squareup.picasso.Picasso;
 
 class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
     private final ImageView ivItem;
@@ -50,7 +52,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    void setValues(final KeranjangProdukItemOnTask onTask, ProdukSerializable obyek,final int position) {
+    void setValues(final KeranjangProdukItemOnTask onTask, final ProdukSerializable obyek, final int position) {
         judul.setText(obyek.getName());
         final String priceValue = obyek.getPrice();
         if (priceValue == null) return;
@@ -58,31 +60,36 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         price.setText(rupiahPrice);
         totalPrice.setText(rupiahPrice);
 
+        Picasso.get().load(Url.serverFoto+obyek.getImgUrl())
+                .into(ivItem);
+
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
-                if (jumlah > 1) {
-                    jumlah--;
-                    jumlahProduk.setText(String.valueOf(jumlah));
-                    int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
-                    onTask.keranjangProdukItemOnTask(position,priceValueTotal);
-                    String sPriceValueTotal = "Rp "+priceValueTotal;
-                    totalPrice.setText(sPriceValueTotal);
-                }
+//            int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
+                int jumlah = obyek.getQty();
+            if (jumlah > 1) {
+                jumlah--;
+                jumlahProduk.setText(String.valueOf(jumlah));
+                int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
+                String sPriceValueTotal = "Rp "+priceValueTotal;
+                totalPrice.setText(sPriceValueTotal);
+            }
             }
         });
 
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
-                jumlah++;
-                jumlahProduk.setText(String.valueOf(jumlah));
-                int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
-                onTask.keranjangProdukItemOnTask(position,priceValueTotal);
-                String sPriceValueTotal = "Rp "+priceValueTotal;
-                totalPrice.setText(sPriceValueTotal);
+//              int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
+            int jumlah = obyek.getQty();
+            jumlah++;
+            jumlahProduk.setText(String.valueOf(jumlah));
+            int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+            onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
+            String sPriceValueTotal = "Rp "+priceValueTotal;
+            totalPrice.setText(sPriceValueTotal);
             }
         });
     }

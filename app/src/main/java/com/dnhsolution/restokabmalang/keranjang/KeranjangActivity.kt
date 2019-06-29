@@ -1,34 +1,51 @@
 package com.dnhsolution.restokabmalang.keranjang
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dnhsolution.restokabmalang.KeranjangTransaksiOnTask
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.Url
 import kotlinx.android.synthetic.main.activity_keranjang.*
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 
-class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnClickListener {
+class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
+    ,View.OnClickListener, KeranjangTransaksiOnTask {
 
     override fun onClick(v: View?) {
-
         when(v?.id) {
             R.id.bProses -> {
-                val valueDiskon = etDiskon.text.toString()
-                if ( valueDiskon == "") return
-                else showDialog("Konfirmasi","Apakan anda ingin memproses?")
+//                val valueDiskon = valueDiskon
+//                if ( valueDiskon == "") return
+//                else showDialog("Konfirmasi","Apakan anda ingin memproses?")
+                showDialog("Konfirmasi","Apakan anda ingin memproses?")
             }
         }
     }
 
+    private var idPengguna: String? = null
+    private var idTmpUsaha: String? = null
+    private var valueDiskon: Int = 0
+    private var valueTotalPrice: Int = 0
     private lateinit var obyek:ArrayList<ProdukSerializable>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_keranjang)
-
         setSupportActionBar(toolbar)
+
+        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
 
         bProses.setOnClickListener(this)
 
@@ -44,7 +61,8 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
         setTotal()
 
         etDiskon.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -55,28 +73,30 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
                 if (s.toString() != current)
                     etDiskon.removeTextChangedListener(this)
 
+                valueDiskon = s.toString().toInt()
                 setTotal()
 
                 etDiskon.addTextChangedListener(this)
             }
-
         })
     }
 
-    override fun keranjangProdukItemOnTask(position:Int, totalPrice: Int) {
+    override fun keranjangProdukItemOnTask(position:Int, totalPrice: Int, qty: Int) {
         obyek[position].totalPrice = totalPrice
+        obyek[position].qty = qty
         setTotal()
     }
 
     private fun setTotal () {
-        var valueTotalPrice = 0
+        var totalPrice = 0
         for (valueTotal in obyek) {
-            valueTotalPrice += valueTotal.totalPrice
+            totalPrice += valueTotal.totalPrice
         }
 
-        var valueDiskon = 0
-        if (!etDiskon.text.toString().isEmpty()) valueDiskon = etDiskon.text.toString().toInt()
-        valueTotalPrice = valueTotalPrice-(valueTotalPrice*valueDiskon/100)
+        var diskon = 0
+//        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
+        if (!etDiskon.text.toString().isEmpty()) diskon = valueDiskon
+        this.valueTotalPrice = totalPrice-(totalPrice*diskon/100)
         val rupiahValue = "Rp ${valueTotalPrice}"
         tvTotal.text = rupiahValue
     }
@@ -89,10 +109,18 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
 
         // Display a message on alert dialog
         builder.setMessage(message)
-//            builder.setPositiveButton("Lanjut"){dialog, which ->
-//            }
+            builder.setPositiveButton("Lanjut"){dialog, which ->
+//                println(createJson())
+                if(CheckNetwork().checkingNetwork(this)) {
+                    val params = HashMap<String, String>()
+                    params.put("paramsArray",createJson())
+                    KeranjangTransaksiJsonTask(this, params).execute(Url.setKeranjangTransaksi)
+                } else {
+                    Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        builder.setNegativeButton("Ok"){dialog, which ->
+        builder.setNegativeButton("Batal"){dialog, which ->
             // Do something when user press the positive button
             dialog.dismiss()
         }
@@ -103,5 +131,50 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask,View.OnCli
 
         // Display the alert dialog on app interface
         dialog.show()
+    }
+
+    fun createJson() : String{
+        val rootObject= JSONObject()
+        rootObject.put("idTmptUsaha",idTmpUsaha)
+        rootObject.put("user",idPengguna)
+        rootObject.put("disc",valueDiskon)
+        rootObject.put("omzet",valueTotalPrice)
+
+        val jsonArr = JSONArray()
+
+        for (pn in obyek) {
+            val pnObj = JSONObject()
+            pnObj.put("idProduk", pn.idItem)
+            pnObj.put("nmProduk", pn.name)
+            pnObj.put("nmProduk", pn.name)
+            pnObj.put("qty", pn.qty)
+            pnObj.put("hrgProduk", pn.price)
+            jsonArr.put(pnObj)
+        }
+        rootObject.put("produk",jsonArr)
+
+        return rootObject.toString()
+    }
+
+    override fun keranjangTransaksiOnTask(result: String?) {
+        if (result == null) {
+            Toast.makeText(this,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            return
+        } else if (result == "") {
+            Toast.makeText(this,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Log.e("Debug", "Response from url:$result")
+        try {
+            val jsonObj = JSONObject(result)
+            val success = jsonObj.getInt("success")
+            val message = jsonObj.getString("message")
+            if (success == 1)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        } catch (ex : JSONException) {
+            ex.printStackTrace()
+            Toast.makeText(this, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
     }
 }

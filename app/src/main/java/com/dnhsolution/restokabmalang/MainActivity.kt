@@ -2,13 +2,10 @@ package com.dnhsolution.restokabmalang
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.dnhsolution.restokabmalang.data.DataFragment
 import com.dnhsolution.restokabmalang.home.HomeFragment
-import com.dnhsolution.restokabmalang.sistem.SistemFragment
+import com.dnhsolution.restokabmalang.sistem.master.SistemMasterActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -33,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
             R.id.navigation_sistem -> {
 //                textMessage.setText(R.string.title_sistem)
-                startActivity(Intent(this,SistemFragment::class.java))
+                startActivity(Intent(this,SistemMasterActivity::class.java))
                 return@OnNavigationItemSelectedListener true
             }
         }
