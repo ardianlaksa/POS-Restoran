@@ -43,4 +43,6 @@
         <item>Merah</item>
     </string-array>
 
+    <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>
+
 </resources>
