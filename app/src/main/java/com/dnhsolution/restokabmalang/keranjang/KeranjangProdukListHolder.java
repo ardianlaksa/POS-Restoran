@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.Url;
+import com.squareup.picasso.Picasso;
 
 class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
     private final ImageView ivItem;
@@ -57,6 +59,9 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         String rupiahPrice = "Rp "+priceValue;
         price.setText(rupiahPrice);
         totalPrice.setText(rupiahPrice);
+
+        Picasso.get().load(Url.serverFoto+obyek.getImgUrl())
+                .into(ivItem);
 
         minus.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,5 +1,6 @@
 package com.dnhsolution.restokabmalang.home
 
+import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -14,13 +15,19 @@ import com.dnhsolution.restokabmalang.keranjang.KeranjangActivity
 import kotlinx.android.synthetic.main.home_fragment.*
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import org.json.JSONException
+import org.json.JSONObject
 
 class HomeFragment:Fragment(), ProdukOnTask {
+
+    private var produkAdapter: ProdukAdapter? = null
+    private var idTmpUsaha: String = "0"
 
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
     private val favoritedBookNamesKey = "favoritedBookNamesKey"
     var produkSerializable: ProdukSerializable? = null
+    private var produks:ArrayList<ProdukElement> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.home_fragment,container,false)
@@ -31,21 +38,21 @@ class HomeFragment:Fragment(), ProdukOnTask {
 
         setHasOptionsMenu(true)
 
+        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "0").toString()
+
         if(CheckNetwork().checkingNetwork(context!!)) {
-            val stringUrl = "${Url.getProduk}?idTmpUsaha=1"
+            val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha"
             Log.i(_tag,stringUrl)
             jsonTask = ProdukJsonTask(this).execute(stringUrl)
         } else {
             Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
 
-        val produkAdapter = ProdukAdapter(context, produks)
-        gvMainActivity.adapter = produkAdapter
-
         gvMainActivity.setOnItemClickListener { parent, _, position, id ->
             val produk = produks[position]
             produk.toggleFavorite()
-            produkAdapter.notifyDataSetChanged()
+            produkAdapter?.notifyDataSetChanged()
         }
     }
 
@@ -59,6 +66,39 @@ class HomeFragment:Fragment(), ProdukOnTask {
         }
 
         Log.e("Debug", "Response from url:$result")
+        try {
+            val jsonObj = JSONObject(result)
+            val success = jsonObj.getInt("success")
+            val message = jsonObj.getString("message")
+            if (success == 1) {
+
+                val rArray = jsonObj.getJSONArray("result")
+                for (i in 0 until rArray.length()) {
+
+                    val idBarang = rArray.getJSONObject(i).getInt("ID_BARANG")
+                    val harga = rArray.getJSONObject(i).getString("HARGA")
+                    val foto = rArray.getJSONObject(i).getString("FOTO")
+                    val nmBarang = rArray.getJSONObject(i).getString("NM_BARANG")
+                    val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
+
+                    produks.add(
+                        ProdukElement(
+                            idBarang,nmBarang, harga, foto, keterangan )
+                    )
+                }
+
+                if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
+                else produkAdapter = ProdukAdapter(context, produks)
+
+                gvMainActivity.adapter = produkAdapter
+
+            } else {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -94,7 +134,7 @@ class HomeFragment:Fragment(), ProdukOnTask {
                         arrayProdukSerialization.add(
                             ProdukSerializable(
                                 value.idItem, value.name, value.price
-                                , value.imageResource, value.imageUrl,value.price.toInt(), 1
+                                , value.imageUrl,value.price.toInt(), 1
                             )
                         )
 //                        produkSerializable?.idItem = value.idItem
@@ -138,38 +178,4 @@ class HomeFragment:Fragment(), ProdukOnTask {
             }
         }
     }
-
-    private val produks = arrayOf(
-        ProdukElement(
-            1, "Judul", "10", R.drawable.img_food_example,
-            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-        ,"Diskripsi"), ProdukElement(
-            2, "Judul", "20", R.drawable.img_food_example,
-            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,"Diskripsi"), ProdukElement(
-            3, "Judul", "30", R.drawable.img_food_example,
-            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,"Diskripsi"), ProdukElement(
-            4, "Judul", "40", R.drawable.img_food_example,
-            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,"Diskripsi"), ProdukElement(
-            5, "Judul", "50", R.drawable.img_food_example,
-            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,"Diskripsi"), ProdukElement(
-            6, "Judul", "60", R.drawable.img_food_example,
-            "${Url.serverPdrd}IMG_20190516_163229_1994000784056139154.jpg"
-            ,"Diskripsi"), ProdukElement(
-            7, "Judul", "70", R.drawable.img_food_example,
-            "http://www.raywenderlich.com/wp-content/uploads/2016/03/thegoingtobedbook.jpg"
-            ,"Diskripsi"), ProdukElement(
-            8, "Judul", "80", R.drawable.img_food_example,
-            "http://www.raywenderlich.com/wp-content/uploads/2016/03/ohbabygobaby.jpg"
-            ,"Diskripsi"), ProdukElement(
-            9, "Judul", "90", R.drawable.img_food_example,
-            "http://www.raywenderlich.com/wp-content/uploads/2016/03/thetoothbook.jpg"
-            ,"Diskripsi"), ProdukElement(
-            10, "Judul", "100", R.drawable.img_food_example,
-            "http://www.raywenderlich.com/wp-content/uploads/2016/03/onefish.jpg"
-            ,"Diskripsi")
-    )
 }

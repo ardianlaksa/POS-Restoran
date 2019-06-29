@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,18 +43,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etPassword = (EditText)findViewById(R.id.etPassword);
-        etUsername = (EditText)findViewById(R.id.etUsername);
-        btnLogin = (Button)findViewById(R.id.btnLogin);
-        bPassword = (Button) findViewById(R.id.bPassword);
+        etPassword = findViewById(R.id.etPassword);
+        etUsername = findViewById(R.id.etUsername);
+        btnLogin = findViewById(R.id.btnLogin);
+        bPassword =  findViewById(R.id.bPassword);
 
-        LAktivasi = (LinearLayout)findViewById(R.id.LAktivasi);
-        LLogin = (LinearLayout)findViewById(R.id.LLogin);
-        LKeterangan = (LinearLayout)findViewById(R.id.LKeterangan);
-        et1 = (EditText)findViewById(R.id.et1);
-        et2 = (EditText)findViewById(R.id.et2);
-        et3 = (EditText)findViewById(R.id.et3);
-        et4 = (EditText)findViewById(R.id.et4);
+        LAktivasi = findViewById(R.id.LAktivasi);
+        LLogin = findViewById(R.id.LLogin);
+        LKeterangan = findViewById(R.id.LKeterangan);
+        et1 = findViewById(R.id.et1);
+        et2 = findViewById(R.id.et2);
+        et3 = findViewById(R.id.et3);
+        et4 = findViewById(R.id.et4);
 
         et1.requestFocus();
         et1.addTextChangedListener(new TextWatcher() {
@@ -251,7 +252,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }){
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("kode_aktivasi", kode);
 
@@ -270,7 +271,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void retry(VolleyError error) throws VolleyError {
+            public void retry(VolleyError error) {
 
             }
         });
@@ -292,6 +293,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 try {
                     JSONObject jsonObject = new JSONObject(response);
+                    Log.i("json",jsonObject.toString());
                     JSONArray jsonArray = jsonObject.getJSONArray("result");
                     JSONObject json = jsonArray.getJSONObject(0);
                     String pesan = json.getString("pesan");
@@ -303,6 +305,11 @@ public class LoginActivity extends AppCompatActivity {
 //                        String dptb2 = json.getString("dptb_2");
 //                        String dpph = json.getString("dpph");
 
+
+                        json = jsonArray.getJSONObject(1);
+                        String idTempatusaha = json.getString("ID_TEMPAT_USAHA");
+                        String idPengguna = json.getString("ID_PENGGUNA");
+
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
                         //membuat editor untuk menyimpan data ke shared preferences
@@ -310,6 +317,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         //menambah data ke editor
                         editor.putString(Url.SESSION_USERNAME, etUsername.getText().toString());
+                        editor.putString(Url.SESSION_ID_PENGGUNA,idPengguna);
+                        editor.putString(Url.SESSION_ID_TEMPAT_USAHA,idTempatusaha);
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
 
                         //menyimpan data ke editor
@@ -336,7 +345,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }){
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("username", etUsername.getText().toString());
                 params.put("password", etPassword.getText().toString());
@@ -356,7 +365,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void retry(VolleyError error) throws VolleyError {
+            public void retry(VolleyError error) {
 
             }
         });

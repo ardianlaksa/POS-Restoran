@@ -15,3 +15,7 @@ interface RekapHarianOnTask {
 interface KeranjangTransaksiOnTask {
     fun keranjangTransaksiOnTask(result:String?)
 }
+
+interface SistemMasterOnTask {
+    fun sistemMasterOnTask(result:String?)
+}

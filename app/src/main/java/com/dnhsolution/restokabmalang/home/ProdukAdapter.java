@@ -23,6 +23,7 @@
 package com.dnhsolution.restokabmalang.home;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,20 +32,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.Url;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class ProdukAdapter extends BaseAdapter {
 
   private final Context mContext;
-  private final ProdukElement[] books;
+  private final ArrayList<ProdukElement> books;
 
-  public ProdukAdapter(Context context, ProdukElement[] books) {
+  public ProdukAdapter(Context context, ArrayList<ProdukElement> books) {
     this.mContext = context;
     this.books = books;
   }
 
   @Override
   public int getCount() {
-    return books.length;
+    return books.size();
   }
 
   @Override
@@ -59,7 +64,7 @@ public class ProdukAdapter extends BaseAdapter {
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    final ProdukElement book = books[position];
+    final ProdukElement book = books.get(position);
 
     // standard implementation (should start with this)
 //    if (convertView == null) {
@@ -94,13 +99,16 @@ public class ProdukAdapter extends BaseAdapter {
     }
 
     final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
-    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
+//    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
     viewHolder.nameTextView.setText(book.getName());
     String priceValue = "Rp. "+book.getPrice();
     viewHolder.authorTextView.setText(priceValue);
     viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.star_enabled : R.drawable.star_disabled);
     viewHolder.descriptionTextView.setText(book.getDescription());
-//    Picasso.get().load(book.getImageUrl()).into(viewHolder.imageViewCoverArt);
+    String url = Url.serverFoto+book.getImageUrl();
+//    Log.i("url : ", url);
+//    Picasso.get().load(url).fit().centerCrop().into(viewHolder.imageViewCoverArt);
+    Picasso.get().load(url).into(viewHolder.imageViewCoverArt);
 
     return convertView;
   }
@@ -121,5 +129,4 @@ public class ProdukAdapter extends BaseAdapter {
       this.descriptionTextView = descriptionTextView;
     }
   }
-
 }

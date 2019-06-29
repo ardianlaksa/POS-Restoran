@@ -16,6 +16,7 @@ import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import kotlinx.android.synthetic.main.activity_keranjang.*
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
@@ -32,6 +33,8 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
         }
     }
 
+    private var idPengguna: String? = null
+    private var idTmpUsaha: String? = null
     private var valueDiskon: Int = 0
     private var valueTotalPrice: Int = 0
     private lateinit var obyek:ArrayList<ProdukSerializable>
@@ -40,9 +43,9 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
         setContentView(R.layout.activity_keranjang)
         setSupportActionBar(toolbar)
 
-
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        val status = sharedPreferences.getString(Url.SESSION_USERNAME, "0")
+        idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
 
         bProses.setOnClickListener(this)
 
@@ -132,8 +135,8 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
 
     fun createJson() : String{
         val rootObject= JSONObject()
-        rootObject.put("idTmptUsaha","1")
-        rootObject.put("user","1")
+        rootObject.put("idTmptUsaha",idTmpUsaha)
+        rootObject.put("user",idPengguna)
         rootObject.put("disc",valueDiskon)
         rootObject.put("omzet",valueTotalPrice)
 
@@ -163,5 +166,15 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
         }
 
         Log.e("Debug", "Response from url:$result")
+        try {
+            val jsonObj = JSONObject(result)
+            val success = jsonObj.getInt("success")
+            val message = jsonObj.getString("message")
+            if (success == 1)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        } catch (ex : JSONException) {
+            ex.printStackTrace()
+            Toast.makeText(this, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
     }
 }

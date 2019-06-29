@@ -16,11 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.RekapBulananOnTask
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
+import org.json.JSONException
+import org.json.JSONObject
 
-class RekapBulananFragment : Fragment(),RekapBulananOnTask {
+class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
     companion object {
         @JvmStatic
@@ -31,26 +34,31 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
         }
     }
 
+    private lateinit var tvTotal: TextView
+    private lateinit var recyclerView: RecyclerView
     private val listBulan: HashMap<String,String>
         get(){
             val bln = HashMap<String,String>()
-            bln["01"] = "Jan"
-            bln["02"] = "Feb"
-            bln["03"] = "Mar"
-            bln["04"] = "Apr"
-            bln["05"] = "Mei"
-            bln["06"] = "Jun"
-            bln["05"] = "Jul"
-            bln["08"] = "Agu"
-            bln["09"] = "Sep"
-            bln["10"] = "Okt"
-            bln["11"] = "Nov"
-            bln["12"] = "Des"
+            bln["JAN"] = "Jan"
+            bln["FEB"] = "Feb"
+            bln["MAR"] = "Mar"
+            bln["APR"] = "Apr"
+            bln["MAY"] = "Mei"
+            bln["JUN"] = "Jun"
+            bln["JUL"] = "Jul"
+            bln["AUG"] = "Agu"
+            bln["SEP"] = "Sep"
+            bln["OCT"] = "Okt"
+            bln["NOV"] = "Nov"
+            bln["DES"] = "Des"
             return bln
         }
 
     private var params = ""
 
+    private lateinit var spiBln: Spinner
+    private lateinit var spiThn: Spinner
+    private var itemsBulanan:ArrayList<RekapBulananListElement>? = null
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
     private var tempItemsBulanan = ArrayList<RekapBulananListElement>()
@@ -61,6 +69,9 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
     private var isOpenedBln = false
     private var selectedBln = ""
     private var selectedThn = ""
+    private var bulan = "1"
+    private var tahun = "1"
+    private var idTempatUsaha = "1"
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -71,45 +82,19 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_rekap_bulanan, container, false)
-        val spiBln = view.findViewById(R.id.spinBln) as Spinner
-        val spiThn = view.findViewById(R.id.spinThn) as Spinner
-        val recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
+        spiBln = view.findViewById(R.id.spinBln) as Spinner
+        spiThn = view.findViewById(R.id.spinThn) as Spinner
+        recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
+
+        tvTotal = view.findViewById(R.id.tvTotal) as TextView
 
         if(CheckNetwork().checkingNetwork(context!!)) {
-            val stringUrl = "${Url.getRekapBulanan}?value=1"
+            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&&TAHUN=$tahun&&ID_TEMPAT_USAHA=$idTempatUsaha"
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
             Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
-
-        for (index in itemsBulanan.indices) {
-            val tgl = (itemsBulanan[index].tgl).split("/")
-            if (!spinThnArray.contains(tgl[0])) spinThnArray.add(tgl[0])
-
-            for (itemBulan in listBulan) {
-                if (itemBulan.key == tgl[1]) {
-                    var isAda = false
-                    spinBlnArray.forEach { event ->
-                        if (event.idItem == tgl[1]) {
-                            isAda = true
-                        }
-                    }
-                    if (!isAda) spinBlnArray.add(RekapBulananBlnSpinElement(tgl[1], itemBulan.value))
-                    break
-                }
-            }
-        }
-
-        val spinThnAdapter = context?.let {
-            RekapBulananThnSpinAdapter(
-                it,
-                android.R.layout.simple_spinner_dropdown_item,
-                spinThnArray
-            )
-        }
-
-        spiThn.adapter = spinThnAdapter
 
         spiThn.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -120,7 +105,7 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
 
                 selectedThn = spinThnArray[position]
                 tempItemsBulanan = ArrayList()
-                itemsBulanan.forEach { event ->
+                itemsBulanan!!.forEach { event ->
                     val tgl = (event.tgl).split("/")
                     if (selectedThn == tgl[0] && selectedBln == tgl[1]) {
                         tempItemsBulanan.add(event)
@@ -162,7 +147,7 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
 
                 selectedBln = spinBlnArray[position].idItem
                 tempItemsBulanan = ArrayList()
-                itemsBulanan.forEach { event ->
+                itemsBulanan!!.forEach { event ->
                     val tgl = (event.tgl).split("/")
                     if (selectedBln == tgl[1] && selectedThn == tgl[0]) {
                         tempItemsBulanan.add(event)
@@ -185,22 +170,6 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
 
         }
 
-        val tvTotal = view.findViewById(R.id.tvTotal) as TextView
-        var totalValue = 0.0
-        for(ttl in itemsBulanan) {
-            totalValue += ttl.total
-        }
-        tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-
-        val adapterList = context?.let {
-            RekapBulananListAdapter(
-                itemsBulanan,
-                it
-            )
-        }
-        recyclerView.adapter = adapterList
-        recyclerView.layoutManager = (LinearLayoutManager(context))
-
         return view
     }
 
@@ -214,18 +183,83 @@ class RekapBulananFragment : Fragment(),RekapBulananOnTask {
         }
 
         Log.e("Debug", "Response from url:$result")
-    }
+        try {
+            val jsonObj = JSONObject(result)
+            val success = jsonObj.getInt("success")
+            val message = jsonObj.getString("message")
+            if (success == 1) {
 
-    private val itemsBulanan = arrayListOf(
-        RekapBulananListElement(
-            1, "2019/01/01", 16000, 0, 16000),
-        RekapBulananListElement(
-            2, "2018/02/02", 8000, 0, 8000),
-        RekapBulananListElement(
-            3, "2019/01/02", 100000, 0, 100000),
-        RekapBulananListElement(
-            4, "2016/03/03", 4500, 0, 4500),
-        RekapBulananListElement(
-            5, "2019/03/04", 30000, 0, 30000)
-    )
+                itemsBulanan = ArrayList()
+
+                val rArray = jsonObj.getJSONArray("result")
+                for (i in 0 until rArray.length()) {
+
+                    val idTrx = rArray.getJSONObject(i).getInt("ID_TRX")
+                    val disc = rArray.getJSONObject(i).getInt("DISC")
+                    val omzet = rArray.getJSONObject(i).getInt("OMZET")
+                    val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
+
+                    itemsBulanan?.add(
+                        RekapBulananListElement(
+                            idTrx,tglTrx, omzet, disc)
+                    )
+                }
+
+
+                if (itemsBulanan != null && itemsBulanan!!.size > 0) {
+                    for (index in itemsBulanan!!.indices) {
+                        val stringTgl = itemsBulanan!![index].tgl
+                        if (!stringTgl.isEmpty()) {
+                            val listTgl = (itemsBulanan!![index].tgl).split("-")
+                            if (!spinThnArray.contains(listTgl[2])) spinThnArray.add(listTgl[2])
+
+                            for (itemBulan in listBulan) {
+                                if (itemBulan.key == listTgl[1]) {
+                                    var isAda = false
+                                    spinBlnArray.forEach { event ->
+                                        if (event.idItem == listTgl[1]) {
+                                            isAda = true
+                                        }
+                                    }
+                                    if (!isAda) spinBlnArray.add(RekapBulananBlnSpinElement(listTgl[1], itemBulan.value))
+                                    break
+                                }
+                            }
+                        }
+                    }
+
+                    val spinThnAdapter = context?.let {
+                        RekapBulananThnSpinAdapter(
+                            it,
+                            android.R.layout.simple_spinner_dropdown_item,
+                            spinThnArray
+                        )
+                    }
+
+                    spiThn.adapter = spinThnAdapter
+
+                    var totalValue = 0.0
+                    for(ttl in itemsBulanan!!) {
+                        totalValue += ttl.omzet
+                    }
+                    tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+
+                    val adapterList = context?.let {
+                        RekapBulananListAdapter(
+                            itemsBulanan!!,
+                            it
+                        )
+                    }
+                    recyclerView.adapter = adapterList
+                    recyclerView.layoutManager = (LinearLayoutManager(context))
+                }
+
+            } else {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
+    }
 }

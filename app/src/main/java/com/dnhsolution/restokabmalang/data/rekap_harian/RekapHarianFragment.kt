@@ -16,9 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.RekapHarianOnTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
+import org.json.JSONException
+import org.json.JSONObject
 
 class RekapHarianFragment : Fragment(), RekapHarianOnTask {
 
@@ -31,6 +34,11 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask {
         }
     }
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var tvTotal: TextView
+    private lateinit var spiTgl: Spinner
+
+    private var itemsHarian:ArrayList<RekapHarianListElement>? = null
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
     private var params = ""
@@ -49,45 +57,30 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask {
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
-        val spiTgl = view.findViewById(R.id.spinTgl) as Spinner
-        val tvTotal = view.findViewById(R.id.tvTotal) as TextView
-        val recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
+        spiTgl = view.findViewById(R.id.spinTgl) as Spinner
+        tvTotal = view.findViewById(R.id.tvTotal) as TextView
+        recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
 
         if(CheckNetwork().checkingNetwork(context!!)) {
-            val stringUrl = "${Url.getRekapHarian}?value=1"
+            val stringUrl = "${Url.getRekapHarian}?tgl=1"
             Log.i(_tag,stringUrl)
             jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
         } else {
             Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
 
-        for (item in itemsHarian) {
-            val tgl = item.tgl
-            if (!spinTglArray.contains(tgl)) spinTglArray.add(tgl)
-        }
-
-        val spinTglAdapter = context?.let {
-            RekapHarianSpinAdapter(
-                it,
-                android.R.layout.simple_spinner_dropdown_item,
-                spinTglArray
-            )
-        }
-
-        spiTgl.adapter = spinTglAdapter
-
         spiTgl.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (isOpened == false) {
                     isOpened = true
                     return
                 }
+
                 tempItemsHarian = ArrayList()
-                for (item in itemsHarian) {
+
+                for (item in itemsHarian!!) {
                     val tgl = spinTglArray[position]
                     if (item.tgl == tgl) tempItemsHarian.add(item)
                 }
@@ -102,23 +95,6 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask {
             }
         }
 
-        var totalValue = 0.0
-
-        tempItemsHarian = itemsHarian
-        for(ttl in tempItemsHarian) {
-            totalValue += ttl.total
-        }
-        tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-
-        adapterList = context?.let {
-            RekapHarianListAdapter(
-                tempItemsHarian,
-                it
-            )
-        }
-        recyclerView.adapter = adapterList
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
         return view
     }
 
@@ -132,20 +108,88 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask {
         }
 
         Log.e("Debug", "Response from url:$result")
+        try {
+            val jsonObj = JSONObject(result)
+            val success = jsonObj.getInt("success")
+            val message = jsonObj.getString("message")
+            if (success == 1) {
+
+                itemsHarian = ArrayList()
+
+                val rArray = jsonObj.getJSONArray("result")
+                for (i in 0 until rArray.length()) {
+
+                    val idDtx = rArray.getJSONObject(i).getInt("ID_DTX")
+                    val nmBarang = rArray.getJSONObject(i).getString("NAMA_BARANG")
+                    val qty = rArray.getJSONObject(i).getInt("QTY")
+                    val disc = rArray.getJSONObject(i).getInt("DISC")
+                    val harga = rArray.getJSONObject(i).getInt("HARGA")
+                    val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
+
+                    itemsHarian?.add(
+                        RekapHarianListElement(
+                            idDtx,nmBarang, harga, qty, disc, qty*harga, tglTrx)
+                    )
+                }
+
+                itemsHarian.let {
+
+                }
+                if (itemsHarian != null && itemsHarian!!.size > 0) {
+                    for (item in itemsHarian!!) {
+                        val tgl = item.tgl
+                        if (!spinTglArray.contains(tgl)) spinTglArray.add(tgl)
+                    }
+
+                    val spinTglAdapter = context?.let {
+                        RekapHarianSpinAdapter(
+                            it,
+                            android.R.layout.simple_spinner_dropdown_item,
+                            spinTglArray
+                        )
+                    }
+
+                    spiTgl.adapter = spinTglAdapter
+
+                    var totalValue = 0.0
+
+                    tempItemsHarian = itemsHarian!!
+                    for(ttl in tempItemsHarian) {
+                        totalValue += ttl.total
+                    }
+                    tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+
+                    adapterList = context?.let {
+                        RekapHarianListAdapter(
+                            tempItemsHarian,
+                            it
+                        )
+                    }
+                    recyclerView.adapter = adapterList
+                    recyclerView.layoutManager = LinearLayoutManager(context)
+                }
+
+            } else {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private val itemsHarian = arrayListOf(
-        RekapHarianListElement(
-            1, "Ayam Bakar Madu", 16000, 1, 0, 16000
-        , "2019/01/01"),
-        RekapHarianListElement(
-            1, "Ayam Goreng Crispy", 15000, 1, 0, 15000
-            , "2019/01/02"),
-        RekapHarianListElement(
-            1, "Es Campur", 8000, 1, 0, 8000
-            , "2019/01/02"),
-        RekapHarianListElement(
-            1, "Jus Tomat", 8000, 1, 0, 8000
-            , "2019/01/03")
-    )
+//    private val itemsHarian = arrayListOf(
+//        RekapHarianListElement(
+//            1, "Ayam Bakar Madu", 16000, 1, 0, 16000
+//        , "2019/01/01"),
+//        RekapHarianListElement(
+//            1, "Ayam Goreng Crispy", 15000, 1, 0, 15000
+//            , "2019/01/02"),
+//        RekapHarianListElement(
+//            1, "Es Campur", 8000, 1, 0, 8000
+//            , "2019/01/02"),
+//        RekapHarianListElement(
+//            1, "Jus Tomat", 8000, 1, 0, 8000
+//            , "2019/01/03")
+//    )
 }

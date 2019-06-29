@@ -51,7 +51,7 @@ class RekapBulananListHolder extends RecyclerView.ViewHolder {
         omzet.setText(omzetValue);
         tgl.setText(itemText.getTgl());
         disc.setText(String.valueOf(itemText.getDisc()));
-        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
-        total.setText(totalValue);
+//        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
+//        total.setText(totalValue);
     }
 }
