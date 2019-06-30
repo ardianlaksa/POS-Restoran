@@ -8,6 +8,7 @@ object Url {
     const val SESSION_PASSWORD = "password"
     const val SESSION_ID_PENGGUNA = "idPengguna"
     const val SESSION_ID_TEMPAT_USAHA = "idTempatUsaha"
+    const val SESSION_NAMA_TEMPAT_USAHA = "nama_tempat_usaha"
     const val SESSION_STS_LOGIN = "status"
     const val SESSION_NAME = "pos"
     const val setKeranjangTransaksi = "${serverPos}setKeranjangTransaksi"

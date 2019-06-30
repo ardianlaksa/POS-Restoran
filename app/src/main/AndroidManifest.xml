@@ -57,6 +57,7 @@
         </activity>
 
         <activity android:name=".cetak.DeviceActivity"></activity>
+        <activity android:name=".cetak.MainCetak"></activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

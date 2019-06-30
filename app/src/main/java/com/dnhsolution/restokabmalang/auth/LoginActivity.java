@@ -309,6 +309,7 @@ public class LoginActivity extends AppCompatActivity {
                         json = jsonArray.getJSONObject(1);
                         String idTempatusaha = json.getString("ID_TEMPAT_USAHA");
                         String idPengguna = json.getString("ID_PENGGUNA");
+                        String nmTempatUsaha = json.getString("NM_TEMPAT_USAHA");
 
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -319,6 +320,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Url.SESSION_USERNAME, etUsername.getText().toString());
                         editor.putString(Url.SESSION_ID_PENGGUNA,idPengguna);
                         editor.putString(Url.SESSION_ID_TEMPAT_USAHA,idTempatusaha);
+                        editor.putString(Url.SESSION_NAMA_TEMPAT_USAHA,nmTempatUsaha);
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
 
                         //menyimpan data ke editor
@@ -373,4 +375,70 @@ public class LoginActivity extends AppCompatActivity {
         queue.add(stringRequest);
 
     }
+
+//    public void getData(){
+//
+//        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+//        progressDialog.setMessage("Loading...");
+//        progressDialog.show();
+//        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+//        String url = "http://localhost/token/AndroidJson/getIdTrx";
+//        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//
+//                try {
+//                    JSONObject jsonObject = new JSONObject(response);
+//                    Log.i("json",jsonObject.toString());
+//                    JSONArray jsonArray = jsonObject.getJSONArray("result");
+//                    JSONObject json = jsonArray.getJSONObject(0);
+//                    String id_trx = json.getString("id_trx");
+//                    etIDTrx.setText(id_trx);
+//
+//                    Toast.makeText(MainActivity.this, id_trx, Toast.LENGTH_SHORT).show();
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
+//                progressDialog.dismiss();
+//
+//
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                progressDialog.dismiss();
+//                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+//            }
+//        }){
+//            @Override
+//            protected Map<String, String> getParams() {
+//                Map<String, String> params = new HashMap<>();
+//                params.put("status", "ok");
+//                return params;
+//            }
+//        };
+//        stringRequest.setRetryPolicy(new RetryPolicy() {
+//            @Override
+//            public int getCurrentTimeout() {
+//                return 50000;
+//            }
+//
+//            @Override
+//            public int getCurrentRetryCount() {
+//                return 50000;
+//            }
+//
+//            @Override
+//            public void retry(VolleyError error) {
+//
+//            }
+//        });
+//
+//        queue.add(stringRequest);
+//
+//
+//    }
 }

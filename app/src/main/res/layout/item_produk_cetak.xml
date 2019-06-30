@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/llHeaderListRealisasi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/_4"
+        android:paddingStart="@dimen/_4"
+        android:paddingRight="@dimen/_4"
+        android:paddingEnd="@dimen/_4"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/tvNo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".3"
+            android:paddingTop="@dimen/_4"
+            android:paddingBottom="@dimen/_4"
+            android:text="1."
+            android:textSize="@dimen/f_16"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvNama"
+            android:paddingLeft="5dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:text="Nama Item"
+            android:textSize="@dimen/f_16"
+            android:textStyle="bold"
+            android:gravity="left|center_horizontal"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="@dimen/_4"
+            android:paddingBottom="@dimen/_4"/>
+
+        <TextView
+            android:id="@+id/tvQty"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center_horizontal"
+            android:paddingBottom="@dimen/_4"
+            android:paddingTop="@dimen/_4"
+            android:text="12"
+            android:textSize="@dimen/f_16"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvHarga"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="12.000"
+            android:textSize="@dimen/f_16"
+            android:textStyle="bold"
+            android:gravity="right|center_horizontal"
+            android:paddingTop="@dimen/_4"
+            android:paddingBottom="@dimen/_4"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="5dp"/>
+
+</LinearLayout>

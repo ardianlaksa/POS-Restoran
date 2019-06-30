@@ -1,6 +1,7 @@
 package com.dnhsolution.restokabmalang.keranjang
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnhsolution.restokabmalang.KeranjangTransaksiOnTask
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.cetak.MainCetak
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import kotlinx.android.synthetic.main.activity_keranjang.*
@@ -115,6 +117,8 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
                     val params = HashMap<String, String>()
                     params.put("paramsArray",createJson())
                     KeranjangTransaksiJsonTask(this, params).execute(Url.setKeranjangTransaksi)
+                    startActivity(Intent(this@KeranjangActivity, MainCetak::class.java))
+                    finish()
                 } else {
                     Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
                 }

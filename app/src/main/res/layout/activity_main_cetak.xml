@@ -1,71 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".cetak.MainCetak"
-    android:padding="15dp">
+    android:padding="10dp"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/label"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Type here:" />
-
-    <View
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#000"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:visibility="gone"
-        android:id="@+id/entry"
-        android:gravity="center"
-        android:layout_width="fill_parent"
-        android:text="osodsod"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/label" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="\t\t\t\t\t\t\t\t\t Restoran Maju Jaya"/>
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <me.biubiubiu.justifytext.library.JustifyTextView
-        android:text="\n\nRestoran Maju Jaya 1\n"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="17dp"
-        android:textColor="#000"
-        />
+                <LinearLayout
+                    android:id="@+id/llHeaderListRealisasi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/_4"
+                    android:paddingStart="@dimen/_4"
+                    android:paddingRight="@dimen/_4"
+                    android:paddingEnd="@dimen/_4"
+                    android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/entry">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".3"
+                        android:paddingTop="@dimen/_4"
+                        android:paddingBottom="@dimen/_4"
+                        android:text="No"
+                        android:textSize="@dimen/f_16"
+                        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/open"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:text="Open" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.5"
+                        android:text="Nama Item"
+                        android:textSize="@dimen/f_16"
+                        android:textStyle="bold"
+                        android:gravity="center_horizontal"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:paddingTop="@dimen/_4"
+                        android:paddingBottom="@dimen/_4"/>
 
-        <Button
-            android:id="@+id/send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:paddingBottom="@dimen/_4"
+                        android:paddingTop="@dimen/_4"
+                        android:text="Qty"
+                        android:textSize="@dimen/f_16"
+                        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Close" />
-    </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Harga"
+                        android:textSize="@dimen/f_16"
+                        android:textStyle="bold"
+                        android:gravity="center_horizontal"
+                        android:paddingTop="@dimen/_4"
+                        android:paddingBottom="@dimen/_4"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#363636"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#363636"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="right"
+                android:gravity="right"
+                >
+
+                <TextView
+                    android:layout_marginLeft="150dp"
+                    android:text="Subtotal"
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvSubtotal"
+                    android:gravity="right"
+                    android:layout_width="150dp"
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:text="0"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="right"
+                android:gravity="right"
+                >
+
+                <TextView
+                    android:id="@+id/tvDisc"
+                    android:layout_marginLeft="150dp"
+                    android:text="Disc (0%) "
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvJmlDisc"
+                    android:gravity="right"
+                    android:layout_width="150dp"
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:text="0"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#363636"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="right"
+                android:gravity="right"
+                >
+
+                <TextView
+                    android:layout_marginLeft="150dp"
+                    android:text="Total "
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvTotal"
+                    android:gravity="right"
+                    android:layout_width="150dp"
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:text="0"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="100dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_4"
+                android:paddingStart="@dimen/_4"
+                android:paddingRight="@dimen/_4"
+                android:paddingEnd="@dimen/_4"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/btnKembali"
+                    android:layout_margin="5dp"
+                    android:background="#BEBEBE"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Kembali"
+                    android:textSize="@dimen/f_16"
+                    android:maxLines="1"/>
+
+                <Button
+                    android:id="@+id/btnCetak"
+                    android:layout_margin="5dp"
+                    android:background="#1BA599"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cetak"
+                    android:textSize="@dimen/f_16"
+                    android:maxLines="1"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:gravity="center"
+                android:layout_marginTop="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_status"
+                android:text="status koneksi bluetooth"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </LinearLayout>
