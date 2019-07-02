@@ -42,7 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class MainCetak extends AppCompatActivity {
+public class MainCetak extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, BluetoothHandler.HandlerInterface{
 
     RecyclerView rvData;
     List<ItemProduk> itemProduk;
@@ -215,7 +215,7 @@ public class MainCetak extends AppCompatActivity {
                     RC_BLUETOOTH, params);
             return;
         }
-        mService = new BluetoothService(this, new BluetoothHandler((BluetoothHandler.HandlerInterface) this));
+        mService = new BluetoothService(this, new BluetoothHandler(this));
     }
 
     public void onPermissionsGranted(int requestCode, List<String> perms) {
@@ -311,7 +311,7 @@ public class MainCetak extends AppCompatActivity {
             mService.sendMessage("--------------------------------", "");
 
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+tvSubtotal.getText().toString());
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Disc ( "+tvDisc.getText().toString()+"% ) : "+tvJmlDisc.getText().toString());
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
