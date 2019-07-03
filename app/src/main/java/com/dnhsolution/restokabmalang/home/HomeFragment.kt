@@ -49,7 +49,7 @@ class HomeFragment:Fragment(), ProdukOnTask {
             Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
 
-        gvMainActivity.setOnItemClickListener { parent, _, position, id ->
+        gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
             produk.toggleFavorite()
             produkAdapter?.notifyDataSetChanged()
@@ -177,5 +177,10 @@ class HomeFragment:Fragment(), ProdukOnTask {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i(_tag,"onResume")
     }
 }

@@ -6,7 +6,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.dnhsolution.restokabmalang.KeranjangProdukItemOnTask;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.squareup.picasso.Picasso;
 
@@ -56,7 +58,8 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         judul.setText(obyek.getName());
         final String priceValue = obyek.getPrice();
         if (priceValue == null) return;
-        String rupiahPrice = "Rp "+priceValue;
+
+        String rupiahPrice = new AddingIDRCurrency().formatIdrCurrencyNonKoma(Double.parseDouble(priceValue));
         price.setText(rupiahPrice);
         totalPrice.setText(rupiahPrice);
 
@@ -73,7 +76,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
                 jumlahProduk.setText(String.valueOf(jumlah));
                 int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
                 onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
-                String sPriceValueTotal = "Rp "+priceValueTotal;
+                String sPriceValueTotal = new AddingIDRCurrency().formatIdrCurrencyNonKoma(priceValueTotal);
                 totalPrice.setText(sPriceValueTotal);
             }
             }
@@ -88,7 +91,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
             jumlahProduk.setText(String.valueOf(jumlah));
             int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
             onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
-            String sPriceValueTotal = "Rp "+priceValueTotal;
+            String sPriceValueTotal = new AddingIDRCurrency().formatIdrCurrencyNonKoma(priceValueTotal);
             totalPrice.setText(sPriceValueTotal);
             }
         });

@@ -21,6 +21,9 @@
     <string name="title_diskripsi">Diskripsi</string>
     <string name="title_foto">Foto</string>
     <string name="title_tambah_file">Tambah File</string>
+    <string name="title_tambah">Tambah</string>
+
+    <string name="snack_bar_undo">Undo</string>
 
     <!--Notif-->
     <string name="check_network">Please check your connection</string>

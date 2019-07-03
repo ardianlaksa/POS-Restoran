@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -125,12 +126,28 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="@id/etDiskon"
                 app:layout_constraintBottom_toBottomOf="@id/etDiskon"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tvDiskonTotal"
                 android:layout_marginRight="@dimen/_8"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginBottom="@dimen/_2"
                 android:text="@string/_sym_percent"
                 android:textColor="@color/colorPrimary"/>
+
+            <TextView
+                android:id="@+id/tvDiskonTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_4"
+                android:layout_marginStart="@dimen/_4"
+                android:layout_marginEnd="@dimen/_8"
+                android:layout_marginRight="@dimen/_8"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etDiskon"
+                app:layout_constraintBottom_toBottomOf="@id/etDiskon"
+                android:text="@string/rp_0"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="@dimen/f_22"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.squareup.picasso.Picasso;
 
@@ -101,7 +102,7 @@ public class ProdukAdapter extends BaseAdapter {
     final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
 //    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
     viewHolder.nameTextView.setText(book.getName());
-    String priceValue = "Rp. "+book.getPrice();
+    String priceValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(Double.parseDouble(book.getPrice()));
     viewHolder.authorTextView.setText(priceValue);
     viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.star_enabled : R.drawable.star_disabled);
     viewHolder.descriptionTextView.setText(book.getDescription());

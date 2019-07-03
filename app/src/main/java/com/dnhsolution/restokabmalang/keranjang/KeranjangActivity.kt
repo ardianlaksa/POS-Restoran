@@ -6,22 +6,34 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnhsolution.restokabmalang.KeranjangTransaksiOnTask
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.cetak.MainCetak
+import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import kotlinx.android.synthetic.main.activity_keranjang.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
+import com.dnhsolution.restokabmalang.KeranjangProdukItemOnTask
+import com.dnhsolution.restokabmalang.MainActivity
+import com.google.android.material.snackbar.Snackbar
 
-class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
+
+
+class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     ,View.OnClickListener, KeranjangTransaksiOnTask {
 
     override fun onClick(v: View?) {
@@ -57,8 +69,9 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
 //        val name = obyek.get(1).name
 
         val produkAdapter = KeranjangProdukListAdapter(obyek, this,this)
-        recyclerView.adapter = produkAdapter
-        recyclerView?.layoutManager = (LinearLayoutManager(this))
+        setUpRecyclerView(produkAdapter)
+//        recyclerView.adapter = produkAdapter
+//        recyclerView?.layoutManager = (LinearLayoutManager(this))
 
         setTotal()
 
@@ -83,9 +96,18 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
         })
     }
 
+    private fun setUpRecyclerView(mAdapter:KeranjangProdukListAdapter) {
+        recyclerView.adapter = mAdapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(mAdapter))
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
     override fun keranjangProdukItemOnTask(position:Int, totalPrice: Int, qty: Int) {
-        obyek[position].totalPrice = totalPrice
-        obyek[position].qty = qty
+        if (position > -1) {
+            obyek[position].totalPrice = totalPrice
+            obyek[position].qty = qty
+        }
         setTotal()
     }
 
@@ -94,13 +116,40 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
         for (valueTotal in obyek) {
             totalPrice += valueTotal.totalPrice
         }
+        tvTotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
         var diskon = 0
 //        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
         if (!etDiskon.text.toString().isEmpty()) diskon = valueDiskon
         this.valueTotalPrice = totalPrice-(totalPrice*diskon/100)
-        val rupiahValue = "Rp ${valueTotalPrice}"
-        tvTotal.text = rupiahValue
+        val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
+        tvDiskonTotal.text = rupiahValue
+    }
+
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        super.onCreateOptionsMenu(menu)
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        inflater?.inflate(R.menu.menu_lanjut, menu)
+//    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_tambah, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.action_menu_tambah -> {
+                val i = Intent(this,MainActivity::class.java)
+                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                startActivity(i)
+                true
+            } else -> super.onOptionsItemSelected(item)
+        }
     }
 
     fun showDialog(title:String,message:String){
@@ -111,7 +160,7 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
 
         // Display a message on alert dialog
         builder.setMessage(message)
-            builder.setPositiveButton("Lanjut"){dialog, which ->
+            builder.setPositiveButton("Lanjut"){_, _ ->
 //                println(createJson())
                 if(CheckNetwork().checkingNetwork(this)) {
                     val params = HashMap<String, String>()
@@ -124,7 +173,7 @@ class KeranjangActivity:AppCompatActivity(),KeranjangProdukItemOnTask
                 }
             }
 
-        builder.setNegativeButton("Batal"){dialog, which ->
+        builder.setNegativeButton("Batal"){dialog, _ ->
             // Do something when user press the positive button
             dialog.dismiss()
         }

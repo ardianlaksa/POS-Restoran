@@ -48,7 +48,7 @@
             android:layout_marginTop="@dimen/_4"
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light"
-            android:textSize="@dimen/f_18"
+            android:textSize="@dimen/f_14"
             android:text="@string/rp_0"/>
 
     </LinearLayout>
@@ -105,7 +105,7 @@
             android:layout_gravity="end"
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light"
-            android:textSize="@dimen/f_22"
+            android:textSize="@dimen/f_18"
             android:text="@string/rp_0"/>
 
     </LinearLayout>

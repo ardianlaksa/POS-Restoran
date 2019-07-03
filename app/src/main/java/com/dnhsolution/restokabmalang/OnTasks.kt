@@ -19,3 +19,11 @@ interface KeranjangTransaksiOnTask {
 interface SistemMasterOnTask {
     fun sistemMasterOnTask(result:String?)
 }
+
+interface KeranjangProdukItemOnTask {
+    fun keranjangProdukItemOnTask(position:Int,totalPrice:Int,qty:Int)
+}
+
+interface KeranjangProdukItemDeleteOnTask {
+    fun keranjangProdukItemOnTask(position:Int,totalPrice:Int,qty:Int)
+}
