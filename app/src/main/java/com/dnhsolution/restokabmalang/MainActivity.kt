@@ -4,20 +4,27 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.dnhsolution.restokabmalang.data.DataFragment
-import com.dnhsolution.restokabmalang.home.HomeFragment
+import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
 import com.dnhsolution.restokabmalang.sistem.master.SistemMasterActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-//    private lateinit var textMessage: TextView
+    companion object{
+        var valueArgsFromKeranjang:Int? = null
+    }
+
+    private val _tag = javaClass.simpleName
+    //    private lateinit var textMessage: TextView
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-//                textMessage.setText(R.string.title_home)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_transaksi -> {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.frameLayout, HomeFragment()).commit()
+                    .replace(R.id.frameLayout, ProdukListFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_data -> {
@@ -28,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
 
-            R.id.navigation_sistem -> {
+            R.id.navigation_master -> {
 //                textMessage.setText(R.string.title_sistem)
                 startActivity(Intent(this,SistemMasterActivity::class.java))
                 return@OnNavigationItemSelectedListener true
@@ -45,22 +52,6 @@ class MainActivity : AppCompatActivity() {
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.frameLayout, HomeFragment()).commit()
+            .replace(R.id.frameLayout, ProdukListFragment()).commit()
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        menuInflater.inflate(R.menu.menu_lanjut, menu)
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        return when (item.itemId) {
-//            R.id.action_menu_lanjut -> true
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
 }

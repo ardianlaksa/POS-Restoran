@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.RekapBulananOnTask
+import com.dnhsolution.restokabmalang.utilities.RekapBulananOnTask
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -71,9 +71,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
     private var selectedThn = ""
     private var bulan = "1"
     private var tahun = "1"
-    private var idTempatUsaha = "1"
+    private var idTmpUsaha = "-1"
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         arguments?.getString("params")?.let { params = it }
     }
@@ -88,8 +88,12 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
         tvTotal = view.findViewById(R.id.tvTotal) as TextView
 
+
+        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
+
         if(CheckNetwork().checkingNetwork(context!!)) {
-            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&&TAHUN=$tahun&&ID_TEMPAT_USAHA=$idTempatUsaha"
+            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&TAHUN=$tahun&ID_TEMPAT_USAHA=$idTmpUsaha"
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
@@ -98,7 +102,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
         spiThn.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isOpenedThn == false) {
+                if (!isOpenedThn) {
                     isOpenedThn = true
                     return
                 }
@@ -123,7 +127,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
         }
@@ -140,7 +143,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
         spiBln.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isOpenedBln == false) {
+                if (!isOpenedBln) {
                     isOpenedBln = true
                     return
                 }
@@ -165,7 +168,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
         }
@@ -209,7 +211,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 if (itemsBulanan != null && itemsBulanan!!.size > 0) {
                     for (index in itemsBulanan!!.indices) {
                         val stringTgl = itemsBulanan!![index].tgl
-                        if (!stringTgl.isEmpty()) {
+                        if (stringTgl.isNotEmpty()) {
                             val listTgl = (itemsBulanan!![index].tgl).split("-")
                             if (!spinThnArray.contains(listTgl[2])) spinThnArray.add(listTgl[2])
 

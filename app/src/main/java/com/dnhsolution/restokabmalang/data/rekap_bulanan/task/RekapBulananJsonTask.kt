@@ -1,7 +1,7 @@
 package com.dnhsolution.restokabmalang.data.rekap_bulanan.task
 
 import android.os.AsyncTask
-import com.dnhsolution.restokabmalang.RekapBulananOnTask
+import com.dnhsolution.restokabmalang.utilities.RekapBulananOnTask
 import com.dnhsolution.restokabmalang.utilities.Connecting
 
 class RekapBulananJsonTask(private val listener : RekapBulananOnTask) : AsyncTask<String, Void, String?>() {

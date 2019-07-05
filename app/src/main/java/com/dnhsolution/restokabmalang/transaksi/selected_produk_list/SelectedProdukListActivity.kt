@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang.keranjang
+package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
 import android.content.Context
 import android.content.Intent
@@ -7,17 +7,18 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dnhsolution.restokabmalang.KeranjangTransaksiOnTask
+import com.dnhsolution.restokabmalang.utilities.KeranjangProdukItemOnTask
+import com.dnhsolution.restokabmalang.utilities.KeranjangTransaksiOnTask
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.cetak.MainCetak
+import com.dnhsolution.restokabmalang.transaksi.*
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -25,15 +26,8 @@ import kotlinx.android.synthetic.main.activity_keranjang.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
-import com.dnhsolution.restokabmalang.KeranjangProdukItemOnTask
-import com.dnhsolution.restokabmalang.MainActivity
-import com.google.android.material.snackbar.Snackbar
 
-
-
-class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
+class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     ,View.OnClickListener, KeranjangTransaksiOnTask {
 
     override fun onClick(v: View?) {
@@ -47,11 +41,14 @@ class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
     }
 
+    private var produkAdapter: SelectedProdukListAdapter? = null
+    private val _tag: String = javaClass.simpleName
     private var idPengguna: String? = null
     private var idTmpUsaha: String? = null
     private var valueDiskon: Int = 0
     private var valueTotalPrice: Int = 0
-    private lateinit var obyek:ArrayList<ProdukSerializable>
+    private var obyek:ArrayList<ProdukSerializable>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_keranjang)
@@ -63,17 +60,19 @@ class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         bProses.setOnClickListener(this)
 
-        val intent = intent
-        val args = intent.getBundleExtra("BUNDLE")
-        obyek = args.getSerializable("ARRAYLIST") as ArrayList<ProdukSerializable>
+//        val i = intent
+//        val args = i.getBundleExtra("BUNDLE")
+//        obyek = args.getParcelableArrayList("ARRAYLIST")
+
 //        val name = obyek.get(1).name
 
-        val produkAdapter = KeranjangProdukListAdapter(obyek, this,this)
-        setUpRecyclerView(produkAdapter)
+//        val produkAdapter = SelectedProdukListAdapter(obyek, this,this)
+//        setUpRecyclerView(produkAdapter)
+
 //        recyclerView.adapter = produkAdapter
 //        recyclerView?.layoutManager = (LinearLayoutManager(this))
 
-        setTotal()
+//        setTotal()
 
         etDiskon.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -96,24 +95,71 @@ class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         })
     }
 
-    private fun setUpRecyclerView(mAdapter:KeranjangProdukListAdapter) {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val i = intent
+        val args = i.getBundleExtra("BUNDLE")
+        val obyekProduk:ArrayList<ProdukSerializable> = args.getParcelableArrayList("ARRAYLIST")
+        if (obyek == null) {
+            Log.i(_tag, "onResume")
+            obyek = obyekProduk
+        }
+
+        // Loop arrayList2 items
+        for (item2 in obyekProduk) {
+            // Loop arrayList1 items
+            var found = false
+            for (item1 in obyek!!) {
+                if (item2.idItem == item1.idItem) {
+                    found = true
+                }
+            }
+            if (!found) {
+                obyek!!.add(item2)
+            }
+        }
+
+        if (produkAdapter == null) {
+            produkAdapter = SelectedProdukListAdapter(
+                obyek!!,
+                this,
+                this
+            )
+            setUpRecyclerView(produkAdapter!!)
+        } else {
+            produkAdapter!!.notifyDataSetChanged()
+        }
+
+        setTotal()
+    }
+
+    private fun setUpRecyclerView(mAdapter: SelectedProdukListAdapter) {
         recyclerView.adapter = mAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(mAdapter))
+        val itemTouchHelper = ItemTouchHelper(
+            SwipeToDeleteCallback(
+                mAdapter
+            )
+        )
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun keranjangProdukItemOnTask(position:Int, totalPrice: Int, qty: Int) {
         if (position > -1) {
-            obyek[position].totalPrice = totalPrice
-            obyek[position].qty = qty
+            obyek!![position].totalPrice = totalPrice
+            obyek!![position].qty = qty
         }
         setTotal()
     }
 
     private fun setTotal () {
         var totalPrice = 0
-        for (valueTotal in obyek) {
+        for (valueTotal in obyek!!) {
             totalPrice += valueTotal.totalPrice
         }
         tvTotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
@@ -144,8 +190,14 @@ class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_menu_tambah -> {
-                val i = Intent(this,MainActivity::class.java)
-                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+
+                val favoritedProdukNames = ArrayList<Int>()
+                for (Produk in obyek!!) {
+                    favoritedProdukNames.add(Produk.idItem)
+                }
+
+                val i = Intent(this, TambahProdukActivity::class.java)
+                i.putExtra("ARRAYLIST", favoritedProdukNames)
                 startActivity(i)
                 true
             } else -> super.onOptionsItemSelected(item)
@@ -165,8 +217,11 @@ class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 if(CheckNetwork().checkingNetwork(this)) {
                     val params = HashMap<String, String>()
                     params.put("paramsArray",createJson())
-                    KeranjangTransaksiJsonTask(this, params).execute(Url.setKeranjangTransaksi)
-                    startActivity(Intent(this@KeranjangActivity, MainCetak::class.java))
+                    SelectedProdukListJsonTask(
+                        this,
+                        params
+                    ).execute(Url.setKeranjangTransaksi)
+                    startActivity(Intent(this@SelectedProdukListActivity, MainCetak::class.java))
                     finish()
                 } else {
                     Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
@@ -195,7 +250,7 @@ class KeranjangActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         val jsonArr = JSONArray()
 
-        for (pn in obyek) {
+        for (pn in obyek!!) {
             val pnObj = JSONObject()
             pnObj.put("idProduk", pn.idItem)
             pnObj.put("nmProduk", pn.name)

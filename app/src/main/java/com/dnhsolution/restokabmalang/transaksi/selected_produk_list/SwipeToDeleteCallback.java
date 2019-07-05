@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang.keranjang;
+package com.dnhsolution.restokabmalang.transaksi.selected_produk_list;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
-    private KeranjangProdukListAdapter mAdapter;
+    private SelectedProdukListAdapter mAdapter;
     private Drawable icon;
     private final ColorDrawable background;
 
-    public SwipeToDeleteCallback(KeranjangProdukListAdapter adapter) {
+    public SwipeToDeleteCallback(SelectedProdukListAdapter adapter) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
 

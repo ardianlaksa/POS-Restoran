@@ -1,7 +1,6 @@
 package com.dnhsolution.restokabmalang.sistem.master
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -22,7 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.SistemMasterOnTask
+import com.dnhsolution.restokabmalang.utilities.SistemMasterOnTask
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.DeleteFileOnTask
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.FileListAdapter
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.FileListElement
@@ -41,7 +40,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,SistemMasterOnTask {
+class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
+    SistemMasterOnTask {
 
     private val idTmpUsaha: String = "111"
     private val folderName = "POS_Resto"

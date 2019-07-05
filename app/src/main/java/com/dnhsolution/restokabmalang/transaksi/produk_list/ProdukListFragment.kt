@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang.home
+package com.dnhsolution.restokabmalang.transaksi.produk_list
 
 import android.content.Context
 import android.content.Intent
@@ -8,43 +8,45 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.dnhsolution.restokabmalang.ProdukOnTask
-import com.dnhsolution.restokabmalang.keranjang.ProdukSerializable
+import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
+import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.utilities.Url
-import com.dnhsolution.restokabmalang.keranjang.KeranjangActivity
-import kotlinx.android.synthetic.main.home_fragment.*
+import com.dnhsolution.restokabmalang.transaksi.selected_produk_list.SelectedProdukListActivity
+import kotlinx.android.synthetic.main.fragment_produk_list.*
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import org.json.JSONException
 import org.json.JSONObject
 
-class HomeFragment:Fragment(), ProdukOnTask {
+class ProdukListFragment:Fragment(), ProdukOnTask {
 
-    private var produkAdapter: ProdukAdapter? = null
+    private var valueArgsFromKeranjang: Int? = null
+    private var produkAdapter: ProdukListAdapter? = null
     private var idTmpUsaha: String = "0"
 
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
     private val favoritedBookNamesKey = "favoritedBookNamesKey"
     var produkSerializable: ProdukSerializable? = null
-    private var produks:ArrayList<ProdukElement> = ArrayList()
+    private var produks:ArrayList<ProdukListElement> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.home_fragment,container,false)
+        return inflater.inflate(R.layout.fragment_produk_list,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setHasOptionsMenu(true)
+        Log.i(_tag,"onCreate")
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "0").toString()
+        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "-1").toString()
 
         if(CheckNetwork().checkingNetwork(context!!)) {
             val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha"
             Log.i(_tag,stringUrl)
-            jsonTask = ProdukJsonTask(this).execute(stringUrl)
+            jsonTask = ProdukListJsonTask(this).execute(stringUrl)
         } else {
             Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
@@ -82,14 +84,16 @@ class HomeFragment:Fragment(), ProdukOnTask {
                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
 
                     produks.add(
-                        ProdukElement(
+                        ProdukListElement(
                             idBarang,nmBarang, harga, foto, keterangan )
                     )
                 }
 
                 if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
-                else produkAdapter = ProdukAdapter(context, produks)
+                else produkAdapter =
+                    ProdukListAdapter(context, produks)
 
+                if (gvMainActivity == null) return
                 gvMainActivity.adapter = produkAdapter
 
             } else {
@@ -114,10 +118,10 @@ class HomeFragment:Fragment(), ProdukOnTask {
         outState.putIntegerArrayList(favoritedBookNamesKey, favoritedProdukNames)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater?.inflate(R.menu.menu_lanjut, menu)
+        inflater.inflate(R.menu.menu_lanjut, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -149,7 +153,7 @@ class HomeFragment:Fragment(), ProdukOnTask {
 
                 if (arrayProdukSerialization.size > 0) {
 
-                    val intent = Intent(context, KeranjangActivity::class.java)
+                    val intent = Intent(context, SelectedProdukListActivity::class.java)
                     val args = Bundle()
                     args.putSerializable("ARRAYLIST", arrayProdukSerialization)
                     intent.putExtra("BUNDLE", args)
@@ -177,10 +181,5 @@ class HomeFragment:Fragment(), ProdukOnTask {
                 }
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.i(_tag,"onResume")
     }
 }
