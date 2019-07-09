@@ -1,10 +1,7 @@
 package com.dnhsolution.restokabmalang.sistem.master
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -24,7 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.SistemMasterOnTask
+import com.dnhsolution.restokabmalang.utilities.SistemMasterOnTask
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.DeleteFileOnTask
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.FileListAdapter
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.FileListElement
@@ -43,7 +40,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,SistemMasterOnTask {
+class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
+    SistemMasterOnTask {
 
     private val idTmpUsaha: String = "111"
     private val folderName = "POS_Resto"
@@ -59,27 +57,8 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,SistemMasterOnTa
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var sharedPreferences: SharedPreferences
-        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
-        val tema = sharedPreferences.getString(Url.setTema, "0")
-
-        if (tema.equals("0", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_First)
-        } else if (tema.equals("1", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Second)
-        } else if (tema.equals("2", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Third)
-        } else if (tema.equals("3", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Fourth)
-        } else if (tema.equals("4", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Fifth)
-        } else if (tema.equals("5", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Sixth)
-        }
         setContentView(R.layout.activity_master_sistem)
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = label
 
         etHarga.addTextChangedListener(object : TextWatcher {
             private var current = ""

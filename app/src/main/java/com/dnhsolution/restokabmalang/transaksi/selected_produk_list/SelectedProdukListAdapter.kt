@@ -1,4 +1,4 @@
-package com.dnhsolution.restokabmalang.keranjang
+package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
 import android.app.Activity
 import android.content.Context
@@ -7,15 +7,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.dnhsolution.restokabmalang.KeranjangProdukItemOnTask
+import com.dnhsolution.restokabmalang.utilities.KeranjangProdukItemOnTask
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.google.android.material.snackbar.Snackbar
 
-
-class KeranjangProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private val activity: Activity
-                                 , private val onTask: KeranjangProdukItemOnTask
+class SelectedProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private val activity: Activity
+                                , private val onTask: KeranjangProdukItemOnTask
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     private var mRecentlyDeletedItemPosition: Int = 0
     private var mRecentlyDeletedItem: ProdukSerializable? = null
     var mItemList: ArrayList<ProdukSerializable>? = null
@@ -31,11 +32,11 @@ class KeranjangProdukListAdapter(itemList: ArrayList<ProdukSerializable>, privat
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_keranjang_produk, parent, false)
-        return KeranjangProdukListHolder.newInstance(view, activity)
+        return SelectedProdukListHolder.newInstance(view, activity)
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
-        val holder = viewHolder as KeranjangProdukListHolder
+        val holder = viewHolder as SelectedProdukListHolder
         val itemText = mItemList!![position]
         holder.setValues(onTask,itemText,position)
     }
@@ -74,9 +75,9 @@ class KeranjangProdukListAdapter(itemList: ArrayList<ProdukSerializable>, privat
         }
     }
 
-    internal fun setFilter(mItem: List<ProdukSerializable>) {
-        mItemList = ArrayList()
-        mItemList!!.addAll(mItem)
-        notifyDataSetChanged()
-    }
+//    internal fun setFilter(mItem: List<ProdukSerializable>) {
+//        mItemList = ArrayList()
+//        mItemList!!.addAll(mItem)
+//        notifyDataSetChanged()
+//    }
 }

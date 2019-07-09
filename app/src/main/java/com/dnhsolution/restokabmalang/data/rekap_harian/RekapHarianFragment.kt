@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.RekapHarianOnTask
+import com.dnhsolution.restokabmalang.utilities.RekapHarianOnTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -48,7 +48,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask {
 
     private var isOpened = false
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         arguments?.getString("params")?.let { params = it }
     }
@@ -73,7 +73,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask {
             override fun onNothingSelected(parent: AdapterView<*>?) { }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isOpened == false) {
+                if (!isOpened) {
                     isOpened = true
                     return
                 }

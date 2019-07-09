@@ -20,10 +20,9 @@
  * THE SOFTWARE.
  */
 
-package com.dnhsolution.restokabmalang.home;
+package com.dnhsolution.restokabmalang.transaksi.produk_list;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,12 +37,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class ProdukAdapter extends BaseAdapter {
+public class ProdukListAdapter extends BaseAdapter {
 
   private final Context mContext;
-  private final ArrayList<ProdukElement> books;
+  private final ArrayList<ProdukListElement> books;
 
-  public ProdukAdapter(Context context, ArrayList<ProdukElement> books) {
+  public ProdukListAdapter(Context context, ArrayList<ProdukListElement> books) {
     this.mContext = context;
     this.books = books;
   }
@@ -65,7 +64,7 @@ public class ProdukAdapter extends BaseAdapter {
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    final ProdukElement book = books.get(position);
+    final ProdukListElement book = books.get(position);
 
     // standard implementation (should start with this)
 //    if (convertView == null) {

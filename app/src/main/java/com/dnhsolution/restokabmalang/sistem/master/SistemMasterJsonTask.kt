@@ -6,13 +6,13 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.SistemMasterOnTask
+import com.dnhsolution.restokabmalang.utilities.SistemMasterOnTask
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
 class SistemMasterJsonTask(private val listener : SistemMasterOnTask, private val params : HashMap<String, String>
-                          , private val files : HashMap<String, String>, private val context: Context)
+                           , private val files : HashMap<String, String>, private val context: Context)
     : AsyncTask<String, Int, String?>() {
 
     private var builder: NotificationCompat.Builder? = null
