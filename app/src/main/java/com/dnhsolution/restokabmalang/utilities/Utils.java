@@ -9,6 +9,9 @@ public class Utils {
     public final static int THEME_FIRST = 0;
     public final static int THEME_SECOND = 1;
     public final static int THEME_THIRD = 2;
+    public final static int THEME_FOURTH = 3;
+    public final static int THEME_FIFTH = 4;
+    public final static int THEME_SIXTH = 5;
 
     public static void changeToTheme(Activity activity, int theme) {
 
@@ -29,7 +32,16 @@ public class Utils {
                 activity.setTheme(R.style.Theme_Second);
                 break;
             case THEME_THIRD:
-                activity.setTheme(R.style.Theme_Second);
+                activity.setTheme(R.style.Theme_Third);
+                break;
+            case THEME_FOURTH:
+                activity.setTheme(R.style.Theme_Fourth);
+                break;
+            case THEME_FIFTH:
+                activity.setTheme(R.style.Theme_Fifth);
+                break;
+            case THEME_SIXTH:
+                activity.setTheme(R.style.Theme_Sixth);
                 break;
         }
     }

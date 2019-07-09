@@ -11,6 +11,8 @@ object Url {
     const val SESSION_NAMA_TEMPAT_USAHA = "nama_tempat_usaha"
     const val SESSION_STS_LOGIN = "status"
     const val SESSION_NAME = "pos"
+    const val setLabel = "label"
+    const val setTema = "tema"
     const val setKeranjangTransaksi = "${serverPos}setKeranjangTransaksi"
     const val getProduk = "${serverPos}getProduk"
     const val setSistemMaster = "${serverPos}setSistemMaster"

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,10 +65,36 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     private boolean isPrinterReady = false;
 
 
+    SharedPreferences sharedPreferences;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+        String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
+        String tema = sharedPreferences.getString(Url.setTema, "0");
+
+        if(tema.equalsIgnoreCase("0")){
+            MainCetak.this.setTheme(R.style.Theme_First);
+        }else if(tema.equalsIgnoreCase("1")){
+            MainCetak.this.setTheme(R.style.Theme_Second);
+        }else if(tema.equalsIgnoreCase("2")){
+            MainCetak.this.setTheme(R.style.Theme_Third);
+        }else if(tema.equalsIgnoreCase("3")){
+            MainCetak.this.setTheme(R.style.Theme_Fourth);
+        }else if(tema.equalsIgnoreCase("4")){
+            MainCetak.this.setTheme(R.style.Theme_Fifth);
+        }else if(tema.equalsIgnoreCase("5")){
+            MainCetak.this.setTheme(R.style.Theme_Sixth);
+        }
+
+
         setContentView(R.layout.activity_main_cetak);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(label);
 
         rvData = (RecyclerView) findViewById(R.id.recyclerView);
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
@@ -105,6 +132,28 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
         ButterKnife.bind(this);
         setupBluetooth();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
+        getSupportActionBar().setTitle(label);
+        String tema = sharedPreferences.getString(Url.setTema, "0");
+
+        if(tema.equalsIgnoreCase("0")){
+            MainCetak.this.setTheme(R.style.Theme_First);
+        }else if(tema.equalsIgnoreCase("1")){
+            MainCetak.this.setTheme(R.style.Theme_Second);
+        }else if(tema.equalsIgnoreCase("2")){
+            MainCetak.this.setTheme(R.style.Theme_Third);
+        }else if(tema.equalsIgnoreCase("3")){
+            MainCetak.this.setTheme(R.style.Theme_Fourth);
+        }else if(tema.equalsIgnoreCase("4")){
+            MainCetak.this.setTheme(R.style.Theme_Fifth);
+        }else if(tema.equalsIgnoreCase("5")){
+            MainCetak.this.setTheme(R.style.Theme_Sixth);
+        }
     }
 
     private void getData() {

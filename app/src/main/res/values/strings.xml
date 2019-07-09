@@ -22,6 +22,8 @@
     <string name="title_foto">Foto</string>
     <string name="title_tambah_file">Tambah File</string>
     <string name="title_tambah">Tambah</string>
+    <string name="title_tambah_data">Input Data</string>
+    <string name="title_theme">Edit Label dan Theme</string>
 
     <string name="snack_bar_undo">Undo</string>
 
@@ -64,7 +66,10 @@
     <string-array name="theme_array">
         <item>Default</item>
         <item>Biru</item>
+        <item>Hijau</item>
+        <item>Kuning</item>
         <item>Merah</item>
+        <item>Ungu</item>
     </string-array>
 
     <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>

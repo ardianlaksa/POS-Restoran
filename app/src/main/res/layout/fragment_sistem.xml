@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
+    style="?pageBackground"
     android:focusableInTouchMode="true" >
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="?actionBarStyle"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -18,7 +20,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
             android:elevation="@dimen/_4"
             android:overScrollMode="always"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
@@ -26,8 +27,8 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
+        android:padding="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        style="?pageBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -77,7 +78,7 @@
                 android:text="Judul App" />
 
             <EditText
-                android:id="@+id/tvUsername"
+                android:id="@+id/etLabel"
                 style="?textRegular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

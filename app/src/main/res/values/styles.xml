@@ -27,6 +27,36 @@
         <item name="android:paddingRight">@dimen/activity_horizontal_padding</item>
     </style>
 
+    <style name="page_background_blue">
+        <item name="android:background">@drawable/blue_gray_gradient_background</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_padding</item>
+    </style>
+
+    <style name="page_background_green">
+        <item name="android:background">@drawable/green_gray_gradient_background</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_padding</item>
+    </style>
+
+    <style name="page_background_yellow">
+        <item name="android:background">@drawable/yellow_gray_gradient_background</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_padding</item>
+    </style>
+
+    <style name="page_background_red">
+        <item name="android:background">@drawable/red_gray_gradient_background</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_padding</item>
+    </style>
+
+    <style name="page_background_purple">
+        <item name="android:background">@drawable/purple_gray_gradient_background</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_padding</item>
+    </style>
+
     <style name="text_subheader_wh">
         <item name="android:textColor">#000</item>
         <item name="android:textSize">@dimen/text_subheader_text_size</item>
@@ -70,8 +100,12 @@
         <item name="android:background">#00000000</item>
     </style>
 
-    <color name="actionbar_bg_wh">#AFAFAF</color>
+    <color name="actionbar_bg_wh">@color/colorPrimary</color>
     <color name="actionbar_bg_blue">#3F51B5</color>
+    <color name="actionbar_bg_green">#4CAF50</color>
+    <color name="actionbar_bg_yellow">#FF9800</color>
+    <color name="actionbar_bg_red">#F44336</color>
+    <color name="actionbar_bg_purple">#673AB7</color>
 
     <!--<style name="actionbar_wh" >
         <item name="android:background">@color/blackTransparent50</item>
@@ -82,5 +116,32 @@
         <item name="android:background">@color/actionbar_bg_wh</item>
         <item name="background">@color/actionbar_bg_wh</item>
     </style>
+
+    <style name="actionbar_blue" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_bg_blue</item>
+        <item name="background">@color/actionbar_bg_blue</item>
+    </style>
+
+    <style name="actionbar_green" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_bg_green</item>
+        <item name="background">@color/actionbar_bg_green</item>
+    </style>
+
+    <style name="actionbar_yellow" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_bg_yellow</item>
+        <item name="background">@color/actionbar_bg_yellow</item>
+    </style>
+
+    <style name="actionbar_red" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_bg_red</item>
+        <item name="background">@color/actionbar_bg_red</item>
+    </style>
+
+    <style name="actionbar_purple" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_bg_purple</item>
+        <item name="background">@color/actionbar_bg_purple</item>
+    </style>
+
+
 
 </resources>

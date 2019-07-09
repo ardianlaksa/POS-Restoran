@@ -59,7 +59,7 @@
     <dimen name="f_36">36sp</dimen>
 
     <!--theme example-->
-    <dimen name="activity_horizontal_padding">16dp</dimen>
+    <dimen name="activity_horizontal_padding">0dp</dimen>
 
     <dimen name="content_left_margin_wh">8sp</dimen>
 

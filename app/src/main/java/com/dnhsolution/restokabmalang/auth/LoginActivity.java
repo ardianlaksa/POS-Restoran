@@ -310,6 +310,8 @@ public class LoginActivity extends AppCompatActivity {
                         String idTempatusaha = json.getString("ID_TEMPAT_USAHA");
                         String idPengguna = json.getString("ID_PENGGUNA");
                         String nmTempatUsaha = json.getString("NM_TEMPAT_USAHA");
+                        String label = json.getString("LABEL_APP");
+                        String tema = json.getString("THEME_APP");
 
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -321,6 +323,8 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Url.SESSION_ID_PENGGUNA,idPengguna);
                         editor.putString(Url.SESSION_ID_TEMPAT_USAHA,idTempatusaha);
                         editor.putString(Url.SESSION_NAMA_TEMPAT_USAHA,nmTempatUsaha);
+                        editor.putString(Url.setLabel,label);
+                        editor.putString(Url.setTema,tema);
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
 
                         //menyimpan data ke editor

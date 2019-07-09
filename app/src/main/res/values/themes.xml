@@ -12,6 +12,63 @@
     </style>
 
     <style name="Theme.Second" parent="AppTheme.NoActionBar">
+        <item name="pageBackground">@style/page_background_blue</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_blue</item>
+    </style>
+
+    <style name="Theme.Third" parent="AppTheme.NoActionBar">
+        <item name="pageBackground">@style/page_background_green</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_green</item>
+    </style>
+
+    <style name="Theme.Fourth" parent="AppTheme.NoActionBar">
+        <item name="pageBackground">@style/page_background_yellow</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_yellow</item>
+    </style>
+
+    <style name="Theme.Fifth" parent="AppTheme.NoActionBar">
+        <item name="pageBackground">@style/page_background_red</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_red</item>
+    </style>
+
+    <style name="Theme.Sixth" parent="AppTheme.NoActionBar">
+        <item name="pageBackground">@style/page_background_purple</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_purple</item>
+    </style>
+
+    <style name="Theme.Blue" parent="AppTheme.NoActionBar">
+        <item name="android:textColor">#000</item>
+        <item name="android:background">#566DE4</item>
         <item name="pageBackground">@style/page_background_wh</item>
         <item name="textSubheader">@style/text_subheader_wh</item>
         <item name="textLarge">@style/text_large_wh</item>
@@ -22,8 +79,56 @@
         <item name="actionBarStyle">@style/actionbar_wh</item>
     </style>
 
-    <style name="Theme.YOUR_CUSTOM_THEME" parent="Theme.AppCompat.Light">
-        <!-- Define styles for YOUR_CUSTOM_THEME here. -->
+    <style name="Theme.Yellow" parent="AppTheme.NoActionBar">
+        <item name="android:textColor">#000</item>
+        <item name="android:background">#FFEB3B</item>
+        <item name="pageBackground">@style/page_background_wh</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_wh</item>
+    </style>
+
+    <style name="Theme.Green" parent="AppTheme.NoActionBar">
+        <item name="android:textColor">#000</item>
+        <item name="android:background">#8BC34A</item>
+        <item name="pageBackground">@style/page_background_wh</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_wh</item>
+    </style>
+
+    <style name="Theme.Red" parent="AppTheme.NoActionBar">
+        <item name="android:textColor">#000</item>
+        <item name="android:background">#EE5C4E</item>
+        <item name="pageBackground">@style/page_background_wh</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_wh</item>
+    </style>
+
+    <style name="Theme.Purple" parent="AppTheme.NoActionBar">
+        <item name="android:textColor">#000</item>
+        <item name="android:background">#D142EB</item>
+        <item name="pageBackground">@style/page_background_wh</item>
+        <item name="textSubheader">@style/text_subheader_wh</item>
+        <item name="textLarge">@style/text_large_wh</item>
+        <item name="textRegular">@style/text_regular_wh</item>
+        <item name="whiteBackground">@style/white_background_wh</item>
+        <item name="button">@style/button_wh</item>
+        <item name="spinner">@style/spinner_wh</item>
+        <item name="actionBarStyle">@style/actionbar_wh</item>
     </style>
 
 </resources>
