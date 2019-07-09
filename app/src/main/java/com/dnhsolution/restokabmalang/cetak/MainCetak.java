@@ -136,21 +136,21 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
         super.onResume();
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
         getSupportActionBar().setTitle(label);
-        String tema = sharedPreferences.getString(Url.setTema, "0");
-
-        if(tema.equalsIgnoreCase("0")){
-            MainCetak.this.setTheme(R.style.Theme_First);
-        }else if(tema.equalsIgnoreCase("1")){
-            MainCetak.this.setTheme(R.style.Theme_Second);
-        }else if(tema.equalsIgnoreCase("2")){
-            MainCetak.this.setTheme(R.style.Theme_Third);
-        }else if(tema.equalsIgnoreCase("3")){
-            MainCetak.this.setTheme(R.style.Theme_Fourth);
-        }else if(tema.equalsIgnoreCase("4")){
-            MainCetak.this.setTheme(R.style.Theme_Fifth);
-        }else if(tema.equalsIgnoreCase("5")){
-            MainCetak.this.setTheme(R.style.Theme_Sixth);
-        }
+//        String tema = sharedPreferences.getString(Url.setTema, "0");
+//
+//        if(tema.equalsIgnoreCase("0")){
+//            MainCetak.this.setTheme(R.style.Theme_First);
+//        }else if(tema.equalsIgnoreCase("1")){
+//            MainCetak.this.setTheme(R.style.Theme_Second);
+//        }else if(tema.equalsIgnoreCase("2")){
+//            MainCetak.this.setTheme(R.style.Theme_Third);
+//        }else if(tema.equalsIgnoreCase("3")){
+//            MainCetak.this.setTheme(R.style.Theme_Fourth);
+//        }else if(tema.equalsIgnoreCase("4")){
+//            MainCetak.this.setTheme(R.style.Theme_Fifth);
+//        }else if(tema.equalsIgnoreCase("5")){
+//            MainCetak.this.setTheme(R.style.Theme_Sixth);
+//        }
     }
 
     private void getData() {

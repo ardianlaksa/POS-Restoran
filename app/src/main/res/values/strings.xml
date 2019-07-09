@@ -66,9 +66,14 @@
     <string-array name="theme_array">
         <item>Default</item>
         <item>Biru</item>
+        <item>Hijau</item>
+        <item>Kuning</item>
         <item>Merah</item>
+        <item>Ungu</item>
     </string-array>
 
     <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>
+    <string name="title_tambah_data">Input Data</string>
+    <string name="title_theme">Edit Label dan Tema</string>
 
 </resources>

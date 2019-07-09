@@ -29,11 +29,11 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
 
-        <ImageView
-            tools:ignore="ContentDescription"
-            android:id="@+id/ivImageToolbar"
-            android:layout_width="@dimen/_24"
-            android:layout_height="@dimen/_24" />
+        <!--<ImageView-->
+            <!--tools:ignore="ContentDescription"-->
+            <!--android:id="@+id/ivImageToolbar"-->
+            <!--android:layout_width="@dimen/_24"-->
+            <!--android:layout_height="@dimen/_24" />-->
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -55,7 +55,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
                 android:text="@string/title_nama_barang"/>
 
             <EditText
@@ -65,7 +64,6 @@
                 android:autofillHints="@string/text"
                 android:inputType="text"
                 android:hint="@string/text"
-                android:textColorHint="@android:color/darker_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -83,7 +81,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
                 android:text="@string/title_harga"/>
 
             <EditText
@@ -93,7 +90,6 @@
                 android:autofillHints="@string/rp_0"
                 android:inputType="numberDecimal"
                 android:hint="@string/rp_0"
-                android:textColorHint="@android:color/darker_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -113,7 +109,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:textColor="@android:color/white"
                 android:text="@string/title_diskripsi"/>
 
             <EditText
@@ -123,7 +118,6 @@
                 android:inputType="text"
                 android:autofillHints="@string/text"
                 android:hint="@string/text"
-                android:textColorHint="@android:color/darker_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

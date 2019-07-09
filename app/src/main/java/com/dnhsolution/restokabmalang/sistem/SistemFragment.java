@@ -46,16 +46,17 @@ public class SistemFragment extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+        label = sharedPreferences.getString(Url.setLabel, "0");
+        tema = sharedPreferences.getString(Url.setTema, "0");
         // MUST BE SET BEFORE setContentView
         Utils.onActivityCreateSetTheme(this);
         // AFTER SETTING THEME
         setContentView(R.layout.fragment_sistem);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(label);
 
-        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
-        label = sharedPreferences.getString(Url.setLabel, "0");
-        tema = sharedPreferences.getString(Url.setTema, "0");
         spThemes = findViewById(R.id.spThemes);
         theme = Integer.parseInt(tema);
 
@@ -207,7 +208,6 @@ public class SistemFragment extends AppCompatActivity {
         dialogView = inflater.inflate(R.layout.dialog_action, null);
         dialog.setView(dialogView);
         dialog.setCancelable(true);
-        dialog.setIcon(R.drawable.ic_logo);
         dialog.setTitle("Pemberitahuan");
 
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
