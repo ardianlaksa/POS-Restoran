@@ -23,15 +23,17 @@ class DataFragment : Fragment() {
         viewpager = view.findViewById(R.id.viewpager_main) as ViewPager
         tabMain = view.findViewById(R.id.tabs_main) as TabLayout
 
+        val fragmentAdapter = DataPagerAdapter(childFragmentManager)
+        viewpager.adapter = fragmentAdapter
+
+        tabMain.setupWithViewPager(viewpager)
+
         return view
     }
 
     override fun onResume() {
         super.onResume()
 
-        val fragmentAdapter = DataPagerAdapter(childFragmentManager)
-        viewpager.adapter = fragmentAdapter
 
-        tabMain.setupWithViewPager(viewpager)
     }
 }

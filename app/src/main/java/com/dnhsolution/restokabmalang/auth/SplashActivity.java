@@ -8,6 +8,7 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.sistem.MainMaster;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.jaredrummler.android.widget.AnimatedSvgView;
 

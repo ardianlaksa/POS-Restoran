@@ -26,7 +26,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SistemFragment extends AppCompatActivity {
@@ -38,7 +40,7 @@ public class SistemFragment extends AppCompatActivity {
     int theme = 0;
     // Here we set the theme for the activity
     // Note `Utils.onActivityCreateSetTheme` must be called before `setContentView`
-    String tema, label;
+    String tema, label, temp_tema;
     AlertDialog.Builder dialog;
     LayoutInflater inflater;
     View dialogView;
@@ -49,8 +51,26 @@ public class SistemFragment extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         label = sharedPreferences.getString(Url.setLabel, "0");
         tema = sharedPreferences.getString(Url.setTema, "0");
+        temp_tema = sharedPreferences.getString(Url.SESSION_TEMP_TEMA, "null");
+
+        if(temp_tema.equalsIgnoreCase("null")){
+            if(tema.equalsIgnoreCase("0")){
+                SistemFragment.this.setTheme(R.style.Theme_First);
+            }else if(tema.equalsIgnoreCase("1")){
+                SistemFragment.this.setTheme(R.style.Theme_Second);
+            }else if(tema.equalsIgnoreCase("2")){
+                SistemFragment.this.setTheme(R.style.Theme_Third);
+            }else if(tema.equalsIgnoreCase("3")){
+                SistemFragment.this.setTheme(R.style.Theme_Fourth);
+            }else if(tema.equalsIgnoreCase("4")){
+                SistemFragment.this.setTheme(R.style.Theme_Fifth);
+            }else if(tema.equalsIgnoreCase("5")){
+                SistemFragment.this.setTheme(R.style.Theme_Sixth);
+            }
+        }else{
+            Utils.onActivityCreateSetTheme(this);
+        }
         // MUST BE SET BEFORE setContentView
-        Utils.onActivityCreateSetTheme(this);
         // AFTER SETTING THEME
         setContentView(R.layout.fragment_sistem);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -61,9 +81,12 @@ public class SistemFragment extends AppCompatActivity {
         theme = Integer.parseInt(tema);
 
 
-        //Utils.changeToTheme(SistemFragment.this, theme);
         setupSpinnerItemSelection();
 
+
+        if(temp_tema.equalsIgnoreCase("null")){
+            spThemes.setSelection(theme);
+        }
 
         etLabel = (EditText)findViewById(R.id.etLabel);
         bSimpan = (Button)findViewById(R.id.bSimpan);
@@ -86,6 +109,7 @@ public class SistemFragment extends AppCompatActivity {
 
     }
 
+
     private void setupSpinnerItemSelection() {
 
         //ThemeApplication.currentPosition = theme;
@@ -98,8 +122,16 @@ public class SistemFragment extends AppCompatActivity {
                                        int position, long id) {
                 if (ThemeApplication.currentPosition != position) {
                     Utils.changeToTheme(SistemFragment.this, position);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                    //menambah data ke editor
+                    editor.putString(Url.SESSION_TEMP_TEMA, String.valueOf(position));
+
+                    //menyimpan data ke editor
+                    editor.apply();
                     //theme = position;
                 }
+
                 theme = position;
                 //Toast.makeText(SistemFragment.this, String.valueOf(theme), Toast.LENGTH_SHORT).show();
                 ThemeApplication.currentPosition = position;
@@ -208,7 +240,9 @@ public class SistemFragment extends AppCompatActivity {
         dialogView = inflater.inflate(R.layout.dialog_action, null);
         dialog.setView(dialogView);
         dialog.setCancelable(true);
+        dialog.setIcon(R.drawable.ic_logo);
         dialog.setTitle("Pemberitahuan");
+
 
         dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 

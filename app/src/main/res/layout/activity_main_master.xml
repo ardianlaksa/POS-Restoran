@@ -63,10 +63,48 @@
                 android:id="@+id/bTheme"
                 style="?button"
                 android:textColor="#fff"
-                android:background="#EB8B02"
+                android:background="#2196F3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/title_theme"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/_8"
+            android:id="@+id/llbtnProduk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llbtnTheme">
+
+            <Button
+                android:layout_marginTop="@dimen/_8"
+                android:id="@+id/bProduk"
+                style="?button"
+                android:textColor="#fff"
+                android:background="#4CAF50"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_produk"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/_8"
+            android:id="@+id/llbtnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llbtnProduk">
+
+            <Button
+                android:layout_marginTop="@dimen/_8"
+                android:id="@+id/bLogout"
+                style="?button"
+                android:textColor="#fff"
+                android:background="#F44336"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logout"/>
 
         </RelativeLayout>
 

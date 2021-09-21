@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvNama"
-                android:text="@string/title_nama"
+                android:text="No. Trx"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -63,7 +63,7 @@
                 android:id="@+id/tvTitleDisc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_diskon"
+                android:text="Omzet"
                 android:textSize="@dimen/f_10"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
@@ -71,10 +71,11 @@
                 app:layout_constraintRight_toLeftOf="@id/tvDisc"/>
 
             <TextView
+                android:visibility="invisible"
                 android:id="@+id/tvDisc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/_0"
+                android:text=""
                 android:textColor="@color/colorAccent"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
@@ -87,7 +88,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvHarga"
-                android:text="@string/title_harga"
+                android:text="Tanggal"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -123,7 +124,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvQty"
-                android:text="@string/title_qty"
+                android:text="Disc"
                 android:textSize="@dimen/f_10"/>
 
             <TextView

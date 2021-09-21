@@ -23,6 +23,8 @@
 package com.dnhsolution.restokabmalang.transaksi.produk_list;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +32,20 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.squareup.picasso.Picasso;
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class ProdukListAdapter extends BaseAdapter {
@@ -103,12 +114,35 @@ public class ProdukListAdapter extends BaseAdapter {
     viewHolder.nameTextView.setText(book.getName());
     String priceValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(Double.parseDouble(book.getPrice()));
     viewHolder.authorTextView.setText(priceValue);
-    viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.star_enabled : R.drawable.star_disabled);
+    viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.ic_baseline_check_circle_24_dark_green : R.drawable.ic_baseline_check_circle_24_gray);
     viewHolder.descriptionTextView.setText(book.getDescription());
-    String url = Url.serverFoto+book.getImageUrl();
+    String url="";
+    if(book.getStatus().equalsIgnoreCase("server")) {
+      url = Url.serverFoto+book.getImageUrl();
+    } else {
+      url = new File(book.getImageUrl()).toString();
+
+    }
+    Glide.with(viewHolder.imageViewCoverArt.getContext()).load(url)
+            .centerCrop()
+            .fitCenter()
+            .listener(new RequestListener<Drawable>() {
+              @Override
+              public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                Log.e("xmx1","Error "+e.toString());
+                return false;
+              }
+
+              @Override
+              public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                Log.e("xmx1","no Error ");
+                return false;
+              }
+            })
+            .into(viewHolder.imageViewCoverArt);
 //    Log.i("url : ", url);
 //    Picasso.get().load(url).fit().centerCrop().into(viewHolder.imageViewCoverArt);
-    Picasso.get().load(url).into(viewHolder.imageViewCoverArt);
+    //Picasso.get().load(url).into(viewHolder.imageViewCoverArt);
 
     return convertView;
   }

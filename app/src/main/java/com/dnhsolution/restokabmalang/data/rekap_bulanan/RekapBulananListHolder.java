@@ -7,6 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 class RekapBulananListHolder extends RecyclerView.ViewHolder {
     private final TextView numItem,omzet,tgl,disc,total;
 //    private final View view;
@@ -49,7 +53,24 @@ class RekapBulananListHolder extends RecyclerView.ViewHolder {
         numItem.setText(number);
         String omzetValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getOmzet());
         omzet.setText(omzetValue);
-        tgl.setText(itemText.getTgl());
+
+        final String OLD_FORMAT = "MM-dd-yyyy";
+        final String NEW_FORMAT = "dd-MM-yyyy";
+
+// August 12, 2010
+        String oldDateString = itemText.getTgl();
+        String newDateString;
+
+        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+        Date d = null;
+        try {
+            d = sdf.parse(oldDateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        sdf.applyPattern(NEW_FORMAT);
+        newDateString = sdf.format(d);
+        tgl.setText(newDateString);
         disc.setText(String.valueOf(itemText.getDisc()));
 //        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
 //        total.setText(totalValue);

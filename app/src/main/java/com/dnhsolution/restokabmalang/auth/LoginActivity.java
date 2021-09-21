@@ -11,11 +11,10 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.view.inputmethod.EditorInfo;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.*;
 import com.android.volley.toolbox.StringRequest;
@@ -34,9 +33,10 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText etUsername, etPassword, et1, et2, et3, et4;
     Button btnLogin, bPassword;
-    Boolean bvisible = false;
+    Boolean bvisible = true;
 
     LinearLayout LAktivasi, LLogin, LKeterangan;
+    String kode_aktivasi = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         et1.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(et1.getText().toString().length()==0){
-                    et2.requestFocus();
-                }
+                et1.requestFocus();
 
             }
 
@@ -75,6 +73,8 @@ public class LoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 if(et1.getText().toString().length()==0){
                     et1.requestFocus();
+                }else{
+                    et2.requestFocus();
                 }
 
             }
@@ -82,9 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         et2.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(et2.getText().toString().length()==0){
-                    et3.requestFocus();
-                }
+                et2.requestFocus();
 
             }
 
@@ -96,7 +94,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 if(et2.getText().toString().length()==0){
-                    et2.requestFocus();
+                    et1.requestFocus();
+                }else{
+                    et3.requestFocus();
                 }
 
             }
@@ -104,9 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         et3.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(et3.getText().toString().length()==0){
-                    et4.requestFocus();
-                }
+                et3.requestFocus();
 
             }
 
@@ -118,7 +116,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 if(et3.getText().toString().length()==0){
-                    et3.requestFocus();
+                    et2.requestFocus();
+                }else{
+                    et4.requestFocus();
                 }
 
             }
@@ -126,9 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         et4.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(et4.getText().toString().length()==1){
-                    et4.requestFocus();
-                }
+                et4.requestFocus();
             }
 
             @Override
@@ -138,7 +136,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(et4.getText().toString().length()==1){
+                if(et4.getText().toString().length()==0){
+                    et3.requestFocus();
+                }else{
                     if(et1.getText().toString().equalsIgnoreCase("")){
                         et1.requestFocus();
                         et1.setError("Harap isi bidang ini !");
@@ -184,6 +184,18 @@ public class LoginActivity extends AppCompatActivity {
                     }else{
                         sendData();
                     }
+            }
+        });
+
+        etUsername.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    etPassword.requestFocus();
+                    handled = true;
+                }
+                return handled;
             }
         });
     }
@@ -233,6 +245,7 @@ public class LoginActivity extends AppCompatActivity {
                         LAktivasi.setVisibility(View.GONE);
                         LKeterangan.setVisibility(View.GONE);
                         LLogin.setVisibility(View.VISIBLE);
+                        kode_aktivasi = kode;
                     }else{
                         Toast.makeText(LoginActivity.this, "Jaringan masih sibuk !", Toast.LENGTH_SHORT).show();
                     }
@@ -312,6 +325,9 @@ public class LoginActivity extends AppCompatActivity {
                         String nmTempatUsaha = json.getString("NM_TEMPAT_USAHA");
                         String label = json.getString("LABEL_APP");
                         String tema = json.getString("THEME_APP");
+                        String alamat = json.getString("ALAMAT");
+                        String email = json.getString("EMAIL");
+                        String telp = json.getString("TELP");
 
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -323,6 +339,9 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Url.SESSION_ID_PENGGUNA,idPengguna);
                         editor.putString(Url.SESSION_ID_TEMPAT_USAHA,idTempatusaha);
                         editor.putString(Url.SESSION_NAMA_TEMPAT_USAHA,nmTempatUsaha);
+                        editor.putString(Url.SESSION_ALAMAT,alamat);
+                        editor.putString(Url.SESSION_EMAIL,email);
+                        editor.putString(Url.SESSION_TELP,telp);
                         editor.putString(Url.setLabel,label);
                         editor.putString(Url.setTema,tema);
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
@@ -331,7 +350,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.apply();
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-                        finish();
+                        finishAffinity();
                     }else{
                         Toast.makeText(LoginActivity.this, "Jaringan masih sibuk !", Toast.LENGTH_SHORT).show();
                     }
@@ -355,6 +374,7 @@ public class LoginActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 params.put("username", etUsername.getText().toString());
                 params.put("password", etPassword.getText().toString());
+                params.put("kode_aktivasi", kode_aktivasi);
 
                 return params;
             }

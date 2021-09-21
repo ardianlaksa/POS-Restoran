@@ -49,12 +49,18 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
 
     void setValues(String number,RekapHarianListElement itemText) {
         numItem.setText(number);
-        nama.setText(itemText.getName());
-        String priceValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getHarga());
-        Harga.setText(priceValue);
-        qty.setText(String.valueOf(itemText.getQty()));
-        disc.setText(String.valueOf(itemText.getDisc()));
-        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
-        total.setText(totalValue);
+        nama.setText(String.valueOf(itemText.getIdItem()));
+        Harga.setText(itemText.getTgl());
+        String disc_rp = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getDisc());
+        qty.setText(disc_rp);
+        String omzet = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
+        total.setText(omzet);
+
+//        String priceValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getHarga());
+//        Harga.setText(priceValue);
+//        qty.setText(String.valueOf(itemText.getQty()));
+//        disc.setText(String.valueOf(itemText.getDisc()));
+//        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
+//        total.setText(totalValue);
     }
 }

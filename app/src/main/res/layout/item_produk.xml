@@ -13,7 +13,7 @@
         <ImageView
             android:id="@+id/imageview_cover_art"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_72"
+            android:layout_height="@dimen/_128"
             android:scaleType="fitXY"/>
 
         <ImageView

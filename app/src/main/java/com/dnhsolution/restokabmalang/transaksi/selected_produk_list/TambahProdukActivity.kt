@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.sistem.produk.ItemProduk
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListAdapter
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
@@ -28,6 +30,8 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
     private var produks:ArrayList<ProdukListElement> = ArrayList()
+    var databaseHandler: DatabaseHandler? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +44,15 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "0").toString()
 
+        databaseHandler = DatabaseHandler(this)
+
         if(CheckNetwork().checkingNetwork(this)) {
             val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha"
             Log.i(_tag,stringUrl)
             jsonTask = ProdukListJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            getDataLokal()
+            //Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
 
         gvMainActivity.setOnItemClickListener { _, _, position, _ ->
@@ -61,7 +68,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
-                            , value.imageUrl, value.price.toInt(), 1
+                            , value.imageUrl, value.price.toInt(), 1, value.status
                         )
                     )
                 } else {
@@ -74,7 +81,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
                 val args = Bundle()
                 args.putSerializable("ARRAYLIST", arrayProdukSerialization)
                 intent.putExtra("BUNDLE", args)
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                 startActivity(intent)
                 finish()
             }
@@ -108,7 +115,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan )
+                            idBarang,nmBarang, harga, foto, keterangan,"server" )
                     )
                 }
 
@@ -136,6 +143,49 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
         } catch (e: JSONException) {
             e.printStackTrace()
             Toast.makeText(this, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getDataLokal() {
+        produks.clear()
+        produkAdapter?.notifyDataSetChanged()
+
+        val jml_data = databaseHandler!!.CountDataProduk()
+        if (jml_data == 0) {
+            Toast.makeText(this,R.string.empty_data,Toast.LENGTH_SHORT).show()
+        }
+
+        val listProduk: List<ItemProduk> = databaseHandler!!.dataProduk2
+
+        for(e in listProduk){
+            val idBarang = e.id_barang.toInt()
+            val harga = e.harga
+            val foto = e.url_image
+            val nmBarang = e.nama_barang
+            val keterangan = e.keterangan
+
+            produks.add(
+                ProdukListElement(
+                    idBarang,nmBarang, harga, foto, keterangan, "lokal" )
+            )
+        }
+
+        if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
+        else produkAdapter =
+            ProdukListAdapter(this, produks)
+
+        if (gvMainActivity == null) return
+        gvMainActivity.adapter = produkAdapter
+
+        if (valueArgsFromKeranjang != null) {
+            for (favoriteId in valueArgsFromKeranjang!!) {
+                for (Produk in produks) {
+                    if (Produk.idItem == favoriteId) {
+                        Produk.isFavorite = true
+                        break
+                    }
+                }
+            }
         }
     }
 

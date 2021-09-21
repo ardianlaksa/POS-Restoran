@@ -11,6 +11,7 @@ class ProdukSerializable : Parcelable {
     var imgUrl: String? = null
     var totalPrice: Int = 0
     var qty: Int = 1
+    var status: String? = null
 
     constructor(parcel: Parcel) : this() {
         idItem = parcel.readInt()
@@ -19,17 +20,19 @@ class ProdukSerializable : Parcelable {
         imgUrl = parcel.readString()
         totalPrice = parcel.readInt()
         qty = parcel.readInt()
+        status = parcel.readString()
     }
 
     constructor()
 
-    constructor(idItem: Int, name: String, price: String, imgUrl: String, totalPrice: Int, qty: Int) {
+    constructor(idItem: Int, name: String, price: String, imgUrl: String, totalPrice: Int, qty: Int, status:String) {
         this.idItem = idItem
         this.name = name
         this.price = price
         this.imgUrl = imgUrl
         this.totalPrice = totalPrice
         this.qty = qty
+        this.status = status
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -39,6 +42,7 @@ class ProdukSerializable : Parcelable {
         parcel.writeString(imgUrl)
         parcel.writeInt(totalPrice)
         parcel.writeInt(qty)
+        parcel.writeString(status)
     }
 
     override fun describeContents(): Int {

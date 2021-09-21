@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.Url;
 import com.zj.btsdk.BluetoothService;
 
 import java.util.Set;
@@ -108,6 +110,16 @@ public class DeviceActivity extends AppCompatActivity {
 
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+
+            //membuat editor untuk menyimpan data ke shared preferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            //menambah data ke editor
+            editor.putString(Url.SESSION_PRINTER_BT, address);
+
+            //menyimpan data ke editor
+            editor.apply();
 
             setResult(RESULT_OK, intent);
             finish();

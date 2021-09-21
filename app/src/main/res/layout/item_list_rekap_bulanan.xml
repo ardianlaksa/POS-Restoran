@@ -2,12 +2,15 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/_4">
 
     <LinearLayout
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingRight="6dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -31,7 +34,39 @@
             android:layout_marginRight="@dimen/_8"
             android:gravity="center"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="@dimen/_4">
+
+            <TextView
+                android:layout_weight="0.4"
+                android:id="@+id/tvTgl"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="04-10-2019"
+                android:textSize="@dimen/f_16"
+                android:textColor="@android:color/holo_red_light"/>
+
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/tvOmzet"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="Rp. 0"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_18"
+                android:textColor="@android:color/holo_red_light"/>
+
+
+
+        </LinearLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/_4"
@@ -42,12 +77,12 @@
                 android:layout_width="@dimen/_56"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/tvOmzet"
+                app:layout_constraintBottom_toBottomOf="@id/tvOmzet2"
                 android:text="@string/title_omzet"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
-                android:id="@+id/tvOmzet"
+                android:id="@+id/tvOmzet2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_4"
@@ -71,6 +106,7 @@
                 app:layout_constraintRight_toLeftOf="@id/tvDisc"/>
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/tvDisc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -86,24 +122,25 @@
                 android:layout_width="@dimen/_56"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/tvTgl"
+                app:layout_constraintBottom_toBottomOf="@id/tvTgl2"
                 android:text="@string/title_tgl"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
-                android:id="@+id/tvTgl"
+                android:id="@+id/tvTgl2"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_4"
                 android:paddingStart="@dimen/_4"
                 android:paddingEnd="@dimen/_4"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleTgl"
-                app:layout_constraintTop_toBottomOf="@id/tvOmzet"
+                app:layout_constraintTop_toBottomOf="@id/tvOmzet2"
                 android:gravity="center"
                 android:text="@string/text"
                 android:textColor="@android:color/holo_red_light"/>
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/tvTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

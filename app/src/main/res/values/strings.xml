@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">Resto Kab Malang</string>
+    <string name="title_bantuan">Bantuan</string>
     <string name="title_home">Home</string>
-    <string name="title_data">Data</string>
+    <string name="title_data">Rekap</string>
+    <string name="title_tersimpan">Tersimpan</string>
     <!--<string name="title_rekap_bulanan">R. Bulanan</string>-->
     <string name="title_daftar_produk">Daftar Produk</string>
     <string name="title_proses">Proses</string>
     <string name="title_total">Total</string>
-    <string name="title_diskon">Diskon</string>
+    <string name="title_sub_total">Sub Total</string>
+    <string name="title_diskon">Disc</string>
     <string name="title_refresh">Refresh</string>
     <string name="title_sistem">Sistem</string>
     <string name="title_app">Judul App</string>
@@ -28,7 +31,7 @@
     <string name="snack_bar_undo">Undo</string>
 
     <!--Notif-->
-    <string name="check_network">Please check your connection</string>
+    <string name="check_network">Tidak ada koneksi internet !</string>
     <string name="check_input_data">Please check your input data</string>
     <string name="empty_data">Empty Data</string>
     <string name="error_data">Error Data</string>
@@ -72,8 +75,27 @@
         <item>Ungu</item>
     </string-array>
 
+    <string name="tanggal_kosong">--/--/----</string>
+    <string name="batas_waktu_sinkron">Batas Waktu Sinkron</string>
     <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>
+    <string name="login">Login</string>
+    <string name="selamat_datang">Selamat Datang</string>
     <string name="title_tambah_data">Input Data</string>
     <string name="title_theme">Edit Label dan Tema</string>
+    <string name="title_produk">Edit Produk</string>
+    <string name="title_activity_data_tersimpan">DataTersimpanActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="transaksi_tersimpan">Transaksi Tersimpan</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_coba">CobaActivity</string>
+    <string name="tab_text_1">Data Server</string>
+    <string name="tab_text_2">Data Lokal</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>

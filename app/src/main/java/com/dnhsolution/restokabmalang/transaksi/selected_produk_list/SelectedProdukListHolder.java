@@ -1,17 +1,29 @@
 package com.dnhsolution.restokabmalang.transaksi.selected_produk_list;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.dnhsolution.restokabmalang.utilities.KeranjangProdukItemOnTask;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable;
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 class SelectedProdukListHolder extends RecyclerView.ViewHolder {
     private final ImageView ivItem;
@@ -64,8 +76,32 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
         price.setText(rupiahPrice);
         totalPrice.setText(rupiahPrice);
 
-        Picasso.get().load(Url.serverFoto+obyek.getImgUrl())
+        String url="";
+        if(obyek.getStatus().equalsIgnoreCase("server")) {
+            url = Url.serverFoto+obyek.getImgUrl();
+        } else {
+            url = new File(obyek.getImgUrl()).toString();
+
+        }
+        Glide.with(ivItem.getContext()).load(url)
+                .centerCrop()
+                .fitCenter()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.e("xmx1","Error "+e.toString());
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        Log.e("xmx1","no Error ");
+                        return false;
+                    }
+                })
                 .into(ivItem);
+//        Picasso.get().load(Url.serverFoto+obyek.getImgUrl())
+//                .into(ivItem);
 
         minus.setOnClickListener(new View.OnClickListener() {
             @Override

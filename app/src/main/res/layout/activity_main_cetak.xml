@@ -160,7 +160,7 @@
                 <TextView
                     android:id="@+id/tvDisc"
                     android:layout_marginLeft="150dp"
-                    android:text="Disc (0%) "
+                    android:text="Disc"
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:layout_width="match_parent"
@@ -241,10 +241,22 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Cetak"
+                    android:textColor="#fff"
                     android:textSize="@dimen/f_16"
                     android:maxLines="1"/>
 
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnPilihBT"
+                android:layout_margin="5dp"
+                android:background="#3F51B5"
+                android:textColor="#fff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pilih Perangkat Bluetooth"
+                android:textSize="@dimen/f_16"
+                android:maxLines="1"/>
 
             <TextView
                 android:gravity="center"

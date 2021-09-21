@@ -9,10 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,7 +48,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     private RecyclerView.Adapter adapter;
 
     TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status;
-    Button btnKembali, btnCetak;
+    Button btnKembali, btnCetak, btnPilih;
 
     private final String TAG = MainActivity.class.getSimpleName();
     public static final int RC_BLUETOOTH = 0;
@@ -63,7 +60,6 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
 
     SharedPreferences sharedPreferences;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,6 +100,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
         btnCetak = (Button)findViewById(R.id.btnCetak);
         btnKembali = (Button)findViewById(R.id.btnKembali);
+        btnPilih = (Button)findViewById(R.id.btnPilihBT);
 
         itemProduk = new ArrayList<>();
         adapter = new AdapterProduk(itemProduk, MainCetak.this);
@@ -125,10 +122,43 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             }
         });
 
+        btnPilih.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mService.isAvailable()) {
+                    Log.i(TAG, "printText: perangkat tidak support bluetooth");
+                    return;
+                }
+                if (mService.isBTopen())
+                    startActivityForResult(new Intent(MainCetak.this, DeviceActivity.class), RC_CONNECT_DEVICE);
+                else
+                    requestBluetooth();
+            }
+        });
+
+
+
         getData();
 
         ButterKnife.bind(this);
         setupBluetooth();
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+        String bt_device = sharedPreferences.getString(Url.SESSION_PRINTER_BT, "");
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enabled :)
+        } else {
+            if(!bt_device.equalsIgnoreCase("")){
+                BluetoothDevice mDevice = mService.getDevByMac(bt_device);
+                mService.connect(mDevice);
+                Log.d("BT_DEVICE", bt_device);
+            }
+        }
+
     }
 
     @Override
@@ -176,7 +206,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                     }else if(pesan.equalsIgnoreCase("1")){
 
                         tvSubtotal.setText(json.getString("sub_total"));
-                        tvDisc.setText("Disc ("+json.getString("disc")+"%)");
+//                        tvDisc.setText(json.getString("disc"));
                         tvJmlDisc.setText(json.getString("jml_disc"));
                         tvTotal.setText(json.getString("total"));
 
@@ -287,11 +317,12 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     }
 
     public void onDeviceUnableToConnect() {
-        tv_status.setText("Tidak dapat terhubung ke perangkat");
+        tv_status.setText("Tidak terhubung ke perangkat printer");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case RC_ENABLE_BLUETOOTH:
                 if (resultCode == RESULT_OK) {
@@ -323,14 +354,14 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
             SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
             String nm_tempat_usaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0");
-
+            String alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0");
 
             String tanggal = getDateTime();
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage(nm_tempat_usaha, "");
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
-            mService.sendMessage("Jln. Malang Raya No. 40", "");
+            mService.sendMessage(alamat, "");
             mService.write(PrinterCommands.ESC_ENTER);
 
             mService.write(PrinterCommands.ESC_ALIGN_LEFT);
@@ -373,10 +404,14 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             mService.sendMessage("- Terima Kasih -", "");
             mService.write(PrinterCommands.ESC_ENTER);
         } else {
-            if (mService.isBTopen())
-                startActivityForResult(new Intent(this, DeviceActivity.class), RC_CONNECT_DEVICE);
-            else
+            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT).show();
+//            if (mService.isBTopen())
+//                startActivityForResult(new Intent(this, DeviceActivity.class), RC_CONNECT_DEVICE);
+//            else
+//                requestBluetooth();
+            if (!mService.isBTopen())
                 requestBluetooth();
+
         }
     }
 
