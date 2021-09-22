@@ -1,6 +1,7 @@
 package com.dnhsolution.restokabmalang.sistem.produk;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -148,29 +149,7 @@ public class MasterProduk extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         tv_count = (TextView)findViewById(R.id.text_count);
 
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         requestMultiplePermissions();
-
-       int jml_datax = databaseHandler.CountProdukTersimpan();
-        if(jml_datax==0){
-            tv_count.setVisibility(View.INVISIBLE);
-            fab.setVisibility(View.GONE);
-        }else if(jml_datax<=9){
-            tv_count.setVisibility(View.VISIBLE);
-            tv_count.setText(String.valueOf(jml_datax));
-            fab.setVisibility(View.VISIBLE);
-        }else if(jml_datax>9){
-            tv_count.setVisibility(View.VISIBLE);
-            tv_count.setText(String.valueOf(jml_datax)+"+");
-            fab.setVisibility(View.VISIBLE);
-        }
 
         if(MainActivity.Companion.getAdMasterProduk() == 1) return;
 
@@ -189,181 +168,6 @@ public class MasterProduk extends AppCompatActivity {
 
         MainActivity.Companion.setAdMasterProduk(1);
 
-
-//        rvProduk = (RecyclerView)findViewById(R.id.rvProduk);
-//        tvKet = (TextView)findViewById(R.id.tvKet);
-//        adapterProduk= new AdapterProduk(itemProduks, MasterProduk.this);
-//        RecyclerView.LayoutManager mLayoutManagerss = new LinearLayoutManager(getApplicationContext());
-//        rvProduk.setLayoutManager(new GridLayoutManager(this, 3));
-//        rvProduk.setItemAnimator(new DefaultItemAnimator());
-//        rvProduk.setAdapter(adapterProduk);
-
-//        if(new CheckNetwork().checkingNetwork(MasterProduk.this)){
-//            getData();
-//            Toast.makeText(this, "Internet", Toast.LENGTH_SHORT).show();
-//        }else{
-//            Toast.makeText(this, "Lokal", Toast.LENGTH_SHORT).show();
-//            getDataLokal();
-//        }
-
-//        rvProduk.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-//
-//            GestureDetector gestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
-//
-//                @Override public boolean onSingleTapUp(MotionEvent motionEvent) {
-//                    return true;
-//                }
-//
-//            });
-//            @Override
-//            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-//                ChildView = rvProduk.findChildViewUnder(e.getX(), e.getY());
-//
-//                if(ChildView != null && gestureDetector.onTouchEvent(e)) {
-//                    RecyclerViewClickedItemPos = rvProduk.getChildAdapterPosition(ChildView);
-//                    String url_image = itemProduks.get(RecyclerViewClickedItemPos).getUrl_image();
-//                    String nama_barang = itemProduks.get(RecyclerViewClickedItemPos).getNama_barang();
-//                    String id_barang = itemProduks.get(RecyclerViewClickedItemPos).getId_barang();
-//                    String harga = itemProduks.get(RecyclerViewClickedItemPos).getHarga();
-//                    String ket = itemProduks.get(RecyclerViewClickedItemPos).getKeterangan();
-//                    DialogEdit(url_image, nama_barang, id_barang, harga, ket);
-//                    Log.d("TAG", String.valueOf(RecyclerViewClickedItemPos));
-//                }
-//                return false;
-//            }
-//
-//            @Override
-//            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//
-//            }
-//        });
-
-    }
-
-    private void getData() {
-        itemProduks.clear();
-        adapterProduk.notifyDataSetChanged();
-        final ProgressDialog progressDialog = new ProgressDialog(MasterProduk.this);
-        progressDialog.setMessage("Mencari data...");
-        progressDialog.show();
-        RequestQueue queue = Volley.newRequestQueue(MasterProduk.this);
-        SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
-        final String id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0");
-        Log.d("ID_TEMPAT_USAHA", id_tempat_usaha);
-        String url = Url.serverPos+"getProduk?idTmpUsaha="+id_tempat_usaha;
-        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    int status = jsonObject.getInt("success");
-                    JSONArray jsonArray = jsonObject.getJSONArray("result");
-                    JSONObject json = jsonArray.getJSONObject(0);
-                    if(status == 1){
-                        int i;
-                        for (i = 0; i < jsonArray.length(); i++) {
-                            try {
-
-                                JSONObject jO = jsonArray.getJSONObject(i);
-                                ItemProduk id = new ItemProduk();
-                                id.setId_barang(jO.getString("ID_BARANG"));
-                                id.setNama_barang(jO.getString("NM_BARANG"));
-                                id.setUrl_image(jO.getString("FOTO"));
-                                id.setHarga(jO.getString("HARGA"));
-                                id.setKeterangan(jO.getString("KETERANGAN"));
-                                Log.d("NM_BARANG", jO.getString("NM_BARANG"));
-
-                                itemProduks.add(id);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                progressDialog.dismiss();
-                            }
-                        }
-
-
-
-                    }else{
-                        Toast.makeText(MasterProduk.this, "Jaringan masih sibuk !", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();
-                adapterProduk.notifyDataSetChanged();
-                progressDialog.dismiss();
-
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-                Toast.makeText(MasterProduk.this, error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("status","ok");
-
-                return params;
-            }
-        };
-        stringRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-
-        queue.add(stringRequest);
-    }
-
-    private void getDataLokal() {
-        itemProduks.clear();
-        adapterProduk.notifyDataSetChanged();
-
-        int jml_data = databaseHandler.CountDataProduk();
-
-        if(jml_data==0){
-            tvKet.setVisibility(View.VISIBLE);
-        }else{
-            tvKet.setVisibility(View.GONE);
-        }
-
-        try {
-            List<ItemProduk> listDataProduk = databaseHandler.getDataProduk();
-
-            for (ItemProduk f : listDataProduk) {
-                ItemProduk ip = new ItemProduk();
-                ip.setId_barang(f.getId_barang());
-                ip.setNama_barang(f.getNama_barang());
-                ip.setHarga(f.getHarga());
-                ip.setUrl_image(f.getUrl_image());
-                ip.setKeterangan(f.getKeterangan());
-                itemProduks.add(ip);
-            }
-        } catch (SQLiteException e) {
-            e.printStackTrace();
-        }
-        adapterProduk.notifyDataSetChanged();
     }
 
     @Override
@@ -396,11 +200,9 @@ public class MasterProduk extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_menu_tambah:
-                DialogTambah();
-                return true;
-
+        if (item.getItemId() == R.id.action_menu_tambah) {
+            DialogTambah();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -445,8 +247,6 @@ public class MasterProduk extends AppCompatActivity {
                 }else{
                     if(new CheckNetwork().checkingNetwork(MasterProduk.this)){
                         TambahData();
-                    }else{
-                        TambahDataLokal();
                     }
                     dialogBuilder.dismiss();
                 }
@@ -563,11 +363,10 @@ public class MasterProduk extends AppCompatActivity {
                 try {
                     String originalString = s.toString();
 
-                    Long longval;
                     if (originalString.contains(".")) {
                         originalString = originalString.replace(".", "");
                     }
-                    longval = Long.parseLong(originalString);
+                    long longval = Long.parseLong(originalString);
 
                     DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
                     formatter.applyPattern("#,###,###,###");
@@ -582,262 +381,12 @@ public class MasterProduk extends AppCompatActivity {
                 }
 
                 etHarga.addTextChangedListener(this);
-                // TODO Auto-generated method stub
             }
         });
 
         dialogBuilder.setView(dialogView);
         dialogBuilder.show();
     }
-
-//    public void DialogEdit(String url_image, String nama_barang, String id_barang, String harga, String ket){
-//        final AlertDialog dialogBuilder = new AlertDialog.Builder(this).create();
-//        LayoutInflater inflater = this.getLayoutInflater();
-//        View dialogView = inflater.inflate(R.layout.dialog_edit_produk, null);
-//
-//        final EditText etNama, etKeterangan, etHarga;
-//        final Button btnSimpan;
-//        final ImageView ivGambarLama, ivTambahGambar;
-//
-//        etNama = (EditText) dialogView.findViewById(R.id.etNama);
-//        etKeterangan = (EditText) dialogView.findViewById(R.id.etKeterangan);
-//        etHarga = (EditText) dialogView.findViewById(R.id.etHarga);
-//
-//        btnSimpan = (Button) dialogView.findViewById(R.id.btnSimpan);
-//
-//        ivGambarLama = (ImageView)dialogView.findViewById(R.id.ivGambarLama);
-//        ivGambarBaru = (ImageView)dialogView.findViewById(R.id.ivGambarBaru);
-//        ivTambahGambar = (ImageView)dialogView.findViewById(R.id.ivTambahGambar);
-//
-//        btnSimpan.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                e_nama = etNama.getText().toString();
-//                e_harga = etHarga.getText().toString().replace(".", "");
-//                e_ket = etKeterangan.getText().toString();
-//                e_id = id_barang;
-//                e_gambar_lama = url_image;
-//
-//                if(e_nama.trim().equalsIgnoreCase("")){
-//                    etNama.requestFocus();
-//                    etNama.setError("Silahkan isi form ini !");
-//                }else if(e_harga.trim().equalsIgnoreCase("")){
-//                    etHarga.requestFocus();
-//                    etHarga.setError("Silahkan isi form ini !");
-//                }else if(e_ket.trim().equalsIgnoreCase("")){
-//                    etKeterangan.requestFocus();
-//                    etKeterangan.setError("Silahkan isi form ini !");
-//                }else{
-//                    if(new CheckNetwork().checkingNetwork(MasterProduk.this)){
-//                        UpdateData();
-//                    }else{
-//                        UpdateDataLokal();
-//                    }
-//                    dialogBuilder.dismiss();
-//                }
-//
-//            }
-//        });
-//
-//        String originalString = harga;
-//
-//        Long longval;
-//        if (originalString.contains(".")) {
-//            originalString = originalString.replace(".", "");
-//        }
-//        longval = Long.parseLong(originalString);
-//
-//        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-//        formatter.applyPattern("#,###,###,###");
-//        String formattedString = formatter.format(longval);
-//
-//        //setting text after format to EditText
-//        etHarga.setText(formattedString.replace(",", "."));
-//        etHarga.setSelection(etHarga.getText().length());
-//
-//        etNama.setText(nama_barang);
-//        etKeterangan.setText(ket);
-//
-//        etHarga.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//                etHarga.removeTextChangedListener(this);
-//
-//                try {
-//                    String originalString = s.toString();
-//
-//                    Long longval;
-//                    if (originalString.contains(".")) {
-//                        originalString = originalString.replace(".", "");
-//                    }
-//                    longval = Long.parseLong(originalString);
-//
-//                    DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-//                    formatter.applyPattern("#,###,###,###");
-//                    String formattedString = formatter.format(longval);
-//
-//                    //setting text after format to EditText
-//                    etHarga.setText(formattedString.replace(",", "."));
-//                    etHarga.setSelection(etHarga.getText().length());
-//
-//                } catch (NumberFormatException nfe) {
-//                    nfe.printStackTrace();
-//                }
-//
-//                etHarga.addTextChangedListener(this);
-//                // TODO Auto-generated method stub
-//            }
-//        });
-//
-//        if(new CheckNetwork().checkingNetwork(MasterProduk.this)){
-//            Glide.with(ivGambarLama.getContext()).load(Url.serverFoto+url_image)
-//                    .placeholder(R.mipmap.ic_foto)
-//                    .centerCrop()
-//                    .fitCenter()
-//                    .listener(new RequestListener<Drawable>() {
-//                        @Override
-//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-//                            Log.e("xmx1","Error "+e.toString());
-//                            return false;
-//                        }
-//
-//                        @Override
-//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-//                            Log.e("xmx1","no Error ");
-//                            return false;
-//                        }
-//                    })
-//                    .into(ivGambarLama);
-//        }else{
-//            Glide.with(ivGambarLama.getContext()).load(new File(url_image).toString())
-//                    .placeholder(R.mipmap.ic_foto)
-//                    .centerCrop()
-//                    .fitCenter()
-//                    .listener(new RequestListener<Drawable>() {
-//                        @Override
-//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-//                            Log.e("xmx1","Error "+e.toString());
-//                            return false;
-//                        }
-//
-//                        @Override
-//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-//                            Log.e("xmx1","no Error ");
-//                            return false;
-//                        }
-//                    })
-//                    .into(ivGambarLama);
-//        }
-//
-//
-//        ivGambarLama.setVisibility(View.VISIBLE);
-//
-//        ivTambahGambar.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-//                if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-//                    wallpaperDirectory.mkdirs();
-//                }
-//                AlertDialog.Builder builder = new AlertDialog.Builder(MasterProduk.this);
-//                builder.setMessage("Pilihan Tambah Foto")
-//                        .setPositiveButton("Galeri", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//
-//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                                    if (checkSelfPermission(Manifest.permission.CAMERA)
-//                                            != PackageManager.PERMISSION_GRANTED) {
-//                                        requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                                                MY_CAMERA_PERMISSION_CODE);
-//                                        //showFileChooser();
-//                                    } else {
-//                                        wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-//                                        if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-//                                            wallpaperDirectory.mkdirs();
-//                                        }
-//
-//                                        showFileChooser();
-//                                        status = "e";
-//                                    }
-//                                } else {
-//                                    wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-//                                    if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-//                                        wallpaperDirectory.mkdirs();
-//                                    }
-//
-//                                    showFileChooser();
-//                                    status = "e";
-//                                }
-//                            }
-//                        })
-//                        .setNegativeButton("Kamera", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                                    if (checkSelfPermission(Manifest.permission.CAMERA)
-//                                            != PackageManager.PERMISSION_GRANTED) {
-//                                        requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                                                MY_CAMERA_PERMISSION_CODE);
-//                                        //showFileChooser();
-//                                    } else {
-//                                        wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-//                                        if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-//                                            wallpaperDirectory.mkdirs();
-//                                        }
-//
-//                                        Calendar cal = Calendar.getInstance();
-//                                        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault());
-//                                        tempNameFile = "Cam_"+sdf.format(cal.getTime())+".jpg";
-//                                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                                        File f = new File(wallpaperDirectory, tempNameFile);
-//                                        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-//                                                BuildConfig.APPLICATION_ID + ".provider",
-//                                                f);
-//                                        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-//                                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-//
-//                                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-//                                        status = "e";
-//                                    }
-//                                } else {
-//                                    wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-//                                    if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-//                                        wallpaperDirectory.mkdirs();
-//                                    }
-//
-//                                    Calendar cal = Calendar.getInstance();
-//                                    SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault());
-//                                    tempNameFile = "Cam_"+sdf.format(cal.getTime())+".jpg";
-//                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                                    File f = new File(wallpaperDirectory, tempNameFile);
-//                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-//                                    startActivityForResult(intent, CAMERA_REQUEST);
-//                                    status = "e";
-//                                }
-//
-//                            }
-//                        });
-//                AlertDialog alert = builder.create();
-//                alert.show();
-//            }
-//        });
-//
-//
-//        dialogBuilder.setView(dialogView);
-//        dialogBuilder.show();
-//    }
 
     private void requestMultiplePermissions() {
         Dexter.withActivity(this)
@@ -933,7 +482,7 @@ public class MasterProduk extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == this.RESULT_CANCELED){
+        if(resultCode == RESULT_CANCELED){
             return;
         }
         if(requestCode == FILE_SELECT_CODE){

@@ -39,31 +39,5 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:visibility="invisible"
-        android:layout_margin="@dimen/fab_margin">
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            app:backgroundTint="#009688"
-            android:src="@drawable/ic_upload_data"/>
-        <TextView
-            android:id="@+id/text_count"
-            android:layout_width="19dp"
-            android:layout_height="19dp"
-            android:textSize="11sp"
-            android:elevation="10dp"
-            android:gravity="center"
-            android:textColor="#fff"
-            android:background="@drawable/news_bottom_nav_bg"
-            android:layout_alignParentRight="true"
-            tools:text="1" />
-    </RelativeLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
