@@ -85,6 +85,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ServerFragment extends Fragment {
+
     // The onCreateView method is called when Fragment should create its View object hierarchy,
     // either dynamically or via XML layout inflation.
     @Override
@@ -99,10 +100,11 @@ public class ServerFragment extends Fragment {
     SharedPreferences sharedPreferences;
     RecyclerView rvProduk;
     private AdapterProduk adapterProduk;
-    private List<ItemProduk> itemProduks = new ArrayList<>();
+    private final List<ItemProduk> itemProduks = new ArrayList<>();
     int RecyclerViewClickedItemPos;
     View ChildView;
     TextView tvKet;
+    private String idTmpUsaha = "-1";
 
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -129,6 +131,7 @@ public class ServerFragment extends Fragment {
         // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
 
         sharedPreferences = getContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+        idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
         databaseHandler = new DatabaseHandler(getContext());
         rvProduk = (RecyclerView)view.findViewById(R.id.rvProduk);
         tvKet = (TextView)view.findViewById(R.id.tvKet);
@@ -213,7 +216,8 @@ public class ServerFragment extends Fragment {
 
                                 JSONObject jO = jsonArray.getJSONObject(i);
                                 ItemProduk id = new ItemProduk();
-                                id.setId_barang(jO.getString("ID_BARANG"));
+                                String idBarang = jO.getString("ID_BARANG");
+                                id.setId_barang(idBarang);
                                 id.setNama_barang(jO.getString("NM_BARANG"));
                                 id.setUrl_image(jO.getString("FOTO"));
                                 id.setHarga(jO.getString("HARGA"));
@@ -222,6 +226,8 @@ public class ServerFragment extends Fragment {
 
                                 Log.d("NM_BARANG", jO.getString("NM_BARANG"));
 
+                                if(databaseHandler.CountDataProdukId(Integer.parseInt(idBarang)) == 0)
+                                    tambahDataLokal(id);
                                 itemProduks.add(id);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -243,12 +249,9 @@ public class ServerFragment extends Fragment {
 
 
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
+        }, error -> {
+            progressDialog.dismiss();
+            Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
         }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -270,12 +273,23 @@ public class ServerFragment extends Fragment {
             }
 
             @Override
-            public void retry(VolleyError error) throws VolleyError {
+            public void retry(VolleyError error) {
 
             }
         });
 
         queue.add(stringRequest);
+    }
+
+    private void tambahDataLokal(ItemProduk itemProduk) {
+        try {
+            databaseHandler.insert_produk(new com.dnhsolution.restokabmalang.database.ItemProduk(
+                    0, idTmpUsaha,itemProduk.getNama_barang()
+                    ,itemProduk.getHarga(),itemProduk.getKeterangan(),itemProduk.getUrl_image(),"0"
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void DialogEdit(String url_image, String nama_barang, String id_barang, String harga, String ket){
@@ -425,7 +439,6 @@ public class ServerFragment extends Fragment {
                     })
                     .into(ivGambarLama);
         }
-
 
         ivGambarLama.setVisibility(View.VISIBLE);
 
@@ -782,6 +795,8 @@ public class ServerFragment extends Fragment {
                     File fl = new File(e_nama_file);
                     boolean deleted = fl.delete();
                     e_nama_file = "";
+
+                    updateDataLokal();
                     getData();
                 }else if(s.equalsIgnoreCase("gagal")){
                     if (progressdialog.isShowing())
@@ -840,5 +855,14 @@ public class ServerFragment extends Fragment {
         adapterProduk.notifyDataSetChanged();
     }
 
+    private void updateDataLokal() {
+        try {
+            databaseHandler.update_produk(new com.dnhsolution.restokabmalang.database.ItemProduk(
+                    Integer.parseInt(e_id), idTmpUsaha,e_nama,e_harga,e_ket,e_gambar_lama,"0"
+            ));
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

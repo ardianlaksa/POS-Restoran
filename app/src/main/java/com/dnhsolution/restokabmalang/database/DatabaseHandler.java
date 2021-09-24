@@ -1,4 +1,5 @@
 package com.dnhsolution.restokabmalang.database;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -203,6 +204,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
 
+    public int CountDataProdukId(int value) {
+        String countQuery = "SELECT * FROM "+ TABLE_PRODUK + "WHERE "+col_id+"="+value;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
     //GET DATA
     public ArrayList getDataTersimpan() {
         ArrayList list = new ArrayList();
@@ -381,8 +391,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //String today = getCurrentDate();
 
         ContentValues values = new ContentValues();
-
-
         values.put(col_nama_produk, ip.getNama_produk());
         values.put(col_harga, ip.getHarga());
         values.put(col_keterangan, ip.getKeterangan());

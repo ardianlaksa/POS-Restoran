@@ -45,7 +45,7 @@ import kotlin.collections.ArrayList
 class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
     SistemMasterOnTask {
 
-    private val idTmpUsaha: String = "111"
+    private var idTmpUsaha: String? = null
     private val folderName = "POS_Resto"
 
     companion object {
@@ -59,22 +59,29 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var sharedPreferences: SharedPreferences
-        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "-1") ?: "-1"
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
-        if (tema!!.equals("0", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_First)
-        } else if (tema.equals("1", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Second)
-        } else if (tema.equals("2", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Third)
-        } else if (tema.equals("3", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Fourth)
-        } else if (tema.equals("4", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Fifth)
-        } else if (tema.equals("5", ignoreCase = true)) {
-            this@SistemMasterActivity.setTheme(R.style.Theme_Sixth)
+        when {
+            tema!!.equals("0", ignoreCase = true) -> {
+                this@SistemMasterActivity.setTheme(R.style.Theme_First)
+            }
+            tema.equals("1", ignoreCase = true) -> {
+                this@SistemMasterActivity.setTheme(R.style.Theme_Second)
+            }
+            tema.equals("2", ignoreCase = true) -> {
+                this@SistemMasterActivity.setTheme(R.style.Theme_Third)
+            }
+            tema.equals("3", ignoreCase = true) -> {
+                this@SistemMasterActivity.setTheme(R.style.Theme_Fourth)
+            }
+            tema.equals("4", ignoreCase = true) -> {
+                this@SistemMasterActivity.setTheme(R.style.Theme_Fifth)
+            }
+            tema.equals("5", ignoreCase = true) -> {
+                this@SistemMasterActivity.setTheme(R.style.Theme_Sixth)
+            }
         }
         setContentView(R.layout.activity_master_sistem)
         setSupportActionBar(toolbar)
@@ -149,7 +156,7 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
         if(CheckNetwork().checkingNetwork(it.context)) {
             val jmlFile = fileArray.size
             val params = HashMap<String, String>()
-            params["ID_TEMPAT_USAHA"] = idTmpUsaha
+            params["ID_TEMPAT_USAHA"] = idTmpUsaha.toString()
             params["NM_BARANG"] = nmBarang
             params["HARGA"] = harga.toString()
             params["KETERANGAN"] = keterangan

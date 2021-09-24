@@ -81,7 +81,6 @@ import java.util.*;
 
 public class MasterProduk extends AppCompatActivity {
 
-
     SharedPreferences sharedPreferences;
     RecyclerView rvProduk;
     private AdapterProduk adapterProduk;
@@ -159,15 +158,10 @@ public class MasterProduk extends AppCompatActivity {
                 "Icon panah kanan & kiri hijau menandakan status data produk sudah tersinkron.\n" +
                 "Icon refresh kuning menandakan status data produk butuh disinkron.");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                (dialog, which) -> dialog.dismiss());
         alertDialog.show();
 
         MainActivity.Companion.setAdMasterProduk(1);
-
     }
 
     @Override
@@ -554,10 +548,7 @@ public class MasterProduk extends AppCompatActivity {
 
                     ivGambarBaru.setVisibility(View.VISIBLE);
 
-                    if(e_nama_file.equalsIgnoreCase("")){
-
-                    }
-                    else{
+                    if(!e_nama_file.equalsIgnoreCase("")){
                         File fl = new File(e_nama_file);
                         boolean deleted = fl.delete();
                     }
@@ -585,10 +576,7 @@ public class MasterProduk extends AppCompatActivity {
 
                     ivGambar.setVisibility(View.VISIBLE);
 
-                    if(t_nama_file.equalsIgnoreCase("")){
-
-                    }
-                    else{
+                    if(!t_nama_file.equalsIgnoreCase("")) {
                         File fl = new File(t_nama_file);
                         boolean deleted = fl.delete();
                     }
@@ -607,13 +595,10 @@ public class MasterProduk extends AppCompatActivity {
                     if (temp.getName().equals(tempNameFile)) {
                         f = temp;
                         File filePhoto = new File(wallpaperDirectory.toString(), tempNameFile);
-                        //pic = photo;
 
                         int file_size = Integer.parseInt(String.valueOf(filePhoto.length() / 1024));
 
                         Log.d("PirangMB", String.valueOf(file_size));
-                        //tvFileName.setVisibility(View.VISIBLE);
-                        // ivBerkas.setVisibility(View.VISIBLE);
                         if(status.equalsIgnoreCase("e")){
                             Glide.with(ivGambarBaru.getContext()).load(new File(f.getAbsolutePath()).toString())
                                     .placeholder(R.mipmap.ic_foto)
@@ -635,10 +620,7 @@ public class MasterProduk extends AppCompatActivity {
                                     .into(ivGambarBaru);
 
                             ivGambarBaru.setVisibility(View.VISIBLE);
-                            if(e_nama_file.equalsIgnoreCase("")){
-
-                            }
-                            else{
+                            if(!e_nama_file.equalsIgnoreCase("")){
                                 File fl = new File(e_nama_file);
                                 boolean deleted = fl.delete();
                             }
@@ -665,10 +647,7 @@ public class MasterProduk extends AppCompatActivity {
                                     .into(ivGambar);
                             ivGambar.setVisibility(View.VISIBLE);
 
-                            if(t_nama_file.equalsIgnoreCase("")){
-
-                            }
-                            else{
+                            if(!t_nama_file.equalsIgnoreCase("")){
                                 File fl = new File(t_nama_file);
                                 boolean deleted = fl.delete();
                             }
@@ -847,29 +826,5 @@ public class MasterProduk extends AppCompatActivity {
         }
         TambahData uv = new TambahData();
         uv.execute();
-    }
-
-    private void TambahDataLokal() {
-        try {
-            String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-
-            databaseHandler.insert_produk(new com.dnhsolution.restokabmalang.database.ItemProduk(
-                    0, id_tmp_usaha,t_nama,t_harga,t_ket,t_nama_file,"0"
-            ));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(databaseHandler.equals("")){
-            Toast.makeText(getApplicationContext(),"Gagal Menyimpan ! ", Toast.LENGTH_LONG).show();
-        } else {
-            t_nama_file = "";
-//            Fragment fragment = new LokalFragment();
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.view_pager, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
-            startActivity(new Intent(getApplicationContext(), MasterProduk.class));
-            MasterProduk.this.finish();
-            Toast.makeText(getApplicationContext(), "Berhasil Menyimpan Data Baru ! ", Toast.LENGTH_LONG).show();
-        }
     }
 }

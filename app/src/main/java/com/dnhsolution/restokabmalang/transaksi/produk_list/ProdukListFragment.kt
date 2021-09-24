@@ -31,6 +31,7 @@ import com.dnhsolution.restokabmalang.utilities.Url
 import kotlinx.android.synthetic.main.fragment_produk_list.*
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
@@ -98,16 +99,20 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
         if(MainActivity.adTransaksi == 1) return
 
+        tampilAlertDialogTutorial()
+
+        MainActivity.adTransaksi = 1
+    }
+
+    private fun tampilAlertDialogTutorial(){
         val alertDialog = AlertDialog.Builder(requireContext()).create()
         alertDialog.setTitle("Tutorial")
         alertDialog.setMessage("1. Pilih produk yang akan digunakan untuk transaksi\n" +
                 "2. Tap lanjut di kanan atas untuk mulai transaksi")
         alertDialog.setButton(
             AlertDialog.BUTTON_NEUTRAL, "OK"
-        ) { dialog, which -> dialog.dismiss() }
+        ) { dialog, _ -> dialog.dismiss() }
         alertDialog.show()
-
-        MainActivity.adTransaksi = 1
     }
 
     override fun produkOnTask(result: String?) {
@@ -154,6 +159,24 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         } catch (e: JSONException) {
             e.printStackTrace()
             Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun tambahDataLokal(itemProduk: ItemProduk) {
+        try {
+            databaseHandler!!.insert_produk(
+                com.dnhsolution.restokabmalang.database.ItemProduk(
+                    0,
+                    idTmpUsaha,
+                    itemProduk.nama_barang,
+                    itemProduk.harga,
+                    itemProduk.keterangan,
+                    itemProduk.url_image,
+                    "0"
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -244,7 +267,10 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     startActivity(intent)
                 }
                 true
-            } else -> super.onOptionsItemSelected(item)
+            } R.id.action_menu_bantuan -> {
+                tampilAlertDialogTutorial()
+                true
+            }else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -314,8 +340,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         dialogBuilder.show()
     }
 
-    fun sendData() {
-
+    private fun sendData() {
         val progressDialog = ProgressDialog(context)
         progressDialog.setMessage("Loading...")
         progressDialog.show()
@@ -330,39 +355,43 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     val jsonArray = jsonObject.getJSONArray("result")
                     var json = jsonArray.getJSONObject(0)
                     val pesan = json.getString("pesan")
-                    if (pesan.equals("0", ignoreCase = true)) {
-                        Toast.makeText(
-                            context,
-                            "Gagal Melengkapi data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else if (pesan.equals("1", ignoreCase = true)) {
-                        Toast.makeText(
-                            context,
-                            "Sukses Melengkapi data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        val sharedPreferences =
-                            requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+                    when {
+                        pesan.equals("0", ignoreCase = true) -> {
+                            Toast.makeText(
+                                context,
+                                "Gagal Melengkapi data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        pesan.equals("1", ignoreCase = true) -> {
+                            Toast.makeText(
+                                context,
+                                "Sukses Melengkapi data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            val sharedPreferences =
+                                requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
 
-                        //membuat editor untuk menyimpan data ke shared preferences
-                        val editor = sharedPreferences.edit()
+                            //membuat editor untuk menyimpan data ke shared preferences
+                            val editor = sharedPreferences.edit()
 
-                        //menambah data ke editor
-                        editor.putString(Url.SESSION_NAMA_TEMPAT_USAHA, nama)
-                        editor.putString(Url.SESSION_ALAMAT, alamat)
-                        editor.putString(Url.SESSION_EMAIL, email)
-                        editor.putString(Url.SESSION_TELP, telp)
-                        editor.putString(Url.SESSION_KELENGKAPAN, "1")
+                            //menambah data ke editor
+                            editor.putString(Url.SESSION_NAMA_TEMPAT_USAHA, nama)
+                            editor.putString(Url.SESSION_ALAMAT, alamat)
+                            editor.putString(Url.SESSION_EMAIL, email)
+                            editor.putString(Url.SESSION_TELP, telp)
+                            editor.putString(Url.SESSION_KELENGKAPAN, "1")
 
-                        //menyimpan data ke editor
-                        editor.apply()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Jaringan masih sibuk !",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            //menyimpan data ke editor
+                            editor.apply()
+                        }
+                        else -> {
+                            Toast.makeText(
+                                context,
+                                "Jaringan masih sibuk !",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -376,14 +405,14 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             }) {
             override fun getParams(): Map<String, String> {
                 val params = HashMap<String, String>()
-                var sharedPreferences: SharedPreferences
-                sharedPreferences = context!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-                val id_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "null")
+                val sharedPreferences: SharedPreferences =
+                    context!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+                val idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "-1")
                 params["alamat"] = alamat
                 params["nama_usaha"] = nama
                 params["email"] = email
                 params["telp"] = telp
-                params["id_pengguna"] = id_pengguna
+                params["id_pengguna"] = idPengguna
 
                 return params
             }
