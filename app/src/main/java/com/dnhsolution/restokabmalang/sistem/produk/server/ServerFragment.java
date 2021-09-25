@@ -1,6 +1,7 @@
 package com.dnhsolution.restokabmalang.sistem.produk.server;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -105,6 +106,7 @@ public class ServerFragment extends Fragment {
     View ChildView;
     TextView tvKet;
     private String idTmpUsaha = "-1";
+    private final String _tag = getClass().getSimpleName();
 
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -200,55 +202,49 @@ public class ServerFragment extends Fragment {
         Log.d("ID_TEMPAT_USAHA", id_tempat_usaha);
         String url = Url.serverPos+"getProduk?idTmpUsaha="+id_tempat_usaha;
         //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
+        Log.i(_tag, url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
 
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    int status = jsonObject.getInt("success");
-                    JSONArray jsonArray = jsonObject.getJSONArray("result");
-                    JSONObject json = jsonArray.getJSONObject(0);
-                    if(status == 1){
-                        int i;
-                        for (i = 0; i < jsonArray.length(); i++) {
-                            try {
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                int status = jsonObject.getInt("success");
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                JSONObject json = jsonArray.getJSONObject(0);
+                if(status == 1){
+                    int i;
+                    for (i = 0; i < jsonArray.length(); i++) {
+                        try {
 
-                                JSONObject jO = jsonArray.getJSONObject(i);
-                                ItemProduk id = new ItemProduk();
-                                String idBarang = jO.getString("ID_BARANG");
-                                id.setId_barang(idBarang);
-                                id.setNama_barang(jO.getString("NM_BARANG"));
-                                id.setUrl_image(jO.getString("FOTO"));
-                                id.setHarga(jO.getString("HARGA"));
-                                id.setKeterangan(jO.getString("KETERANGAN"));
-                                id.setStatus(true);
+                            JSONObject jO = jsonArray.getJSONObject(i);
+                            ItemProduk id = new ItemProduk();
+                            String idBarang = jO.getString("ID_BARANG");
+                            id.setId_barang(idBarang);
+                            id.setNama_barang(jO.getString("NM_BARANG"));
+                            id.setUrl_image(jO.getString("FOTO"));
+                            id.setHarga(jO.getString("HARGA"));
+                            id.setKeterangan(jO.getString("KETERANGAN"));
+                            id.setStatus(true);
 
-                                Log.d("NM_BARANG", jO.getString("NM_BARANG"));
+                            Log.d("NM_BARANG", jO.getString("NM_BARANG"));
 
-                                if(databaseHandler.CountDataProdukId(Integer.parseInt(idBarang)) == 0)
-                                    tambahDataLokal(id);
-                                itemProduks.add(id);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                progressDialog.dismiss();
-                            }
+                            if(databaseHandler.CountDataProdukId(Integer.parseInt(idBarang)) == 0)
+                                tambahDataLokal(id);
+                            itemProduks.add(id);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            progressDialog.dismiss();
                         }
-
-
-
-                    }else{
-                        Toast.makeText(getContext(), "Jaringan masih sibuk !", Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }else{
+                    Toast.makeText(getContext(), "Jaringan masih sibuk !", Toast.LENGTH_SHORT).show();
                 }
-                //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();
-                adapterProduk.notifyDataSetChanged();
-                progressDialog.dismiss();
-
-
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();
+            adapterProduk.notifyDataSetChanged();
+            progressDialog.dismiss();
+
         }, error -> {
             progressDialog.dismiss();
             Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
@@ -284,7 +280,7 @@ public class ServerFragment extends Fragment {
     private void tambahDataLokal(ItemProduk itemProduk) {
         try {
             databaseHandler.insert_produk(new com.dnhsolution.restokabmalang.database.ItemProduk(
-                    0, idTmpUsaha,itemProduk.getNama_barang()
+                    Integer.parseInt(itemProduk.getId_barang()), idTmpUsaha,itemProduk.getNama_barang()
                     ,itemProduk.getHarga(),itemProduk.getKeterangan(),itemProduk.getUrl_image(),"0"
             ));
         } catch (Exception e) {
@@ -672,7 +668,7 @@ public class ServerFragment extends Fragment {
 
             }
         }else if(requestCode == CAMERA_REQUEST){
-            if (resultCode == getActivity().RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 System.out.println("CAMERA_REQUEST1");
 //                        Bitmap photo = (Bitmap) data.getExtras().get("data");
                 File f = new File(wallpaperDirectory.toString());

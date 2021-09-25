@@ -22,7 +22,8 @@
             android:layout_height="?attr/actionBarSize"
             android:elevation="@dimen/_4"
             android:overScrollMode="always"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            android:theme="@style/ToolbarTheme"
+            app:titleTextColor="@android:color/white"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

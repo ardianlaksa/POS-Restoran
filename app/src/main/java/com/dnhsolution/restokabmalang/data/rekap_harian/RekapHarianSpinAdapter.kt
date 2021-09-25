@@ -25,10 +25,6 @@ class RekapHarianSpinAdapter(context: Context, @LayoutRes resource: Int, list: A
         return createItemView(position, convertView, parent)
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
-        return createItemView(position, convertView, parent)
-    }
-
     private fun createItemView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         val holder: ViewHolder
         val retView: View?

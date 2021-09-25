@@ -14,8 +14,9 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Data Kosong !"
-        android:textSize="17dp"/>
+        android:fontFamily="@font/sinethar"
+        android:text="@string/data_kosong"
+        android:textSize="@dimen/f_16"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvData"
@@ -24,6 +25,6 @@
         android:overScrollMode="never"
         android:layout_height="wrap_content"
         android:paddingLeft="5dp"
-        android:paddingRight="5dp"></androidx.recyclerview.widget.RecyclerView>
+        android:paddingRight="5dp"/>
 
 </LinearLayout>

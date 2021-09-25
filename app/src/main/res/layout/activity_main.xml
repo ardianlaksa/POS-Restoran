@@ -24,7 +24,8 @@
             android:layout_height="?attr/actionBarSize"
             android:elevation="@dimen/_4"
             android:overScrollMode="always"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            android:theme="@style/ToolbarTheme"
+            app:titleTextColor="@android:color/white"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -55,7 +56,9 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_nav_menu"/>
+            app:menu="@menu/bottom_nav_menu"
+            app:itemTextAppearanceActive="@style/ToolbarTheme"
+            app:itemTextAppearanceInactive="@style/ToolbarTheme"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

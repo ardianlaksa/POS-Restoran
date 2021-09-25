@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -77,22 +78,6 @@ public class ProdukListAdapter extends BaseAdapter {
   public View getView(int position, View convertView, ViewGroup parent) {
     final ProdukListElement book = books.get(position);
 
-    // standard implementation (should start with this)
-//    if (convertView == null) {
-//      final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-//      convertView = layoutInflater.inflate(R.layout.linearlayout_book, null);
-//    }
-//
-//    final ImageView imageView = (ImageView)convertView.findViewById(R.id.imageview_cover_art);
-//    final TextView nameTextView = (TextView)convertView.findViewById(R.id.textview_book_name);
-//    final TextView authorTextView = (TextView)convertView.findViewById(R.id.textview_book_author);
-//    final ImageView imageViewFavorite = (ImageView)convertView.findViewById(R.id.imageview_favorite);
-//
-//    imageView.setImageResource(book.getImageResource());
-//    nameTextView.setText(mContext.getString(book.getName()));
-//    authorTextView.setText(mContext.getString(book.getAuthor()));
-//    imageViewFavorite.setImageResource(book.getIsFavorite() ? R.drawable.star_enabled : R.drawable.star_disabled);
-
     // view holder pattern
     if (convertView == null) {
       final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -116,26 +101,24 @@ public class ProdukListAdapter extends BaseAdapter {
     viewHolder.authorTextView.setText(priceValue);
     viewHolder.imageViewFavorite.setImageResource(book.isFavorite() ? R.drawable.ic_baseline_check_circle_24_dark_green : R.drawable.ic_baseline_check_circle_24_gray);
     viewHolder.descriptionTextView.setText(book.getDescription());
-    String url="";
-    if(book.getStatus().equalsIgnoreCase("server")) {
-      url = Url.serverFoto+book.getImageUrl();
-    } else {
-      url = new File(book.getImageUrl()).toString();
+    String url = Url.serverFoto+book.getImageUrl();
 
-    }
     Glide.with(viewHolder.imageViewCoverArt.getContext()).load(url)
+            .override(512,512)
             .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.DATA)
             .fitCenter()
             .listener(new RequestListener<Drawable>() {
               @Override
               public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                Log.e("xmx1","Error "+e.toString());
+                Log.e("onLoadFailed","Error "+e);
+//                viewHolder.imageViewCoverArt.setImageDrawable(mContext.getResources().getDrawable(R.drawable.img_no_image));
                 return false;
               }
 
               @Override
               public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                Log.e("xmx1","no Error ");
+                Log.e("onResourceReady","no Error ");
                 return false;
               }
             })

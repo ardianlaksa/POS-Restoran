@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.RequestListener;
@@ -66,14 +67,18 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.MyViewHold
 
         holder.nama.setText(itemProduk.getNama_barang());
 
-        if(new CheckNetwork().checkingNetwork(context)){
-            Glide.with(holder.ivFoto.getContext()).load(Url.serverFoto+itemProduk.getUrl_image())
+//        if(new CheckNetwork().checkingNetwork(context)){
+            String url = Url.serverFoto+itemProduk.getUrl_image();
+            Glide.with(holder.ivFoto.getContext()).load(url)
+                    .override(512,512)
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
                     .centerCrop()
                     .fitCenter()
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            Log.e("xmx1","Error "+e.toString());
+                            Log.e("xmx1","Error "+e);
+//                            holder.ivFoto.setImageDrawable(context.getResources().getDrawable(R.drawable.img_no_image));
                             return false;
                         }
 
@@ -84,25 +89,25 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.MyViewHold
                         }
                     })
                     .into(holder.ivFoto);
-        }else{
-            Glide.with(holder.ivFoto.getContext()).load(new File(itemProduk.getUrl_image()).toString())
-                    .centerCrop()
-                    .fitCenter()
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            Log.e("xmx1","Error "+e.toString());
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            Log.e("xmx1","no Error ");
-                            return false;
-                        }
-                    })
-                    .into(holder.ivFoto);
-        }
+//        }else{
+//            Glide.with(holder.ivFoto.getContext()).load(new File(itemProduk.getUrl_image()).toString())
+//                    .centerCrop()
+//                    .fitCenter()
+//                    .listener(new RequestListener<Drawable>() {
+//                        @Override
+//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                            Log.e("xmx1","Error "+e.toString());
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                            Log.e("xmx1","no Error ");
+//                            return false;
+//                        }
+//                    })
+//                    .into(holder.ivFoto);
+//        }
 
 
     }

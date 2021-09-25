@@ -116,24 +116,17 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
                 builder.setPositiveButton(
                         "Ya",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                if(new CheckNetwork().checkingNetwork(getApplicationContext())){
-                                    SendData();
-                                }else{
-                                    Toast.makeText(DataTersimpanActivity.this, "Tidak ada koneksi internet !", Toast.LENGTH_SHORT).show();
-                                }
-
+                        (dialog, id) -> {
+                            if(new CheckNetwork().checkingNetwork(getApplicationContext())){
+                                SendData();
+                            }else{
+                                Toast.makeText(DataTersimpanActivity.this, "Tidak ada koneksi internet !", Toast.LENGTH_SHORT).show();
                             }
                         });
 
                 builder.setNegativeButton(
                         "Tidak",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+                        (dialog, id) -> dialog.cancel());
 
                 AlertDialog alert = builder.create();
                 alert.show();
@@ -245,13 +238,11 @@ public class DataTersimpanActivity extends AppCompatActivity {
                     Log.d("HASIL_JSON", jsonObject.getString("message"));
                     if(hasil.equalsIgnoreCase("Berhasil.")){
                         if(datax==jml_data){
-                            sendNotification(String.valueOf(datax)+" data berhasil diupload !");
+                            sendNotification(datax +" data berhasil diupload !");
                             if (progressdialog.isShowing())
                                 progressdialog.dismiss();
 
                             Log.d("INFORMASI", "suksesUpload: ");
-                        }else{
-
                         }
 
                     }else if(hasil.equalsIgnoreCase("Gagal.")){
@@ -262,10 +253,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
                         if (progressdialog.isShowing())
                             progressdialog.dismiss();
                         Log.d("INFORMASI", "gagalUpload: "+s);
-//                    String ns = Context.NOTIFICATION_SERVICE;
-//                    NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(ns);
-//                    nMgr.cancel(1);
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -325,7 +312,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
                             databaseHandler.updateDataTersimpan(new ItemTersimpan(
                                     f.getId(),
                                     "1"
-
                             ));
                         }else{
                             Log.d("INFO_PENTING", "doInBackground: "+msg);
@@ -334,7 +320,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
                         cancel(true);
                         e.printStackTrace();
                     }
-
                 }
 
                 return msg;
@@ -474,7 +459,7 @@ public class DataTersimpanActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), DataTersimpanActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         builder.setContentIntent(pendingIntent);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_logo));
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.logo_sipanji));
         String app_name = String.valueOf(R.string.app_name);
         builder.setContentTitle(app_name);
         builder.setContentText(message);
@@ -485,26 +470,4 @@ public class DataTersimpanActivity extends AppCompatActivity {
         // Will display the notification in the notification bar
         notificationManager.notify(1, builder.build());
     }
-
-//    private void scheduleNotification (Notification notification , int delay) {
-//        Intent notificationIntent = new Intent( this, MyNotificationPublisher. class ) ;
-//        notificationIntent.putExtra(MyNotificationPublisher. NOTIFICATION_ID , 1 ) ;
-//        notificationIntent.putExtra(MyNotificationPublisher. NOTIFICATION , notification) ;
-//        PendingIntent pendingIntent = PendingIntent. getBroadcast ( this, 0 , notificationIntent , PendingIntent. FLAG_UPDATE_CURRENT ) ;
-//        long futureInMillis = SystemClock. elapsedRealtime () + delay ;
-//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context. ALARM_SERVICE ) ;
-//        assert alarmManager != null;
-//        alarmManager.set(AlarmManager. ELAPSED_REALTIME_WAKEUP , futureInMillis , pendingIntent) ;
-//    }
-//    private Notification getNotification (String content) {
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder( this, default_notification_channel_id ) ;
-//        builder.setContentTitle( "Scheduled Notification" ) ;
-//        builder.setContentText(content) ;
-//        builder.setSmallIcon(R.drawable.ic_logo ) ;
-//        builder.setAutoCancel( true ) ;
-//        builder.setChannelId( NOTIFICATION_CHANNEL_ID ) ;
-//        return builder.build() ;
-//    }
-
-
 }

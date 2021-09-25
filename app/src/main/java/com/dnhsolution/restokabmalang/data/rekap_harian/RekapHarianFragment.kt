@@ -172,7 +172,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
         ivDate.setOnClickListener(View.OnClickListener {
             // TODO Auto-generated method stub
             DatePickerDialog(
-                context, date, myCalendar
+                requireContext(), date, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()

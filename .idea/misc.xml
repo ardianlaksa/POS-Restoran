@@ -8,9 +8,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/news_bottom_nav_bg.xml" value="0.1625" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_keranjang.xml" value="0.1933876811594203" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main.xml" value="0.1933876811594203" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_master.xml" value="0.1933876811594203" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml" value="0.10157041540020263" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/content_data_tersimpan.xml" value="0.1933876811594203" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_dashboard.xml" value="0.21" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_produk.xml" value="0.10416666666666667" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml" value="0.25" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/bottom_nav_menu.xml" value="0.21296296296296297" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_help.xml" value="0.20564102564102565" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_lanjut.xml" value="0.20885416666666667" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tambah.xml" value="0.22447916666666667" />
       </map>
     </option>
   </component>

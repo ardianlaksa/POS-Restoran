@@ -87,6 +87,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
+        values.put(col_id, ip.getId());
         values.put(col_id_tempat_usaha, ip.getId_tempat_usaha());
         values.put(col_nama_produk, ip.getNama_produk());
         values.put(col_harga, ip.getHarga());
@@ -205,7 +206,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public int CountDataProdukId(int value) {
-        String countQuery = "SELECT * FROM "+ TABLE_PRODUK + "WHERE "+col_id+"="+value;
+        String countQuery = "SELECT * FROM "+ TABLE_PRODUK + " WHERE "+col_id+"="+value;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
@@ -269,6 +270,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 // Menambahkan data ke dalam list
                 list.add(it);
             } while (cursor.moveToNext());
+            cursor.close();
         }
         // return list
         return list;

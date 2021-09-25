@@ -146,38 +146,43 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        var sharedPreferences: SharedPreferences
-
-        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
 
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
 
         val tema = sharedPreferences.getString(Url.setTema, "0")
 
-        if (tema!!.equals("0", ignoreCase = true)) {
+        when {
+            tema!!.equals("0", ignoreCase = true) -> {
 
-            this@MainActivity.setTheme(R.style.Theme_First)
+                this@MainActivity.setTheme(R.style.Theme_First)
 
-        } else if (tema.equals("1", ignoreCase = true)) {
+            }
+            tema.equals("1", ignoreCase = true) -> {
 
-            this@MainActivity.setTheme(R.style.Theme_Second)
+                this@MainActivity.setTheme(R.style.Theme_Second)
 
-        } else if (tema.equals("2", ignoreCase = true)) {
+            }
+            tema.equals("2", ignoreCase = true) -> {
 
-            this@MainActivity.setTheme(R.style.Theme_Third)
+                this@MainActivity.setTheme(R.style.Theme_Third)
 
-        } else if (tema.equals("3", ignoreCase = true)) {
+            }
+            tema.equals("3", ignoreCase = true) -> {
 
-            this@MainActivity.setTheme(R.style.Theme_Fourth)
+                this@MainActivity.setTheme(R.style.Theme_Fourth)
 
-        } else if (tema.equals("4", ignoreCase = true)) {
+            }
+            tema.equals("4", ignoreCase = true) -> {
 
-            this@MainActivity.setTheme(R.style.Theme_Fifth)
+                this@MainActivity.setTheme(R.style.Theme_Fifth)
 
-        } else if (tema.equals("5", ignoreCase = true)) {
+            }
+            tema.equals("5", ignoreCase = true) -> {
 
-            this@MainActivity.setTheme(R.style.Theme_Sixth)
+                this@MainActivity.setTheme(R.style.Theme_Sixth)
 
+            }
         }
 
         if(CheckNetwork().checkingNetwork(this)) {
@@ -186,17 +191,16 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
         }
 
-
         databaseHandler = DatabaseHandler(this)
 
-        val alamat = sharedPreferences?.getString(Url.SESSION_ALAMAT, "0")
-        val email = sharedPreferences?.getString(Url.SESSION_EMAIL, "0")
-        val telp = sharedPreferences?.getString(Url.SESSION_TELP, "0")
-        val namausaha = sharedPreferences?.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+        val email = sharedPreferences.getString(Url.SESSION_EMAIL, "0")
+        val telp = sharedPreferences.getString(Url.SESSION_TELP, "0")
+        val namausaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
         val id_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "null")
-        status_batas = sharedPreferences.getString(Url.SESSION_STATUS_BATAS, "nonaktif")
+        status_batas = sharedPreferences.getString(Url.SESSION_STATUS_BATAS, "nonaktif").toString()
 
-        Log.i("json",alamat+", "+email+", "+telp+", "+namausaha+", "+id_pengguna);
+        Log.i("json", "$alamat, $email, $telp, $namausaha, $id_pengguna");
 
         if(alamat!!.equals("", ignoreCase = true) || email!!.equals("", ignoreCase = true) ||
             telp!!.equals("", ignoreCase = true) || namausaha!!.equals("", ignoreCase = true)){
@@ -209,16 +213,15 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.title = label
 
-        navView = findViewById(R.id.nav_view) as BottomNavigationView
+        navView = findViewById(R.id.nav_view)
 
         navView!!.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         supportFragmentManager.beginTransaction()
-
             .replace(R.id.frameLayout, DashFragment()).commit()
 
         //show badge in icon menu data tersimpan
-        var countDataTersimpan:Int = databaseHandler!!.CountDataTersimpan()
+        val countDataTersimpan:Int = databaseHandler!!.CountDataTersimpan()
 
         if(countDataTersimpan > 0){
             var jml: String = ""
@@ -238,16 +241,16 @@ class MainActivity : AppCompatActivity() {
         )
         cTrx.moveToFirst()
 
-        var jml_trx : Int = databaseHandler!!.CountDataTersimpan()
+        val jml_trx : Int = databaseHandler!!.CountDataTersimpan()
 
         if(jml_trx>0){
-            var batas = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "3")
+            val batas = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "3") ?: "0"
             tgl_trx = formatDate(cTrx.getString(0), "yyyyMMdd")
-            var tgl_now : String = getDateTime().toString()
-            var tgl_batas : String = getDays(tgl_trx, batas.toInt())
+            val tgl_now : String = getDateTime().toString()
+            val tgl_batas : String = getDays(tgl_trx, batas.toInt())
 
             if(tgl_now.toInt() > tgl_batas.toInt()){
-                val sharedPreferences = this!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+                val sharedPreferences = this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
                 editor.putString(Url.SESSION_STATUS_BATAS, "aktif")
                 editor.apply()
@@ -256,7 +259,7 @@ class MainActivity : AppCompatActivity() {
 
 
             }else{
-                val sharedPreferences = this!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+                val sharedPreferences = this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
                 editor.putString(Url.SESSION_STATUS_BATAS, "nonaktif")
                 editor.apply()
@@ -419,14 +422,14 @@ class MainActivity : AppCompatActivity() {
             }) {
             override fun getParams(): Map<String, String> {
                 val params = HashMap<String, String>()
-                var sharedPreferences: SharedPreferences
-                sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-                val id_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "null")
+                val sharedPreferences: SharedPreferences =
+                    getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+                val id_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "-1")
                 params["alamat"] = alamat
                 params["nama_usaha"] = nama
                 params["email"] = email
                 params["telp"] = telp
-                params["id_pengguna"] = id_pengguna
+                params["id_pengguna"] = id_pengguna.toString()
 
                 return params
             }

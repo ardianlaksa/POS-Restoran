@@ -31,7 +31,6 @@ import com.dnhsolution.restokabmalang.utilities.Url
 import kotlinx.android.synthetic.main.fragment_produk_list.*
 import org.json.JSONException
 import org.json.JSONObject
-import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
@@ -162,30 +161,11 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         }
     }
 
-    private fun tambahDataLokal(itemProduk: ItemProduk) {
-        try {
-            databaseHandler!!.insert_produk(
-                com.dnhsolution.restokabmalang.database.ItemProduk(
-                    0,
-                    idTmpUsaha,
-                    itemProduk.nama_barang,
-                    itemProduk.harga,
-                    itemProduk.keterangan,
-                    itemProduk.url_image,
-                    "0"
-                )
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     private fun getDataLokal() {
         produks.clear()
-        produkAdapter?.notifyDataSetChanged()
 
-        val jml_data = databaseHandler!!.CountDataProduk()
-        if (jml_data == 0) {
+        val jmlData = databaseHandler!!.CountDataProduk()
+        if (jmlData == 0) {
             Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
         }
 
@@ -412,7 +392,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                 params["nama_usaha"] = nama
                 params["email"] = email
                 params["telp"] = telp
-                params["id_pengguna"] = idPengguna
+                params["id_pengguna"] = idPengguna.toString()
 
                 return params
             }

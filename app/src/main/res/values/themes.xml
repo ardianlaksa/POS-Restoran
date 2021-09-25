@@ -4,7 +4,7 @@
         <item name="pageBackground">@style/page_background_wh</item>
         <item name="textSubheader">@style/text_subheader_wh</item>
         <item name="textLarge">@style/text_large_wh</item>
-        <item name="textRegular">@style/text_regular_wh</item>
+<!--        <item name="textRegular">@style/text_regular_wh</item>-->
         <item name="whiteBackground">@style/white_background_wh</item>
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
@@ -20,6 +20,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_blue</item>
+        <item name="android:fontFamily">@font/sinethar</item>
     </style>
 
     <style name="Theme.Third" parent="AppTheme.NoActionBar">
@@ -31,6 +32,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_green</item>
+        <item name="android:fontFamily">@font/sinethar</item>
     </style>
 
     <style name="Theme.Fourth" parent="AppTheme.NoActionBar">
@@ -42,6 +44,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_yellow</item>
+        <item name="android:fontFamily">@font/sinethar</item>
     </style>
 
     <style name="Theme.Fifth" parent="AppTheme.NoActionBar">
@@ -53,6 +56,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_red</item>
+        <item name="android:fontFamily">@font/sinethar</item>
     </style>
 
     <style name="Theme.Sixth" parent="AppTheme.NoActionBar">
@@ -64,6 +68,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_purple</item>
+        <item name="android:fontFamily">@font/sinethar</item>
     </style>
 
     <style name="Theme.Blue" parent="AppTheme.NoActionBar">
@@ -129,6 +134,10 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_wh</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:fontFamily">@font/sinethar</item>
     </style>
 
 </resources>

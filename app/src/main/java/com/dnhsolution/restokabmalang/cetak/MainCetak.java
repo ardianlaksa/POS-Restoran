@@ -118,7 +118,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainCetak.this, MainActivity.class));
-                finish();
+                finishAffinity();
             }
         });
 

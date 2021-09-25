@@ -66,7 +66,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_keranjang)
-        setSupportActionBar(toolbar)
 
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
@@ -223,23 +222,25 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         super.onResume()
         val i = intent
         val args = i.getBundleExtra("BUNDLE")
-        val obyekProduk:ArrayList<ProdukSerializable> = args.getParcelableArrayList("ARRAYLIST")
+        val obyekProduk:ArrayList<ProdukSerializable>? = args?.getParcelableArrayList("ARRAYLIST")
         if (obyek == null) {
             Log.i(_tag, "onResume")
             obyek = obyekProduk
         }
 
         // Loop arrayList2 items
-        for (item2 in obyekProduk) {
-            // Loop arrayList1 items
-            var found = false
-            for (item1 in obyek!!) {
-                if (item2.idItem == item1.idItem) {
-                    found = true
+        if (obyekProduk != null) {
+            for (item2 in obyekProduk) {
+                // Loop arrayList1 items
+                var found = false
+                for (item1 in obyek!!) {
+                    if (item2.idItem == item1.idItem) {
+                        found = true
+                    }
                 }
-            }
-            if (!found) {
-                obyek!!.add(item2)
+                if (!found) {
+                    obyek!!.add(item2)
+                }
             }
         }
 
@@ -440,7 +441,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         builder.setNegativeButton("Batal"){_, _ ->
             val i = Intent(Intent(this@SelectedProdukListActivity, MainActivity::class.java))
             startActivity(i)
-            finish()
+            finishAffinity()
         }
 
         // Finally, make the alert dialog using builder
@@ -522,7 +523,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             pnObj.put("hrgProduk", pn.price)
             jsonArr.put(pnObj)
 
-            Log.d("NAMA_BARANG", pn.name)
+            Log.d("NAMA_BARANG", pn.name.toString())
         }
         rootObject.put("produk",jsonArr)
 
