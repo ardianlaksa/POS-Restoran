@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -57,7 +58,6 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
     private BluetoothService mService = null;
     private boolean isPrinterReady = false;
-
 
     SharedPreferences sharedPreferences;
 
@@ -117,8 +117,10 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
         btnKembali.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainCetak.this, MainActivity.class));
-                finishAffinity();
+//                startActivity(new Intent(MainCetak.this, MainActivity.class));
+//                finishAffinity();
+                setResult(RESULT_OK);
+                finish();
             }
         });
 
@@ -135,8 +137,6 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                     requestBluetooth();
             }
         });
-
-
 
         getData();
 
@@ -381,27 +381,25 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
                 mService.write(PrinterCommands.ESC_ALIGN_LEFT);
                 mService.sendMessage(nama_produk, "");
-                writePrint(PrinterCommands.ESC_ALIGN_CENTER, harga+" x "+qty+" : "+total_harga);
+                writePrint(PrinterCommands.ESC_ALIGN_CENTER, gantiKetitik(harga)+" x "+qty+" : "+gantiKetitik(total_harga));
             }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
 
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+tvSubtotal.getText().toString());
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(tvSubtotal.getText().toString()));
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
 
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Total : "+tvTotal.getText().toString());
+//            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Total : "+tvTotal.getText().toString());
+            String a = "Total : "+gantiKetitik(tvTotal.getText().toString());
+            printConfig(a,1,2,1);
             mService.write(PrinterCommands.ESC_ENTER);
 
-//            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Tunai : 50.000");
-//            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Kembali : 5.000");
-//            mService.write(PrinterCommands.ESC_ENTER);
-
-            mService.write(PrinterCommands.ESC_ALIGN_CENTER);
-            mService.sendMessage("- Terima Kasih -", "");
+            printConfig("- Terima Kasih -",3,1,1);
+            mService.write(PrinterCommands.ESC_ENTER);
             mService.write(PrinterCommands.ESC_ENTER);
         } else {
             Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT).show();
@@ -411,8 +409,12 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 //                requestBluetooth();
             if (!mService.isBTopen())
                 requestBluetooth();
-
         }
+    }
+
+    private String gantiKetitik(String value){
+        value = value.replace(",",".");
+        return value;
     }
 
     private void requestBluetooth() {
@@ -425,21 +427,88 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     }
 
     private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss",Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
     }
 
     void writePrint(byte[] align, String msg){
         mService.write(align);
-        String space = "   ";
+        StringBuilder space = new StringBuilder("   ");
         int l = msg.length();
         if(l < 31){
             for(int x = 31-l; x >= 0; x--) {
-                space = space+" ";
+                space.append(" ");
             }
         }
-        msg = msg.replace(" : ", space);
+        msg = msg.replace(" : ", space.toString());
         mService.write( msg.getBytes());
+    }
+
+    protected void printConfig(String bill, int size, int style, int align)
+    {
+        //size 1 = large, size 2 = medium, size 3 = small
+        //style 1 = Regular, style 2 = Bold
+        //align 0 = left, align 1 = center, align 2 = right
+
+        try{
+
+            byte[] format = new byte[]{27,33, 0};
+            byte[] change = new byte[]{27,33, 0};
+
+            mService.write(format);
+
+            //different sizes, same style Regular
+            if (size==1 && style==1)  //large
+            {
+                change[2] = (byte) (0x10); //large
+                mService.write(change);
+            }else if(size==2 && style==1) //medium
+            {
+                //nothing to change, uses the default settings
+            }else if(size==3 && style==1) //small
+            {
+                change[2] = (byte) (0x3); //small
+                mService.write(change);
+            }
+
+            //different sizes, same style Bold
+            if (size==1 && style==2)  //large
+            {
+                change[2] = (byte) (0x10 | 0x8); //large
+                mService.write(change);
+            }else if(size==2 && style==2) //medium
+            {
+                change[2] = (byte) (0x8);
+                mService.write(change);
+            }else if(size==3 && style==2) //small
+            {
+                change[2] = (byte) (0x3 | 0x8); //small
+                mService.write(change);
+            }
+
+
+            switch (align) {
+                case 0:
+                    //left align
+                    mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+                    break;
+                case 1:
+                    //center align
+                    mService.write(PrinterCommands.ESC_ALIGN_CENTER);
+                    break;
+                case 2:
+                    //right align
+                    mService.write(PrinterCommands.ESC_ALIGN_RIGHT);
+                    break;
+            }
+            mService.write(bill.getBytes());
+            mService.write(new byte[]{PrinterCommands.LF});
+        }catch(Exception ex){
+            Log.e("error", ex.toString());
+        }
+    }
+    protected void printNewLine() {
+        mService.write(PrinterCommands.FEED_LINE);
     }
 }

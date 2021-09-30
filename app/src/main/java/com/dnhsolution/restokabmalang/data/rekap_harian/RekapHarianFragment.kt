@@ -84,7 +84,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
             Log.i(_tag,stringUrl)
             jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
 
         recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
@@ -195,7 +195,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
             Log.i(_tag,stringUrl)
             jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -310,7 +310,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
             Log.i(_tag,stringUrl)
             jsonTaskDetail = DRekapHarianJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
 
 

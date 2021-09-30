@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.LayoutRes
+import com.dnhsolution.restokabmalang.R
 
 class RekapBulananBlnSpinAdapter(context: Context, @LayoutRes resource: Int, list: ArrayList<RekapBulananBlnSpinElement>)
     : ArrayAdapter<RekapBulananBlnSpinElement>(context, resource, list){
@@ -21,23 +22,25 @@ class RekapBulananBlnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
         this.list = list
     }
 
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View {
         return createItemView(position, convertView, parent)
     }
 
-    private fun createItemView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        return createItemView(position, convertView, parent)
+    }
+
+    private fun createItemView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val holder: ViewHolder
         val retView: View?
 
         if(convertView == null){
             retView = mInflater?.inflate(resource, parent, false)
             holder = ViewHolder()
-
-            if (retView != null) {
-                holder.tvItem = retView.findViewById(android.R.id.text1) as TextView
-                retView.tag = holder
-            }
-
+//             holder.tvItem = retView.findViewById(android.R.id.text1) as TextView
+            holder.mId = retView?.findViewById(R.id.mId)
+            holder.tvItem = retView?.findViewById(R.id.tvItem)
+            retView?.tag = holder
         } else {
             holder = convertView.tag as ViewHolder
             retView = convertView
@@ -45,12 +48,15 @@ class RekapBulananBlnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
 
         val offerData = list.get(position)
 
-        holder.tvItem?.setText(offerData.nama)
+        holder.mId?.text = offerData.idItem
+        holder.tvItem?.text = offerData.nama
 
-        return retView
+        return retView!!
     }
 
     internal class ViewHolder {
+//        var tvItem: TextView? = null
+        var mId: TextView? = null
         var tvItem: TextView? = null
     }
 

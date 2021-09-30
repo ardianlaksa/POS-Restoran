@@ -1,7 +1,6 @@
 package com.dnhsolution.restokabmalang.cetak;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -24,33 +23,18 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.database.DatabaseHandler;
-import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.zj.btsdk.BluetoothService;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -71,7 +55,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status;
     Button btnKembali, btnCetak, btnPilih;
 
-    private final String TAG = MainActivity.class.getSimpleName();
+    private final String _tag = getClass().getSimpleName();
     public static final int RC_BLUETOOTH = 0;
     public static final int RC_CONNECT_DEVICE = 1;
     public static final int RC_ENABLE_BLUETOOTH = 2;
@@ -139,27 +123,21 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         //recyclerView.addItemDecoration(dividerItemDecoration);
         rvData.setAdapter(adapter);
 
-        btnKembali.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainCetakLokal.this, MainActivity.class));
-                finish();
-            }
+        btnKembali.setOnClickListener(v -> {
+            setResult(RESULT_OK);
+            finish();
         });
 
-        btnPilih.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mService.isAvailable()) {
-                    Log.i(TAG, "printText: perangkat tidak support bluetooth");
-                    return;
-                }
-                if (mService.isBTopen()) {
-                    startActivityForResult(new Intent(MainCetakLokal.this, DeviceActivity.class), RC_CONNECT_DEVICE);
-                }
-                else{
-                    requestBluetooth();
-                }
+        btnPilih.setOnClickListener(v -> {
+            if (!mService.isAvailable()) {
+                Log.i(_tag, "printText: perangkat tidak support bluetooth");
+                return;
+            }
+            if (mService.isBTopen()) {
+                startActivityForResult(new Intent(MainCetakLokal.this, DeviceActivity.class), RC_CONNECT_DEVICE);
+            }
+            else{
+                requestBluetooth();
             }
         });
 
@@ -299,9 +277,9 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         switch (requestCode) {
             case RC_ENABLE_BLUETOOTH:
                 if (resultCode == RESULT_OK) {
-                    Log.i(TAG, "onActivityResult: bluetooth aktif");
+                    Log.i(_tag, "onActivityResult: bluetooth aktif");
                 } else
-                    Log.i(TAG, "onActivityResult: bluetooth harus aktif untuk menggunakan fitur ini");
+                    Log.i(_tag, "onActivityResult: bluetooth harus aktif untuk menggunakan fitur ini");
                 break;
             case RC_CONNECT_DEVICE:
                 if (resultCode == RESULT_OK) {
@@ -316,14 +294,10 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     @OnClick(R.id.btnCetak)
     public void printText(@Nullable View view) {
         if (!mService.isAvailable()) {
-            Log.i(TAG, "printText: perangkat tidak support bluetooth");
+            Log.i(_tag, "printText: perangkat tidak support bluetooth");
             return;
         }
         if (isPrinterReady) {
-//            if (etText.getText().toString().isEmpty()) {
-//                Toast.makeText(this, "Cant print null text", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
 
             SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
             String nm_tempat_usaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0");
@@ -355,27 +329,26 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
 
                 mService.write(PrinterCommands.ESC_ALIGN_LEFT);
                 mService.sendMessage(nama_produk, "");
-                writePrint(PrinterCommands.ESC_ALIGN_CENTER, harga+" x "+qty+" : "+total_harga);
+                writePrint(PrinterCommands.ESC_ALIGN_CENTER, gantiKetitik(harga)+" x "+qty+" : "+gantiKetitik(total_harga));
             }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
 
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+tvSubtotal.getText().toString());
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(tvSubtotal.getText().toString()));
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
 
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Total : "+tvTotal.getText().toString());
+//            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Total : "+tvTotal.getText().toString());
+            String a = "Total : "+gantiKetitik(tvTotal.getText().toString());
+            printConfig(a,1,2,1);
             mService.write(PrinterCommands.ESC_ENTER);
 
-//            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Tunai : 50.000");
-//            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Kembali : 5.000");
-//            mService.write(PrinterCommands.ESC_ENTER);
+            printConfig("- Terima Kasih -",3,1,1);
 
-            mService.write(PrinterCommands.ESC_ALIGN_CENTER);
-            mService.sendMessage("- Terima Kasih -", "");
+            mService.write(PrinterCommands.ESC_ENTER);
             mService.write(PrinterCommands.ESC_ENTER);
         } else {
             Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT).show();
@@ -389,6 +362,10 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         }
     }
 
+    private String gantiKetitik(String value){
+        value = value.replace(",",".");
+        return value;
+    }
 
     private void requestBluetooth() {
         if (mService != null) {
@@ -400,21 +377,21 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     }
 
     private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
     }
 
     void writePrint(byte[] align, String msg){
         mService.write(align);
-        String space = "   ";
+        StringBuilder space = new StringBuilder("   ");
         int l = msg.length();
         if(l < 31){
             for(int x = 31-l; x >= 0; x--) {
-                space = space+" ";
+                space.append(" ");
             }
         }
-        msg = msg.replace(" : ", space);
+        msg = msg.replace(" : ", space.toString());
         mService.write( msg.getBytes());
     }
 
@@ -422,5 +399,72 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         double m = Double.parseDouble(num);
         DecimalFormat formatter = new DecimalFormat("###,###,###");
         return formatter.format(m);
+    }
+
+    protected void printConfig(String bill, int size, int style, int align)
+    {
+        //size 1 = large, size 2 = medium, size 3 = small
+        //style 1 = Regular, style 2 = Bold
+        //align 0 = left, align 1 = center, align 2 = right
+
+        try{
+
+            byte[] format = new byte[]{27,33, 0};
+            byte[] change = new byte[]{27,33, 0};
+
+            mService.write(format);
+
+            //different sizes, same style Regular
+            if (size==1 && style==1)  //large
+            {
+                change[2] = (byte) (0x10); //large
+                mService.write(change);
+            }else if(size==2 && style==1) //medium
+            {
+                //nothing to change, uses the default settings
+            }else if(size==3 && style==1) //small
+            {
+                change[2] = (byte) (0x3); //small
+                mService.write(change);
+            }
+
+            //different sizes, same style Bold
+            if (size==1 && style==2)  //large
+            {
+                change[2] = (byte) (0x10 | 0x8); //large
+                mService.write(change);
+            }else if(size==2 && style==2) //medium
+            {
+                change[2] = (byte) (0x8);
+                mService.write(change);
+            }else if(size==3 && style==2) //small
+            {
+                change[2] = (byte) (0x3 | 0x8); //small
+                mService.write(change);
+            }
+
+
+            switch (align) {
+                case 0:
+                    //left align
+                    mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+                    break;
+                case 1:
+                    //center align
+                    mService.write(PrinterCommands.ESC_ALIGN_CENTER);
+                    break;
+                case 2:
+                    //right align
+                    mService.write(PrinterCommands.ESC_ALIGN_RIGHT);
+                    break;
+            }
+            mService.write(bill.getBytes());
+            mService.write(new byte[]{PrinterCommands.LF});
+        }catch(Exception ex){
+            Log.e("error", ex.toString());
+        }
+    }
+    protected void printNewLine() {
+        mService.write(PrinterCommands.FEED_LINE);
     }
 }

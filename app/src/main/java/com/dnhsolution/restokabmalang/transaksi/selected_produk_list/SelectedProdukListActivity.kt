@@ -1,6 +1,8 @@
 package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
+import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.database.SQLException
 import android.os.Build
@@ -12,11 +14,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.cetak.MainCetak
 import com.dnhsolution.restokabmalang.cetak.MainCetakLokal
@@ -63,6 +65,16 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var obyek:ArrayList<ProdukSerializable>? = null
     var databaseHandler: DatabaseHandler? = null
 
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+//            val data: Intent? = result.data
+            setResult(RESULT_OK)
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_keranjang)
@@ -74,44 +86,20 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         databaseHandler = DatabaseHandler(this)
         bProses.setOnClickListener(this)
 
-//        val i = intent
-//        val args = i.getBundleExtra("BUNDLE")
-//        obyek = args.getParcelableArrayList("ARRAYLIST")
+        bBantuan.setOnClickListener{
+            tampilAlertDialogTutorial()
+        }
 
-//        val name = obyek.get(1).name
+        bTambah.setOnClickListener{
+            val favoritedProdukNames = ArrayList<Int>()
+            for (Produk in obyek!!) {
+                favoritedProdukNames.add(Produk.idItem)
+            }
 
-//        val produkAdapter = SelectedProdukListAdapter(obyek, this,this)
-//        setUpRecyclerView(produkAdapter)
-
-//        recyclerView.adapter = produkAdapter
-//        recyclerView?.layoutManager = (LinearLayoutManager(this))
-
-//        setTotal()
-
-//        etDiskon.addTextChangedListener(object : TextWatcher {
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//            }
-//
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//
-//            private var current = ""
-//
-//            override fun afterTextChanged(s: Editable?) {
-//                Toast.makeText(this@SelectedProdukListActivity, s.toString(), Toast.LENGTH_SHORT).show()
-////                if (s.toString() == "") return
-////                if (s.toString() != current)
-////                    etDiskon.removeTextChangedListener(this)
-////
-////                if(s.toString() == ""){
-////                    valueDiskon = 0
-////                }else{
-////                    valueDiskon = s.toString().toInt()
-////                }
-////                setTotal()
-//
-//                etDiskon.addTextChangedListener(this)
-//            }
-//        })
+            val i = Intent(this, TambahProdukActivity::class.java)
+            i.putExtra("ARRAYLIST", favoritedProdukNames)
+            startActivity(i)
+        }
 
         etDiskon.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -211,6 +199,26 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 //            }
 //        })
 
+    }
+
+    private fun tampilAlertDialogTutorial() {
+        val alertDialog = android.app.AlertDialog.Builder(this).create()
+        alertDialog.setMessage(
+            """
+            1. Icon (+) dan (-) digunakan untuk
+                menambah dan mengurangi
+                jumlah pesanan.
+            2. Disc digunakan untuk
+                menambahkan diskon.
+            3. Tombol proses untuk mengirim
+                data transaksi ke server dan
+                melanjutkan proses cetak.
+            """.trimIndent()
+        )
+        alertDialog.setButton(
+            android.app.AlertDialog.BUTTON_NEGATIVE, "OK"
+        ) { dialog, _ -> dialog.dismiss() }
+        alertDialog.show()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -404,7 +412,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     showDialogBerhasil("Selamat","Transaksi Anda Berhasil di proses !")
 
                 } else {
-                    var idTrx : String = saveLokal()
+                    val idTrx : String = saveLokal()
                     showDialogBerhasilLokal("Selamat","Transaksi Anda Berhasil di proses !", idTrx)
                     //Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
                 }
@@ -424,7 +432,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         dialog.setCanceledOnTouchOutside(false)
     }
 
-    fun showDialogBerhasil(title:String,message:String){
+    private fun showDialogBerhasil(title:String,message:String){
         val builder = AlertDialog.Builder(this)
 
         // Set the alert dialog title
@@ -434,14 +442,15 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         builder.setMessage(message)
         builder.setPositiveButton("Cetak"){_, _ ->
             //                println(createJson())
-            startActivity(Intent(this@SelectedProdukListActivity, MainCetak::class.java))
-            finish()
+//            startActivity()
+            resultLauncher.launch(Intent(this@SelectedProdukListActivity, MainCetak::class.java))
         }
 
         builder.setNegativeButton("Batal"){_, _ ->
-            val i = Intent(Intent(this@SelectedProdukListActivity, MainActivity::class.java))
-            startActivity(i)
-            finishAffinity()
+//            val i = Intent(Intent(this@SelectedProdukListActivity, MainActivity::class.java))
+//            startActivity(i)
+            setResult(RESULT_OK)
+            finish()
         }
 
         // Finally, make the alert dialog using builder
@@ -453,7 +462,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         dialog.setCanceledOnTouchOutside(false)
     }
 
-    fun showDialogBerhasilLokal(title:String,message:String, idTrx:String){
+    private fun showDialogBerhasilLokal(title:String,message:String, idTrx:String){
         val builder = AlertDialog.Builder(this)
 
         // Set the alert dialog title
@@ -462,33 +471,18 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         // Display a message on alert dialog
         builder.setMessage(message)
         builder.setPositiveButton("Cetak"){_, _ ->
-            //                println(createJson())
-            //        String tema = sharedPreferences.getString(Url.setTema, "0");
-//
-//        if(tema.equalsIgnoreCase("0")){
-//            MainCetak.this.setTheme(R.style.Theme_First);
-//        }else if(tema.equalsIgnoreCase("1")){
-//            MainCetak.this.setTheme(R.style.Theme_Second);
-//        }else if(tema.equalsIgnoreCase("2")){
-//            MainCetak.this.setTheme(R.style.Theme_Third);
-//        }else if(tema.equalsIgnoreCase("3")){
-//            MainCetak.this.setTheme(R.style.Theme_Fourth);
-//        }else if(tema.equalsIgnoreCase("4")){
-//            MainCetak.this.setTheme(R.style.Theme_Fifth);
-//        }else if(tema.equalsIgnoreCase("5")){
-//            MainCetak.this.setTheme(R.style.Theme_Sixth);
-//        }
             val i = Intent(Intent(this@SelectedProdukListActivity, MainCetakLokal::class.java))
             i.putExtra("idTrx", idTrx)
-            startActivity(i)
-            finish()
+//            startActivity(i)
+//            finish()
+            resultLauncher.launch(i)
         }
 
         builder.setNegativeButton("Batal"){_, _ ->
-            val i = Intent(Intent(this@SelectedProdukListActivity, MainActivity::class.java))
-            startActivity(i)
+//            val i = Intent(Intent(this@SelectedProdukListActivity, MainActivity::class.java))
+//            startActivity(i)
+            setResult(RESULT_OK)
             finish()
-
         }
 
         // Finally, make the alert dialog using builder
@@ -531,7 +525,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         return rootObject.toString()
     }
 
-    fun saveLokal() : String{
+    private fun saveLokal() : String{
         var tglTrx :String = ""
         var disc : String = ""
         var omzet : String = ""
@@ -549,8 +543,8 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             tglTrx = current.format(formatter)
         } else {
-            var date = Date()
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            val date = Date()
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())
             tglTrx = formatter.format(date)
         }
 

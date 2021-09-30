@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -58,12 +59,9 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
         this.totalPrice = totalPrice;
         view = parent;
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        parent.setOnClickListener(v -> {
 //                String dId = mId.getText().toString();
 //                activity.startActivity(new Intent(activity, PandWisataDetail.class).putExtra("getId",dId));
-            }
         });
     }
 
@@ -76,16 +74,12 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
         price.setText(rupiahPrice);
         totalPrice.setText(rupiahPrice);
 
-        String url="";
-        if(obyek.getStatus().equalsIgnoreCase("server")) {
-            url = Url.serverFoto+obyek.getImgUrl();
-        } else {
-            url = new File(obyek.getImgUrl()).toString();
-
-        }
+        String url = Url.serverFoto+obyek.getImgUrl();
         Glide.with(ivItem.getContext()).load(url)
+                .override(512,512)
                 .centerCrop()
                 .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

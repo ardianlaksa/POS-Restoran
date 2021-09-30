@@ -177,7 +177,7 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
                 this
             ).execute(Url.setSistemMaster)
         } else {
-            Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
     }
 

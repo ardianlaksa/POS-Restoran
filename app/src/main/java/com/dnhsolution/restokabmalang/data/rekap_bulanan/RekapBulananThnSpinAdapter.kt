@@ -25,7 +25,11 @@ class RekapBulananThnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
         return createItemView(position, convertView, parent)
     }
 
-    private fun createItemView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        return createItemView(position, convertView, parent)
+    }
+
+    private fun createItemView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val holder: ViewHolder
         val retView: View?
 
@@ -47,7 +51,7 @@ class RekapBulananThnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
 
         holder.tvItem?.setText(offerData)
 
-        return retView
+        return retView!!
     }
 
     internal class ViewHolder {

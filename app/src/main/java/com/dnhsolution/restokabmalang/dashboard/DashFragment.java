@@ -43,7 +43,6 @@ import com.dnhsolution.restokabmalang.BuildConfig;
 import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.database.DatabaseHandler;
-import com.dnhsolution.restokabmalang.sistem.produk.MasterProduk;
 import com.dnhsolution.restokabmalang.sistem.produk.RealPathUtil;
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity;
 import com.dnhsolution.restokabmalang.utilities.Url;
@@ -72,6 +71,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class DashFragment extends Fragment {
+    private SQLiteDatabase db;
+    private String batasSinkronAngka;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         // Layout tampilan untuk fragment ini
@@ -104,35 +106,11 @@ public class DashFragment extends Fragment {
         tvBatas= view.findViewById(R.id.tvBatas);
         cvTransaksi= view.findViewById(R.id.cvTransaksi);
 
-        String batas = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "7");
-        int jml_trx = databaseHandler.CountDataTersimpan();
-        int jml_produk = databaseHandler.CountDataProduk();
-        String tgl_trx = "";
+        batasSinkronAngka = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "7");
+        db = databaseHandler.getReadableDatabase();
+        batasSinkron();
 
-        SQLiteDatabase db = databaseHandler.getReadableDatabase();
-
-        Cursor cTrx = db.rawQuery(
-                "SELECT tanggal_trx FROM transaksi WHERE status='0' ORDER BY tanggal_trx ASC LIMIT 1",
-                null
-        );
-
-        cTrx.moveToFirst();
-        if(jml_trx>0){
-            tgl_trx = formatDate(cTrx.getString(0), "yyyyMMdd");
-            tvBatas.setText(getBatas(tgl_trx, Integer.parseInt(batas)));
-        }
-        else{
-            tvBatas.setText(getResources().getString(R.string.tanggal_kosong));
-        }
-
-        tvTrxTersimpan.setText(String.valueOf(jml_trx));
-
-        cvTransaksi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getContext(), DataTersimpanActivity.class));
-            }
-        });
+//        cvTransaksi.setOnClickListener(v -> startActivity(new Intent(getContext(), DataTersimpanActivity.class)));
 
 //        cvProduk.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -143,20 +121,42 @@ public class DashFragment extends Fragment {
 
         if(MainActivity.Companion.getAdDashboard() == 1) return;
 
-        tampilAlertDialogTutorial();
+//        tampilAlertDialogTutorial();
 
         MainActivity.Companion.setAdDashboard(1);
 
         // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
     }
 
+    public void batasSinkron(){
+        int jml_trx = databaseHandler.CountDataTersimpanUpload();
+        tvTrxTersimpan.setText(String.valueOf(jml_trx));
+
+        Cursor cTrx = db.rawQuery(
+                "SELECT tanggal_trx FROM transaksi WHERE status='0' ORDER BY tanggal_trx ASC LIMIT 1",
+                null
+        );
+        cTrx.moveToFirst();
+        if(jml_trx>0){
+            String tgl_trx = formatDate(cTrx.getString(0), "yyyyMMdd");
+            tvBatas.setText(getBatas(tgl_trx, Integer.parseInt(batasSinkronAngka)));
+            cTrx.close();
+        } else{
+            tvBatas.setText(getResources().getString(R.string.tanggal_kosong));
+        }
+    }
+
     private void tampilAlertDialogTutorial(){
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle("Tutorial");
-        alertDialog.setMessage("1. Pilih produk tersimpan untuk menambah produk\n" +
-                "2. Pilih transaksi tersimpan untuk melihat data transaksi yang belum tersinkron ke server\n" +
-                "3. Batas waktu sinkron digunakan untuk menampilkan waktu batas untuk sinkronisasi data transaksi");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+        alertDialog.setMessage("" +
+                "1. Transaksi tersimpan : Transaksi\n" +
+                "    yang dilakukan saat tidak ada\n" +
+                "    koneksi.\n" +
+                "2. Batas Waktu Sinkron : Batasan\n" +
+                "   waktu maksimal untuk upload\n" +
+                "   transaksi saat tidak ada koneksi\n" +
+                "   internet.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -586,7 +586,7 @@ public class DashFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        int jml_trx = databaseHandler.CountDataTersimpan();
+        int jml_trx = databaseHandler.CountDataTersimpanUpload();
         tvTrxTersimpan.setText(String.valueOf(jml_trx));
         this.mHandler = new Handler();
         this.mHandler.postDelayed(m_Runnable,3000);

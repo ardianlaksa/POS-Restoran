@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -30,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -74,6 +76,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -112,6 +115,9 @@ public class MasterProduk extends AppCompatActivity {
     FloatingActionButton fab;
     TextView tv_count;
     int jml_data = 0;
+    private Toolbar toolbar;
+    private Menu menuTemp;
+    private int statusJaringan = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,9 +142,9 @@ public class MasterProduk extends AppCompatActivity {
         databaseHandler = new DatabaseHandler(this);
 
         setContentView(R.layout.activity_master_produk);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(label);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(label);
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -152,14 +158,14 @@ public class MasterProduk extends AppCompatActivity {
 
         if(MainActivity.Companion.getAdMasterProduk() == 1) return;
 
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Tutorial");
-        alertDialog.setMessage("1. Tap tombol tambah kanan atas untuk menambahkan produk\n\n" +
-                "Icon panah kanan & kiri hijau menandakan status data produk sudah tersinkron.\n" +
-                "Icon refresh kuning menandakan status data produk butuh disinkron.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                (dialog, which) -> dialog.dismiss());
-        alertDialog.show();
+//        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//        alertDialog.setTitle("Tutorial");
+//        alertDialog.setMessage("1. Tap tombol tambah kanan atas untuk menambahkan produk\n\n" +
+//                "Icon panah kanan & kiri hijau menandakan status data produk sudah tersinkron.\n" +
+//                "Icon refresh kuning menandakan status data produk butuh disinkron.");
+//        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                (dialog, which) -> dialog.dismiss());
+//        alertDialog.show();
 
         MainActivity.Companion.setAdMasterProduk(1);
     }
@@ -183,23 +189,62 @@ public class MasterProduk extends AppCompatActivity {
         }else if(tema.equalsIgnoreCase("5")){
             MasterProduk.this.setTheme(R.style.Theme_Sixth);
         }
+    }
 
+    public void gantiIconWifi(Boolean value){
+        if(value) {
+            menuTemp.getItem(2).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green));
+            statusJaringan = 1;
+        } else {
+            menuTemp.getItem(2).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_wifi_24_gray));
+            statusJaringan = 0;
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_tambah, menu);
+        inflater.inflate(R.menu.menu_master, menu);
+        menuTemp = menu;
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_menu_tambah) {
-            DialogTambah();
+        if (item.getItemId() == R.id.action_menu_lanjut) {
+            if(new CheckNetwork().checkingNetwork(this) && statusJaringan == 1)
+                DialogTambah();
+            else Toast.makeText(this, R.string.tidak_terkoneksi_internet, Toast.LENGTH_SHORT).show();
+            return true;
+        } else if(item.getItemId() == R.id.action_menu_bantuan){
+            tampilAlertDialogTutorial();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void tampilAlertDialogTutorial(){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setMessage("" +
+                "1. Saat ada icon refresh warna\n" +
+                "    kuning dimasing-masing daftar\n" +
+                "    produk, menandakan jika produk\n" +
+                "    diload dari peralatan lokal.\n" +
+                "2. Saat ada icon panah kanan kiri\n" +
+                "    warna hijau dimasing-masing\n" +
+                "    daftar produk, menandakan jika\n" +
+                "    produk tersinkron dengan server.\n" +
+                "3. Tombol icon (+) samping icon [?]\n" +
+                "    di kanan atas untuk mulai\n" +
+                "    transaksi dengan produk yang\n" +
+                "    dipilih.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     public void DialogTambah(){

@@ -32,6 +32,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //kolom produk
     public final String col_keterangan = "keterangan";
     public final String col_foto = "foto";
+    public final String col_ispajak = "ispajak";
+    public final String col_jns_pajak = "jns_pajak";
 
     //kolom transaksi
     public final String col_tanggal_trx="tanggal_trx";
@@ -54,8 +56,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String CREATE_TABEL_PRODUK = "CREATE TABLE " + TABLE_PRODUK + "("
-                + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_id_tempat_usaha + " TEXT," + col_nama_produk + " TEXT,"+
-                col_harga + " TEXT,"+ col_keterangan + " TEXT,"+ col_foto + " TEXT,"+ col_status + " TEXT"+")";
+                + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_id_tempat_usaha + " TEXT,"
+                + col_nama_produk + " TEXT,"+
+                col_harga + " TEXT,"+ col_keterangan + " TEXT,"+ col_foto + " TEXT,"
+                + col_status + " TEXT,"+ col_ispajak + " TEXT,"+ col_jns_pajak + " TEXT"+")";
 
         String CREATE_TABEL_TRANSAKSI = "CREATE TABLE " + TABLE_TRANSAKSI + "("
                 + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_tanggal_trx + " TEXT," + col_disc + " TEXT,"+
@@ -158,7 +162,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //COUNT DATA
-    public int CountDataTersimpan() {
+    public int CountDataTersimpanUpload() {
         String countQuery = "SELECT  * FROM "+ TABLE_TRANSAKSI+" WHERE "+col_status+"=='0'";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);

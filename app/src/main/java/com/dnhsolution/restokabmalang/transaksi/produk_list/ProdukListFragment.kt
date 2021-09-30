@@ -1,5 +1,6 @@
 package com.dnhsolution.restokabmalang.transaksi.produk_list
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
@@ -7,11 +8,18 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.SpannableString
+import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.Response
@@ -28,6 +36,7 @@ import com.dnhsolution.restokabmalang.transaksi.selected_produk_list.SelectedPro
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.utilities.Url
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_produk_list.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -37,6 +46,7 @@ import kotlin.collections.set
 
 class ProdukListFragment:Fragment(), ProdukOnTask {
 
+    private lateinit var searchView: SearchView
     private var valueArgsFromKeranjang: Int? = null
     private var produkAdapter: ProdukListAdapter? = null
     private var idTmpUsaha: String = "0"
@@ -53,6 +63,20 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     var email: String = ""
     var telp: String = ""
     var alamat: String = ""
+    var isSearch = false
+
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+//            val data: Intent? = result.data
+            for(v in produks){
+                if(v.isFavorite)
+                    v.toggleFavorite()
+            }
+            produkAdapter?.notifyDataSetChanged()
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_produk_list,container,false)
@@ -74,10 +98,10 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         val telp = sharedPreferences?.getString(Url.SESSION_TELP, "0")
         val namausaha = sharedPreferences?.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
 
-        if(alamat!!.equals("0", ignoreCase = true) || email!!.equals("0", ignoreCase = true) ||
-            telp!!.equals("0", ignoreCase = true) || namausaha!!.equals("0", ignoreCase = true)){
+//        if(alamat!!.equals("0", ignoreCase = true) || email!!.equals("0", ignoreCase = true) ||
+//            telp!!.equals("0", ignoreCase = true) || namausaha!!.equals("0", ignoreCase = true)){
 //            DialogKelengkapan()
-        }
+//        }
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
             val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha"
@@ -98,18 +122,23 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
         if(MainActivity.adTransaksi == 1) return
 
-        tampilAlertDialogTutorial()
+//        tampilAlertDialogTutorial()
 
         MainActivity.adTransaksi = 1
     }
 
     private fun tampilAlertDialogTutorial(){
         val alertDialog = AlertDialog.Builder(requireContext()).create()
-        alertDialog.setTitle("Tutorial")
-        alertDialog.setMessage("1. Pilih produk yang akan digunakan untuk transaksi\n" +
-                "2. Tap lanjut di kanan atas untuk mulai transaksi")
+        alertDialog.setMessage("" +
+                "1. Pilih produk yang akan digunakan\n" +
+                "    untuk transaksi, centang hijau\n" +
+                "    saat produk terpilih.\n" +
+                "2. Tombol icon (+) samping icon [?]\n" +
+                "    di kanan atas untuk mulai\n" +
+                "    transaksi dengan produk yang\n" +
+                "    dipilih.")
         alertDialog.setButton(
-            AlertDialog.BUTTON_NEUTRAL, "OK"
+            AlertDialog.BUTTON_NEGATIVE, "OK"
         ) { dialog, _ -> dialog.dismiss() }
         alertDialog.show()
     }
@@ -138,16 +167,18 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     val foto = rArray.getJSONObject(i).getString("FOTO")
                     val nmBarang = rArray.getJSONObject(i).getString("NM_BARANG")
                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
+                    val isPajak = rArray.getJSONObject(i).getInt("ISPAJAK")
+                    val jnsProduk = rArray.getJSONObject(i).getInt("JENIS_PRODUK")
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan,"server" )
+                            idBarang,nmBarang, harga, foto, keterangan,"server",isPajak,jnsProduk)
                     )
                 }
 
                 if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
                 else produkAdapter =
-                    ProdukListAdapter(context, produks)
+                    ProdukListAdapter(requireContext(), produks)
 
                 if (gvMainActivity == null) return
                 gvMainActivity.adapter = produkAdapter
@@ -180,13 +211,13 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
             produks.add(
                 ProdukListElement(
-                    idBarang,nmBarang, harga, foto, keterangan, "lokal" )
+                    idBarang,nmBarang, harga, foto, keterangan, "lokal",-1,-1)
             )
         }
 
         if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
         else produkAdapter =
-            ProdukListAdapter(context, produks)
+            ProdukListAdapter(requireContext(), produks)
 
         if (gvMainActivity == null) return
         gvMainActivity.adapter = produkAdapter
@@ -208,7 +239,40 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_lanjut, menu)
+        inflater.inflate(R.menu.menu_transaksi, menu)
+        val searchItem = menu.findItem(R.id.action_menu_cari)
+        searchView = searchItem.actionView as SearchView
+        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchView.onActionViewExpanded()
+        val stringTextSearch:CharSequence = getString(R.string.cari)
+        val ss1 = SpannableString(stringTextSearch)
+        ss1.setSpan(RelativeSizeSpan(0.7f), 0, ss1.length, 0) // set size
+        val searchEditText = searchView.findViewById<View>(androidx.appcompat.R.id.search_src_text) as EditText
+        searchEditText.hint = ss1
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (produkAdapter != null) produkAdapter!!.filter.filter(newText)
+                return false
+            }
+        })
+
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
+                isSearch = true
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
+                isSearch = false
+                if (produkAdapter != null) produkAdapter!!.filter.filter("")
+                return true
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -217,35 +281,39 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_menu_lanjut -> {
-
-                produkSerializable = ProdukSerializable()
+                (activity as MainActivity).toolbar.collapseActionView()
+                val handler = Handler(Looper.getMainLooper())
                 val arrayProdukSerialization = ArrayList<ProdukSerializable>()
-                for (value in produks) {
-                    if (value.isFavorite) {
-                        arrayProdukSerialization.add(
-                            ProdukSerializable(
-                                        value.idItem, value.name, value.price
-                                , value.imageUrl,value.price.toInt(), 1, value.status
+                handler.postDelayed({
+                    produkSerializable = ProdukSerializable()
+                    for (value in produks) {
+                        if (value.isFavorite) {
+                            arrayProdukSerialization.add(
+                                ProdukSerializable(
+                                    value.idItem, value.name, value.price
+                                    , value.imageUrl,value.price.toInt(), 1, value.status
+                                )
                             )
-                        )
 //                        produkSerializable?.idItem = value.idItem
 //                        produkSerializable?.name = value.name
 //                        produkSerializable?.price = value.price
 //                        produkSerializable?.imgResource = value.imageResource
 //                        produkSerializable?.imgUrl = value.imageUrl
-                    } else {
-                        println("kosong")
+                        }
                     }
-                }
+                    if (arrayProdukSerialization.size > 0) {
+                        val intent = Intent(context, SelectedProdukListActivity::class.java)
+                        val args = Bundle()
+                        args.putSerializable("ARRAYLIST", arrayProdukSerialization)
+                        intent.putExtra("BUNDLE", args)
+//                    startActivity(intent)
+                        resultLauncher.launch(intent)
+                    } else
+                        Toast.makeText(requireContext(), R.string.silakan_cek_input_data, Toast.LENGTH_SHORT).show()
+                }, 1000)
 
-                if (arrayProdukSerialization.size > 0) {
-
-                    val intent = Intent(context, SelectedProdukListActivity::class.java)
-                    val args = Bundle()
-                    args.putSerializable("ARRAYLIST", arrayProdukSerialization)
-                    intent.putExtra("BUNDLE", args)
-                    startActivity(intent)
-                }
+                true
+            } R.id.action_menu_cari -> {
                 true
             } R.id.action_menu_bantuan -> {
                 tampilAlertDialogTutorial()

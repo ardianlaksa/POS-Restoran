@@ -17,6 +17,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -70,7 +73,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
     int jml_data = 0;
     ProgressDialog progressdialog;
     int datax = 0;
-
     int status = 0;
 
     @Override
@@ -104,33 +106,29 @@ public class DataTersimpanActivity extends AppCompatActivity {
         tvKet = (TextView)findViewById(R.id.tvKet);
         tv_count = (TextView)findViewById(R.id.text_count);
 
-
         fab_upload = findViewById(R.id.fab);
-        fab_upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                jml_data = databaseHandler.CountDataTersimpan();
-                AlertDialog.Builder builder = new AlertDialog.Builder(DataTersimpanActivity.this);
-                builder.setMessage("Lanjut upload " + jml_data + " data ke server ?");
-                builder.setCancelable(true);
+        fab_upload.setOnClickListener(view -> {
+            jml_data = databaseHandler.CountDataTersimpanUpload();
+            AlertDialog.Builder builder = new AlertDialog.Builder(DataTersimpanActivity.this);
+            builder.setMessage("Lanjut upload " + jml_data + " data ke server ?");
+            builder.setCancelable(true);
 
-                builder.setPositiveButton(
-                        "Ya",
-                        (dialog, id) -> {
-                            if(new CheckNetwork().checkingNetwork(getApplicationContext())){
-                                SendData();
-                            }else{
-                                Toast.makeText(DataTersimpanActivity.this, "Tidak ada koneksi internet !", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+            builder.setPositiveButton(
+                    "Ya",
+                    (dialog, id) -> {
+                        if(new CheckNetwork().checkingNetwork(getApplicationContext())){
+                            SendData();
+                        }else{
+                            Toast.makeText(DataTersimpanActivity.this, R.string.tidak_terkoneksi_internet, Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                builder.setNegativeButton(
-                        "Tidak",
-                        (dialog, id) -> dialog.cancel());
+            builder.setNegativeButton(
+                    "Tidak",
+                    (dialog, id) -> dialog.cancel());
 
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
+            AlertDialog alert = builder.create();
+            alert.show();
         });
 
         dataTersimpan = new ArrayList<>();
@@ -180,17 +178,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
             }
         });
-
-        int jml_datax = databaseHandler.CountDataTersimpan();
-        if(jml_datax==0){
-            tv_count.setVisibility(View.INVISIBLE);
-        }else if(jml_datax<=9){
-            tv_count.setVisibility(View.VISIBLE);
-            tv_count.setText(String.valueOf(jml_datax));
-        }else if(jml_datax>9){
-            tv_count.setVisibility(View.VISIBLE);
-            tv_count.setText("9+");
-        }
     }
 
     private void SendData() {
@@ -200,29 +187,17 @@ public class DataTersimpanActivity extends AppCompatActivity {
             protected void onPreExecute() {
                 super.onPreExecute();
                 progressdialog = new ProgressDialog(DataTersimpanActivity.this);
-
                 progressdialog.setIndeterminate(false);
-
                 progressdialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-
                 progressdialog.setCancelable(true);
-
                 progressdialog.setMessage("Upload data ke server ...");
-
                 progressdialog.setMax(jml_data);
-
                 progressdialog.show();
-
                 progressdialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Minimize",
                         (DialogInterface.OnClickListener) null);
-
             }
 
-            protected void onProgressUpdate(Integer... values)
-            {
-                progressdialog.setProgress(values[0]);
-
-            }
+            protected void onProgressUpdate(Integer... values) { progressdialog.setProgress(values[0]); }
 
             @Override
             protected void onPostExecute(String s) {
@@ -241,10 +216,14 @@ public class DataTersimpanActivity extends AppCompatActivity {
                             sendNotification(datax +" data berhasil diupload !");
                             if (progressdialog.isShowing())
                                 progressdialog.dismiss();
-
                             Log.d("INFORMASI", "suksesUpload: ");
+                            for (ItemTersimpan v : dataTersimpan) {
+                                int posisi = v.getNo()-1;
+                                dataTersimpan.get(posisi).setStatus("1");
+                                adapter.notifyItemChanged(posisi);
+                            }
+                            showHideFabUpload();
                         }
-
                     }else if(hasil.equalsIgnoreCase("Gagal.")){
                         if (progressdialog.isShowing())
                             progressdialog.dismiss();
@@ -257,8 +236,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override
@@ -269,9 +246,10 @@ public class DataTersimpanActivity extends AppCompatActivity {
                 String idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
                 String pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "");
 
-                List<ItemTersimpan> listDataTersimpan = databaseHandler.getDataTersimpanUpload();
-                String msg = null;
-                for (ItemTersimpan f : listDataTersimpan) {
+                List<ItemTersimpan> listDataTersimpanUpload = databaseHandler.getDataTersimpanUpload();
+
+                String msg = "";
+                for (ItemTersimpan f : listDataTersimpanUpload) {
                     try {
                         UploadData u = new UploadData();
 
@@ -306,13 +284,9 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
                         JSONObject jsonMsg = new JSONObject(msg);
 
-
                         if(jsonMsg.getString("message").equalsIgnoreCase("Berhasil.")){
                             datax++;
-                            databaseHandler.updateDataTersimpan(new ItemTersimpan(
-                                    f.getId(),
-                                    "1"
-                            ));
+                            databaseHandler.updateDataTersimpan(new ItemTersimpan(f.getId(),"1"));
                         }else{
                             Log.d("INFO_PENTING", "doInBackground: "+msg);
                         }
@@ -357,10 +331,9 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
     private void getDetailTersimpan(int idTrx) {
         itemDetailTersimpans.clear();
-        detailTersimpanAdater.notifyDataSetChanged();
 
         SQLiteDatabase db = databaseHandler.getReadableDatabase();
-        Cursor mCount= db.rawQuery("select * from detail_transaksi where id_trx='" + String.valueOf(idTrx) + "'", null);
+        Cursor mCount= db.rawQuery("select * from detail_transaksi where id_trx='" + idTrx + "'", null);
         mCount.moveToFirst();
         int countTersimpan= mCount.getInt(0);
         Log.d("DETAIL_TERSIMPAN", "getDetailTersimpan: "+mCount.getInt(0)+"/"+mCount.getInt(1)+"/"+mCount.getString(2)+"/"+mCount.getString(3)+"/"+mCount.getInt(4)+"/"+mCount.getInt(5));
@@ -390,21 +363,14 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
     private void getData() {
         dataTersimpan.clear();
-        adapter.notifyDataSetChanged();
 
         int jml_data = databaseHandler.CountDataTersimpan2();
 
         if(jml_data==0){
             tvKet.setVisibility(View.VISIBLE);
             fab_upload.setVisibility(View.GONE);
-
         }else{
-            int jml_data2 = databaseHandler.CountDataTersimpan();
-            if(jml_data2==0){
-                fab_upload.setVisibility(View.GONE);
-            }else{
-                fab_upload.setVisibility(View.VISIBLE);
-            }
+            showHideFabUpload();
             tvKet.setVisibility(View.GONE);
         }
 
@@ -469,5 +435,72 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
         // Will display the notification in the notification bar
         notificationManager.notify(1, builder.build());
+    }
+
+    private void showHideFabUpload(){
+        int jmlData = databaseHandler.CountDataTersimpanUpload();
+        if(jmlData==0){
+            fab_upload.setVisibility(View.GONE);
+            tv_count.setText("");
+            tv_count.setVisibility(View.INVISIBLE);
+        }else if(jmlData<=9){
+            tv_count.setVisibility(View.VISIBLE);
+            tv_count.setText(String.valueOf(jmlData));
+        }else {
+            tv_count.setVisibility(View.VISIBLE);
+            tv_count.setText("9+");
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_help, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_menu_bantuan) {
+            tampilAlertDialogTutorial();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void tampilAlertDialogTutorial(){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setMessage("" +
+                "1. Status Belum Sinkron warna\n" +
+                "    orange : menandakan data\n" +
+                "    transaksi belum tersinkron\n" +
+                "    dengan server.\n" +
+                "2. Status Sudah sinkron warna\n" +
+                "    hijau : menandakan data\n" +
+                "    transaksi sudah tersinkron dengan\n" +
+                "    server.\n" +
+                "3. Saat ada data dengan status\n" +
+                "    Belum Sinkron, akan tampil\n" +
+                "    tombol icon Upload warna hijau.\n" +
+                "    Tombol ini digunakan untuk\n" +
+                "    upload data transaksi yang\n" +
+                "    Belum Sinkron ke server.\n" +
+                "4. Angka background merah diatas\n" +
+                "    tombol upload menandakan\n" +
+                "    jumlah data dengan status\n" +
+                "    Belum Sinkron.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }

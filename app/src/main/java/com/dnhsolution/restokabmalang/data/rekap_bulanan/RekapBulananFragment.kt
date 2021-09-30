@@ -1,7 +1,6 @@
 package com.dnhsolution.restokabmalang.data.rekap_bulanan
 
 import android.content.Context
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -9,12 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.utilities.RekapBulananOnTask
@@ -109,10 +105,10 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
 
-        btnCari.setOnClickListener(View.OnClickListener {
+        btnCari.setOnClickListener{
 //            var ket = "Silahkan pilih"
 //
 //            if(selectedBln.equals("0")){
@@ -178,9 +174,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             recyclerView.adapter = adapterList
 
             btnReset.visibility = View.VISIBLE
-        })
+        }
 
-        btnReset.setOnClickListener(View.OnClickListener {
+        btnReset.setOnClickListener{
             spiBln.setSelection(0)
             spiThn.setSelection(0)
 
@@ -200,21 +196,16 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
                 }
             }
-
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-
             adapterList = context?.let {
                 RekapBulananListAdapter(
                     tempItemsBulanan,
                     it
                 )
             }
-
             recyclerView.adapter = adapterList
-
             btnReset.visibility = View.GONE
-
-        })
+        }
 
         spiThn.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -255,7 +246,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     isOpenedBln = true
                     return
                 }
-
                 selectedBln = spinBlnArray[position].idItem
 
 //                tempItemsBulanan = ArrayList()
@@ -303,8 +293,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             itemsBulanan!!.clear()
 
             if (success == 1) {
-
-
                 val rArray = jsonObj.getJSONArray("result")
                 for (i in 0 until rArray.length()) {
 
@@ -361,7 +349,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     val spinBlnAdapter = context?.let {
                         RekapBulananBlnSpinAdapter(
                             it,
-                            android.R.layout.simple_spinner_dropdown_item,
+                            R.layout.item_spi_bulan,
                             spinBlnArray
                         )
                     }

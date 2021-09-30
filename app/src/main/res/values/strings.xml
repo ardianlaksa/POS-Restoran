@@ -4,6 +4,7 @@
     <string name="title_home">Home</string>
     <string name="title_data">Rekap</string>
     <string name="title_tersimpan">Tersimpan</string>
+    <string name="title_wifi">Wifi</string>
     <!--<string name="title_rekap_bulanan">R. Bulanan</string>-->
     <string name="title_daftar_produk">Daftar Produk</string>
     <string name="title_proses">Proses</string>
@@ -31,8 +32,8 @@
     <string name="snack_bar_undo">Undo</string>
 
     <!--Notif-->
-    <string name="check_network">Tidak ada koneksi internet !</string>
-    <string name="check_input_data">Please check your input data</string>
+    <string name="tidak_terkoneksi_internet">Tidak ada koneksi internet !</string>
+    <string name="silakan_cek_input_data">Silakan cek input data</string>
     <string name="empty_data">Empty Data</string>
     <string name="error_data">Error Data</string>
     <string name="error_get_data">Error Get Data</string>
@@ -89,6 +90,7 @@
     <string name="transaksi_tersimpan">Transaksi Tersimpan</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
+    <string name="cari">Pencarian</string>
     <string name="previous">Previous</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>

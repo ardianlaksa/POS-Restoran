@@ -115,7 +115,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan,"server" )
+                            idBarang,nmBarang, harga, foto, keterangan,"server",-1,-1)
                     )
                 }
 
@@ -166,7 +166,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
 
             produks.add(
                 ProdukListElement(
-                    idBarang,nmBarang, harga, foto, keterangan, "lokal" )
+                    idBarang,nmBarang, harga, foto, keterangan, "lokal", -1 , -1)
             )
         }
 

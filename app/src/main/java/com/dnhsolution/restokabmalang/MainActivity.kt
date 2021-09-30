@@ -2,6 +2,7 @@ package com.dnhsolution.restokabmalang
 
 
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
@@ -14,6 +15,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.Response
@@ -30,7 +32,6 @@ import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
 import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
@@ -39,6 +40,7 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.fragment.app.FragmentManager
 
 
 class MainActivity : AppCompatActivity() {
@@ -56,80 +58,6 @@ class MainActivity : AppCompatActivity() {
 
     //    private lateinit var textMessage: TextView
 
-    private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-
-        when (item.itemId) {
-
-            R.id.navigation_home -> {
-
-                supportFragmentManager.beginTransaction()
-
-                    .replace(R.id.frameLayout, DashFragment()).commit()
-                return@OnNavigationItemSelectedListener true
-
-            }
-
-            R.id.navigation_transaksi -> {
-                if(status_batas.equals("nonaktif")){
-                    supportFragmentManager.beginTransaction()
-
-                        .replace(R.id.frameLayout, ProdukListFragment()).commit()
-                }else{
-                    val builder = AlertDialog.Builder(this)
-                    builder.setTitle("Pemberitahuan !")
-                    builder.setMessage("Menu Transaksi sementara tidak dapat diakses karena anda melebihi batas waktu sinkron.")
-
-                    builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-
-                    }
-
-                    builder.show()
-                }
-
-                return@OnNavigationItemSelectedListener true
-
-            }
-
-            R.id.navigation_data -> {
-
-//                textMessage.setText(R.string.title_data)
-
-
-
-                supportFragmentManager.beginTransaction()
-
-                    .replace(R.id.frameLayout, DataFragment()).commit()
-
-                return@OnNavigationItemSelectedListener true
-
-            }
-
-            R.id.navigation_data_tersimpan -> {
-
-                startActivity(Intent(this, DataTersimpanActivity::class.java))
-
-                return@OnNavigationItemSelectedListener true
-
-            }
-
-
-
-            R.id.navigation_master -> {
-
-//                textMessage.setText(R.string.title_sistem)
-
-                startActivity(Intent(this, MainMaster::class.java))
-
-                return@OnNavigationItemSelectedListener true
-
-            }
-
-        }
-
-        false
-
-    }
-
     var nama: String = ""
     var email: String = ""
     var telp: String = ""
@@ -138,57 +66,53 @@ class MainActivity : AppCompatActivity() {
     var databaseHandler: DatabaseHandler? = null
     var status_batas: String = ""
 
-    var handler: Handler = Handler()
     var mHandler: Handler? = null
     var navView: BottomNavigationView? = null
 
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+//            val data: Intent? = result.data
+            if(navView?.selectedItemId == R.id.navigation_home) {
+                val fm: FragmentManager = supportFragmentManager
+                val fragment: DashFragment =
+                    fm.findFragmentById(R.id.frameLayout) as DashFragment
+                fragment.batasSinkron()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         val sharedPreferences: SharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
-
         val tema = sharedPreferences.getString(Url.setTema, "0")
-
         when {
             tema!!.equals("0", ignoreCase = true) -> {
-
                 this@MainActivity.setTheme(R.style.Theme_First)
-
             }
             tema.equals("1", ignoreCase = true) -> {
-
                 this@MainActivity.setTheme(R.style.Theme_Second)
-
             }
             tema.equals("2", ignoreCase = true) -> {
-
                 this@MainActivity.setTheme(R.style.Theme_Third)
-
             }
             tema.equals("3", ignoreCase = true) -> {
-
                 this@MainActivity.setTheme(R.style.Theme_Fourth)
-
             }
             tema.equals("4", ignoreCase = true) -> {
-
                 this@MainActivity.setTheme(R.style.Theme_Fifth)
-
             }
             tema.equals("5", ignoreCase = true) -> {
-
                 this@MainActivity.setTheme(R.style.Theme_Sixth)
-
             }
         }
 
         if(CheckNetwork().checkingNetwork(this)) {
             getConfig()
         } else {
-            Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
 
         databaseHandler = DatabaseHandler(this)
@@ -208,70 +132,106 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
-
         setSupportActionBar(toolbar)
-
         supportActionBar!!.title = label
-
         navView = findViewById(R.id.nav_view)
+//        navView!!.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        navView?.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frameLayout, DashFragment()).commit()
+                    return@setOnItemSelectedListener true
+                }
 
-        navView!!.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+                R.id.navigation_transaksi -> {
+                    if(status_batas == "nonaktif"){
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.frameLayout, ProdukListFragment()).commit()
+                    }else{
+                        val builder = AlertDialog.Builder(this)
+                        builder.setTitle("Pemberitahuan !")
+                        builder.setMessage("Menu Transaksi sementara tidak dapat diakses karena anda melebihi batas waktu sinkron.")
+                        builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                        }
+                        builder.show()
+                    }
+                    return@setOnItemSelectedListener true
+                }
+
+                R.id.navigation_data -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frameLayout, DataFragment()).commit()
+                    return@setOnItemSelectedListener true
+                }
+
+                R.id.navigation_data_tersimpan -> {
+//                    startActivity(Intent(this, DataTersimpanActivity::class.java))
+                    resultLauncher.launch(Intent(this, DataTersimpanActivity::class.java))
+                    return@setOnItemSelectedListener false
+                }
+
+                R.id.navigation_master -> {
+                    startActivity(Intent(this, MainMaster::class.java))
+                    return@setOnItemSelectedListener false
+                }
+            }
+            false
+        }
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout, DashFragment()).commit()
 
-        //show badge in icon menu data tersimpan
-        val countDataTersimpan:Int = databaseHandler!!.CountDataTersimpan()
+        val db = databaseHandler?.readableDatabase
+        lihatCountBandge()
 
-        if(countDataTersimpan > 0){
-            var jml: String = ""
-            if(countDataTersimpan > 9){
-                jml = "9+"
-            }else{
-                jml = countDataTersimpan.toString()
-            }
-            BottomMenuHelper.showBadge(this, navView, R.id.navigation_data_tersimpan, jml)
-        }
-
-        val db = databaseHandler!!.readableDatabase
-
-        val cTrx = db.rawQuery(
+        val cTrx = db?.rawQuery(
             "SELECT tanggal_trx FROM transaksi WHERE status='0' ORDER BY tanggal_trx ASC LIMIT 1",
             null
         )
-        cTrx.moveToFirst()
+        cTrx?.moveToFirst()
 
-        val jml_trx : Int = databaseHandler!!.CountDataTersimpan()
+        val jml_trx : Int = databaseHandler?.CountDataTersimpanUpload() ?: 0
 
         if(jml_trx>0){
             val batas = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "3") ?: "0"
-            tgl_trx = formatDate(cTrx.getString(0), "yyyyMMdd")
+            tgl_trx = cTrx?.getString(0)?.let { formatDate(it, "yyyyMMdd") } ?: ""
             val tgl_now : String = getDateTime().toString()
             val tgl_batas : String = getDays(tgl_trx, batas.toInt())
 
             if(tgl_now.toInt() > tgl_batas.toInt()){
-                val sharedPreferences = this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+//                val sharedPreferences = this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
                 editor.putString(Url.SESSION_STATUS_BATAS, "aktif")
                 editor.apply()
-
                 navView!!.menu.findItem(R.id.navigation_transaksi).isEnabled = false
-
-
             }else{
-                val sharedPreferences = this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+//                val sharedPreferences = this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
                 editor.putString(Url.SESSION_STATUS_BATAS, "nonaktif")
                 editor.apply()
                 navView!!.menu.findItem(R.id.navigation_transaksi).isEnabled = true
             }
 
-            Log.d("TANGGAL", "tgl_trx="+tgl_trx+"/////tgl_now="+tgl_now+"/////tgl_batas="+tgl_batas)
+            cTrx?.close()
+            Log.d("TANGGAL", "tgl_trx=$tgl_trx/////tgl_now=$tgl_now/////tgl_batas=$tgl_batas")
         }else{
             navView!!.menu.findItem(R.id.navigation_transaksi).isEnabled = true
         }
+    }
 
-
+    private fun lihatCountBandge(){
+        //show badge in icon menu data tersimpan
+        val countDataTersimpan:Int = databaseHandler!!.CountDataTersimpanUpload()
+        if(countDataTersimpan > 0){
+            var jml = ""
+            jml = if(countDataTersimpan > 9){
+                "9+"
+            }else{
+                countDataTersimpan.toString()
+            }
+            BottomMenuHelper.showBadge(this, navView, R.id.navigation_data_tersimpan, jml)
+        }
     }
 
     fun DialogKelengkapan() {
@@ -555,7 +515,7 @@ class MainActivity : AppCompatActivity() {
 
     private val m_Runnable: Runnable = object : Runnable {
         override fun run() {
-            var countDataTersimpan:Int = databaseHandler!!.CountDataTersimpan()
+            var countDataTersimpan:Int = databaseHandler!!.CountDataTersimpanUpload()
             var jml: String = ""
             if(countDataTersimpan > 0){
 

@@ -8,9 +8,7 @@
     android:layout_margin="@dimen/_4">
 
     <LinearLayout
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingRight="6dp"
+        android:padding="@dimen/_5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -41,12 +39,12 @@
             android:padding="@dimen/_4">
 
             <TextView
-                android:layout_weight="0.4"
+                android:layout_weight="0.6"
                 android:id="@+id/tvTgl"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="04-10-2019"
+                android:text="@string/tanggal_kosong"
                 android:textSize="@dimen/f_16"
                 android:textColor="@android:color/holo_red_light"/>
 
@@ -55,8 +53,8 @@
                 android:id="@+id/tvOmzet"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:gravity="center|right"
-                android:text="Rp. 0"
+                android:gravity="center|end"
+                android:text="@string/rp_0"
                 android:textStyle="bold"
                 android:textSize="@dimen/f_18"
                 android:textColor="@android:color/holo_red_light"/>
