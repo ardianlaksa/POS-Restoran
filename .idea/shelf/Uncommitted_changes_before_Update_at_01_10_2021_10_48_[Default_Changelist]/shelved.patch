@@ -1,0 +1,1192 @@
+Index: app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.java
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.java b/app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.java
+deleted file mode 100644
+--- a/app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.java	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ /dev/null	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
+@@ -1,506 +0,0 @@
+-package com.dnhsolution.restokabmalang.tersimpan;
+-
+-import android.app.AlertDialog;
+-import android.app.NotificationManager;
+-import android.app.PendingIntent;
+-import android.app.ProgressDialog;
+-import android.content.Context;
+-import android.content.DialogInterface;
+-import android.content.Intent;
+-import android.content.SharedPreferences;
+-import android.database.Cursor;
+-import android.database.sqlite.SQLiteDatabase;
+-import android.database.sqlite.SQLiteException;
+-import android.graphics.BitmapFactory;
+-import android.os.AsyncTask;
+-import android.os.Bundle;
+-import android.util.Log;
+-import android.view.GestureDetector;
+-import android.view.LayoutInflater;
+-import android.view.Menu;
+-import android.view.MenuInflater;
+-import android.view.MenuItem;
+-import android.view.MotionEvent;
+-import android.view.View;
+-import android.widget.LinearLayout;
+-import android.widget.TextView;
+-import android.widget.Toast;
+-
+-import androidx.appcompat.app.AppCompatActivity;
+-import androidx.appcompat.widget.Toolbar;
+-import androidx.core.app.NotificationCompat;
+-import androidx.recyclerview.widget.DefaultItemAnimator;
+-import androidx.recyclerview.widget.DividerItemDecoration;
+-import androidx.recyclerview.widget.LinearLayoutManager;
+-import androidx.recyclerview.widget.RecyclerView;
+-
+-import com.dnhsolution.restokabmalang.R;
+-import com.dnhsolution.restokabmalang.database.DatabaseHandler;
+-import com.dnhsolution.restokabmalang.utilities.CheckNetwork;
+-import com.dnhsolution.restokabmalang.utilities.Url;
+-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+-
+-import org.json.JSONArray;
+-import org.json.JSONException;
+-import org.json.JSONObject;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-public class DataTersimpanActivity extends AppCompatActivity {
+-
+-    public static final String NOTIFICATION_CHANNEL_ID = "10001" ;
+-    private final static String default_notification_channel_id = "default" ;
+-
+-    SharedPreferences sharedPreferences;
+-    RecyclerView rvData;
+-    List<ItemTersimpan> dataTersimpan;
+-    LinearLayout linearLayout;
+-
+-    private LinearLayoutManager linearLayoutManager;
+-    private DividerItemDecoration dividerItemDecoration;
+-    private RecyclerView.Adapter adapter;
+-    View ChildView;
+-    int RecyclerViewClickedItemPos;
+-
+-    DatabaseHandler databaseHandler;
+-    TextView tvKet;
+-    FloatingActionButton fab_upload;
+-
+-    DetailTersimpanAdapter detailTersimpanAdater;
+-    List<ItemDetailTersimpan> itemDetailTersimpans = new ArrayList<>();
+-    TextView tv_count;
+-    int jml_data = 0;
+-    ProgressDialog progressdialog;
+-    int datax = 0;
+-    int status = 0;
+-
+-    @Override
+-    protected void onCreate(Bundle savedInstanceState) {
+-        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+-        String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
+-        String tema = sharedPreferences.getString(Url.setTema, "0");
+-        if(tema.equalsIgnoreCase("0")){
+-            DataTersimpanActivity.this.setTheme(R.style.Theme_First);
+-        }else if(tema.equalsIgnoreCase("1")){
+-            DataTersimpanActivity.this.setTheme(R.style.Theme_Second);
+-        }else if(tema.equalsIgnoreCase("2")){
+-            DataTersimpanActivity.this.setTheme(R.style.Theme_Third);
+-        }else if(tema.equalsIgnoreCase("3")){
+-            DataTersimpanActivity.this.setTheme(R.style.Theme_Fourth);
+-        }else if(tema.equalsIgnoreCase("4")){
+-            DataTersimpanActivity.this.setTheme(R.style.Theme_Fifth);
+-        }else if(tema.equalsIgnoreCase("5")){
+-            DataTersimpanActivity.this.setTheme(R.style.Theme_Sixth);
+-        }
+-        super.onCreate(savedInstanceState);
+-        setContentView(R.layout.activity_data_tersimpan);
+-        Toolbar toolbar = findViewById(R.id.toolbar);
+-        setSupportActionBar(toolbar);
+-        getSupportActionBar().setTitle(label);
+-
+-        databaseHandler = new DatabaseHandler(DataTersimpanActivity.this);
+-
+-        rvData = (RecyclerView) findViewById(R.id.rvData);
+-
+-        tvKet = (TextView)findViewById(R.id.tvKet);
+-        tv_count = (TextView)findViewById(R.id.text_count);
+-
+-        fab_upload = findViewById(R.id.fab);
+-        fab_upload.setOnClickListener(view -> {
+-            jml_data = databaseHandler.CountDataTersimpanUpload();
+-            AlertDialog.Builder builder = new AlertDialog.Builder(DataTersimpanActivity.this);
+-            builder.setMessage("Lanjut upload " + jml_data + " data ke server ?");
+-            builder.setCancelable(true);
+-
+-            builder.setPositiveButton(
+-                    "Ya",
+-                    (dialog, id) -> {
+-                        if(new CheckNetwork().checkingNetwork(getApplicationContext())){
+-                            SendData();
+-                        }else{
+-                            Toast.makeText(DataTersimpanActivity.this, R.string.tidak_terkoneksi_internet, Toast.LENGTH_SHORT).show();
+-                        }
+-                    });
+-
+-            builder.setNegativeButton(
+-                    "Tidak",
+-                    (dialog, id) -> dialog.cancel());
+-
+-            AlertDialog alert = builder.create();
+-            alert.show();
+-        });
+-
+-        dataTersimpan = new ArrayList<>();
+-        adapter = new TersimpanAdater(dataTersimpan, DataTersimpanActivity.this);
+-
+-        linearLayoutManager = new LinearLayoutManager(DataTersimpanActivity.this);
+-        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+-        dividerItemDecoration = new DividerItemDecoration(getApplicationContext(), linearLayoutManager.getOrientation());
+-
+-        rvData.setHasFixedSize(true);
+-        rvData.setLayoutManager(linearLayoutManager);
+-        //recyclerView.addItemDecoration(dividerItemDecoration);
+-        rvData.setAdapter(adapter);
+-
+-        getData();
+-
+-        rvData.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+-
+-            GestureDetector gestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+-
+-                @Override public boolean onSingleTapUp(MotionEvent motionEvent) {
+-                    return true;
+-                }
+-
+-            });
+-            @Override
+-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+-                ChildView = rvData.findChildViewUnder(e.getX(), e.getY());
+-
+-                if(ChildView != null && gestureDetector.onTouchEvent(e)) {
+-                    RecyclerViewClickedItemPos = rvData.getChildAdapterPosition(ChildView);
+-                    Log.d("hhhhuu", String.valueOf(RecyclerViewClickedItemPos));
+-                    int id_data = dataTersimpan.get(RecyclerViewClickedItemPos).getId();
+-                    DialogDetailTrx(id_data);
+-                    //Toast.makeText(DataTersimpanActivity.this, String.valueOf(id_data), Toast.LENGTH_SHORT).show();
+-                }
+-                return false;
+-            }
+-
+-            @Override
+-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+-
+-            }
+-
+-            @Override
+-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+-
+-            }
+-        });
+-    }
+-
+-    private void SendData() {
+-        class SendData extends AsyncTask<Void, Integer, String> {
+-
+-            @Override
+-            protected void onPreExecute() {
+-                super.onPreExecute();
+-                progressdialog = new ProgressDialog(DataTersimpanActivity.this);
+-                progressdialog.setIndeterminate(false);
+-                progressdialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+-                progressdialog.setCancelable(true);
+-                progressdialog.setMessage("Upload data ke server ...");
+-                progressdialog.setMax(jml_data);
+-                progressdialog.show();
+-                progressdialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Minimize",
+-                        (DialogInterface.OnClickListener) null);
+-            }
+-
+-            protected void onProgressUpdate(Integer... values) { progressdialog.setProgress(values[0]); }
+-
+-            @Override
+-            protected void onPostExecute(String s) {
+-                super.onPostExecute(s);
+-                Log.d("HASIL", s);
+-                String hasil="";
+-                if (progressdialog.isShowing())
+-                    progressdialog.dismiss();
+-                try {
+-                    JSONObject jsonObject = new JSONObject(s);
+-                    hasil = jsonObject.getString("message");
+-
+-                    Log.d("HASIL_JSON", jsonObject.getString("message"));
+-                    if(hasil.equalsIgnoreCase("Berhasil.")){
+-                        if(datax==jml_data){
+-                            sendNotification(datax +" data berhasil diupload !");
+-                            if (progressdialog.isShowing())
+-                                progressdialog.dismiss();
+-                            Log.d("INFORMASI", "suksesUpload: ");
+-                            for (ItemTersimpan v : dataTersimpan) {
+-                                int posisi = v.getNo()-1;
+-                                dataTersimpan.get(posisi).setStatus("1");
+-                                adapter.notifyItemChanged(posisi);
+-                            }
+-                            showHideFabUpload();
+-                        }
+-                    }else if(hasil.equalsIgnoreCase("Gagal.")){
+-                        if (progressdialog.isShowing())
+-                            progressdialog.dismiss();
+-                        Log.d("INFORMASI", "gagalUpload: ");
+-                    }else{
+-                        if (progressdialog.isShowing())
+-                            progressdialog.dismiss();
+-                        Log.d("INFORMASI", "gagalUpload: "+s);
+-                    }
+-                } catch (JSONException e) {
+-                    e.printStackTrace();
+-                }
+-            }
+-
+-            @Override
+-            protected String doInBackground(Void... params) {
+-
+-                SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+-
+-                String idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
+-                String pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "");
+-
+-                List<ItemTersimpan> listDataTersimpanUpload = databaseHandler.getDataTersimpanUpload();
+-
+-                String msg = "";
+-                for (ItemTersimpan f : listDataTersimpanUpload) {
+-                    try {
+-                        UploadData u = new UploadData();
+-
+-                        JSONObject rootObject = new JSONObject();
+-                        rootObject.put("idTmptUsaha",idTmptUsaha);
+-                        rootObject.put("user",pengguna);
+-                        rootObject.put("disc_rp",f.getDisc_rp());
+-                        String disc = f.getDisc();
+-                        if(disc.isEmpty()){
+-                            disc = f.getDisc_rp();
+-                        }
+-                        rootObject.put("disc",disc);
+-                        rootObject.put("omzet",f.getOmzet());
+-
+-                        JSONArray jsonArr = new JSONArray();
+-
+-                        List<ItemDetailTersimpan> listDetailTrx=databaseHandler.getDetailTersimpan(String.valueOf(f.getId()));
+-                        for(ItemDetailTersimpan d:listDetailTrx){
+-                            JSONObject pnObj = new JSONObject();
+-                            pnObj.put("idProduk",d.getId_produk());
+-                            pnObj.put("nmProduk",d.getNama());
+-                            pnObj.put("qty",d.getQty());
+-                            pnObj.put("hrgProduk",d.getHarga());
+-                            jsonArr.put(pnObj);
+-                        }
+-                        rootObject.put("produk",jsonArr);
+-                        msg = u.uploadData(rootObject.toString());
+-
+-                        Log.e("INFO_PENTING", "NUMBER: "+status);
+-                        status++;
+-                        publishProgress(status);
+-
+-                        JSONObject jsonMsg = new JSONObject(msg);
+-
+-                        if(jsonMsg.getString("message").equalsIgnoreCase("Berhasil.")){
+-                            datax++;
+-                            databaseHandler.updateDataTersimpan(new ItemTersimpan(f.getId(),"1"));
+-                        }else{
+-                            Log.d("INFO_PENTING", "doInBackground: "+msg);
+-                        }
+-                    } catch (Exception e) {
+-                        cancel(true);
+-                        e.printStackTrace();
+-                    }
+-                }
+-
+-                return msg;
+-            }
+-        }
+-        SendData uv = new SendData();
+-        uv.execute();
+-    }
+-
+-    private void DialogDetailTrx(int idTrx) {
+-        final AlertDialog dialogBuilder = new AlertDialog.Builder(this).create();
+-        LayoutInflater inflater = this.getLayoutInflater();
+-        View dialogView = inflater.inflate(R.layout.dialog_detail_rekap_harian, null);
+-
+-        final RecyclerView rvDetail;
+-        final TextView tvTrx;
+-
+-
+-        rvDetail = (RecyclerView)dialogView.findViewById(R.id.recyclerView);
+-        tvTrx = (TextView) dialogView.findViewById(R.id.tvNoTrx);
+-
+-        tvTrx.setText(String.valueOf(idTrx));
+-
+-        detailTersimpanAdater= new DetailTersimpanAdapter(itemDetailTersimpans, DataTersimpanActivity.this);
+-        RecyclerView.LayoutManager mLayoutManagerss = new LinearLayoutManager(DataTersimpanActivity.this);
+-        rvDetail.setLayoutManager(mLayoutManagerss);
+-        rvDetail.setItemAnimator(new DefaultItemAnimator());
+-        rvDetail.setAdapter(detailTersimpanAdater);
+-
+-        getDetailTersimpan(idTrx);
+-
+-        dialogBuilder.setView(dialogView);
+-        dialogBuilder.show();
+-    }
+-
+-    private void getDetailTersimpan(int idTrx) {
+-        itemDetailTersimpans.clear();
+-
+-        SQLiteDatabase db = databaseHandler.getReadableDatabase();
+-        Cursor mCount= db.rawQuery("select * from detail_transaksi where id_trx='" + idTrx + "'", null);
+-        mCount.moveToFirst();
+-        int countTersimpan= mCount.getInt(0);
+-        Log.d("DETAIL_TERSIMPAN", "getDetailTersimpan: "+mCount.getInt(0)+"/"+mCount.getInt(1)+"/"+mCount.getString(2)+"/"+mCount.getString(3)+"/"+mCount.getInt(4)+"/"+mCount.getInt(5));
+-      //  Toast.makeText(this, String.valueOf(idTrx), Toast.LENGTH_LONG).show();
+-        mCount.close();
+-
+-        try {
+-            List<ItemDetailTersimpan> listDetailTersimpan = databaseHandler.getDetailTersimpan(String.valueOf(idTrx));
+-            int no = 1;
+-            for (ItemDetailTersimpan f : listDetailTersimpan) {
+-                ItemDetailTersimpan it = new ItemDetailTersimpan();
+-                it.setId(f.getId());
+-                it.setNama(f.getNama());
+-                it.setQty(f.getQty());
+-                it.setHarga(f.getHarga());
+-                it.setNo(no);
+-                int total = (Integer.parseInt(f.getQty())) * (Integer.parseInt(f.getHarga()));
+-                it.setTotal(String.valueOf(total));
+-                itemDetailTersimpans.add(it);
+-                no++;
+-            }
+-        } catch (SQLiteException e) {
+-            e.printStackTrace();
+-        }
+-        detailTersimpanAdater.notifyDataSetChanged();
+-    }
+-
+-    private void getData() {
+-        dataTersimpan.clear();
+-
+-        int jml_data = databaseHandler.CountDataTersimpan2();
+-
+-        if(jml_data==0){
+-            tvKet.setVisibility(View.VISIBLE);
+-            fab_upload.setVisibility(View.GONE);
+-        }else{
+-            showHideFabUpload();
+-            tvKet.setVisibility(View.GONE);
+-        }
+-
+-        try {
+-            List<ItemTersimpan> listDataTersimpan = databaseHandler.getDataTersimpan();
+-            int nomer = 1;
+-            for (ItemTersimpan f : listDataTersimpan) {
+-                ItemTersimpan it = new ItemTersimpan();
+-                it.setId(f.getId());
+-                it.setNo(nomer);
+-                it.setTanggal_trx(f.getTanggal_trx());
+-                it.setDisc(f.getDisc());
+-                it.setOmzet(f.getOmzet());
+-                it.setDisc_rp(f.getDisc_rp());
+-                it.setStatus(f.getStatus());
+-                dataTersimpan.add(it);
+-
+-                nomer++;
+-            }
+-        } catch (SQLiteException e) {
+-            e.printStackTrace();
+-        }
+-        Log.d("OP_TERUPDATE", String.valueOf(dataTersimpan.size()));
+-        adapter.notifyDataSetChanged();
+-    }
+-
+-    @Override
+-    protected void onResume() {
+-        super.onResume();
+-        String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
+-        getSupportActionBar().setTitle(label);
+-        String tema = sharedPreferences.getString(Url.setTema, "0");
+-        if(tema.equalsIgnoreCase("0")){
+-            this.setTheme(R.style.Theme_First);
+-        }else if(tema.equalsIgnoreCase("1")){
+-            this.setTheme(R.style.Theme_Second);
+-        }else if(tema.equalsIgnoreCase("2")){
+-            this.setTheme(R.style.Theme_Third);
+-        }else if(tema.equalsIgnoreCase("3")){
+-            this.setTheme(R.style.Theme_Fourth);
+-        }else if(tema.equalsIgnoreCase("4")){
+-            this.setTheme(R.style.Theme_Fifth);
+-        }else if(tema.equalsIgnoreCase("5")){
+-            this.setTheme(R.style.Theme_Sixth);
+-        }
+-    }
+-
+-    public void sendNotification(String message) {
+-
+-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+-        builder.setSmallIcon(android.R.drawable.ic_dialog_info);
+-        Intent intent = new Intent(getApplicationContext(), DataTersimpanActivity.class);
+-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+-        builder.setContentIntent(pendingIntent);
+-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.logo_sipanji));
+-        String app_name = String.valueOf(R.string.app_name);
+-        builder.setContentTitle(app_name);
+-        builder.setContentText(message);
+-       // builder.setSubText("Tap to view the website.");
+-
+-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+-
+-        // Will display the notification in the notification bar
+-        notificationManager.notify(1, builder.build());
+-    }
+-
+-    private void showHideFabUpload(){
+-        int jmlData = databaseHandler.CountDataTersimpanUpload();
+-        if(jmlData==0){
+-            fab_upload.setVisibility(View.GONE);
+-            tv_count.setText("");
+-            tv_count.setVisibility(View.INVISIBLE);
+-        }else if(jmlData<=9){
+-            tv_count.setVisibility(View.VISIBLE);
+-            tv_count.setText(String.valueOf(jmlData));
+-        }else {
+-            tv_count.setVisibility(View.VISIBLE);
+-            tv_count.setText("9+");
+-        }
+-    }
+-
+-    @Override
+-    public void onBackPressed() {
+-        setResult(RESULT_OK);
+-        super.onBackPressed();
+-    }
+-
+-    @Override
+-    public boolean onCreateOptionsMenu(Menu menu) {
+-        MenuInflater inflater = getMenuInflater();
+-        inflater.inflate(R.menu.menu_help, menu);
+-        return true;
+-    }
+-
+-    public boolean onOptionsItemSelected(MenuItem item) {
+-        if (item.getItemId() == R.id.action_menu_bantuan) {
+-            tampilAlertDialogTutorial();
+-            return true;
+-        }
+-
+-        return super.onOptionsItemSelected(item);
+-    }
+-
+-    private void tampilAlertDialogTutorial(){
+-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+-        alertDialog.setMessage("" +
+-                "1. Status Belum Sinkron warna\n" +
+-                "    orange : menandakan data\n" +
+-                "    transaksi belum tersinkron\n" +
+-                "    dengan server.\n" +
+-                "2. Status Sudah sinkron warna\n" +
+-                "    hijau : menandakan data\n" +
+-                "    transaksi sudah tersinkron dengan\n" +
+-                "    server.\n" +
+-                "3. Saat ada data dengan status\n" +
+-                "    Belum Sinkron, akan tampil\n" +
+-                "    tombol icon Upload warna hijau.\n" +
+-                "    Tombol ini digunakan untuk\n" +
+-                "    upload data transaksi yang\n" +
+-                "    Belum Sinkron ke server.\n" +
+-                "4. Angka background merah diatas\n" +
+-                "    tombol upload menandakan\n" +
+-                "    jumlah data dengan status\n" +
+-                "    Belum Sinkron.");
+-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+-                new DialogInterface.OnClickListener() {
+-                    public void onClick(DialogInterface dialog, int which) {
+-                        dialog.dismiss();
+-                    }
+-                });
+-        alertDialog.show();
+-    }
+-}
+Index: app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.dnhsolution.restokabmalang.transaksi.produk_list\r\n\r\nimport android.app.Activity\r\nimport android.app.AlertDialog\r\nimport android.app.ProgressDialog\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.content.SharedPreferences\r\nimport android.os.AsyncTask\r\nimport android.os.Bundle\r\nimport android.os.Handler\r\nimport android.os.Looper\r\nimport android.text.SpannableString\r\nimport android.text.style.RelativeSizeSpan\r\nimport android.util.Log\r\nimport android.view.*\r\nimport android.view.inputmethod.EditorInfo\r\nimport android.widget.Button\r\nimport android.widget.EditText\r\nimport android.widget.Toast\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport androidx.appcompat.widget.SearchView\r\nimport androidx.fragment.app.Fragment\r\nimport com.android.volley.Request\r\nimport com.android.volley.Response\r\nimport com.android.volley.RetryPolicy\r\nimport com.android.volley.VolleyError\r\nimport com.android.volley.toolbox.StringRequest\r\nimport com.android.volley.toolbox.Volley\r\nimport com.dnhsolution.restokabmalang.MainActivity\r\nimport com.dnhsolution.restokabmalang.R\r\nimport com.dnhsolution.restokabmalang.database.DatabaseHandler\r\nimport com.dnhsolution.restokabmalang.sistem.produk.ItemProduk\r\nimport com.dnhsolution.restokabmalang.transaksi.ProdukSerializable\r\nimport com.dnhsolution.restokabmalang.transaksi.selected_produk_list.SelectedProdukListActivity\r\nimport com.dnhsolution.restokabmalang.utilities.CheckNetwork\r\nimport com.dnhsolution.restokabmalang.utilities.ProdukOnTask\r\nimport com.dnhsolution.restokabmalang.utilities.Url\r\nimport kotlinx.android.synthetic.main.activity_main.*\r\nimport kotlinx.android.synthetic.main.fragment_produk_list.*\r\nimport org.json.JSONException\r\nimport org.json.JSONObject\r\nimport java.util.*\r\nimport kotlin.collections.ArrayList\r\nimport kotlin.collections.set\r\n\r\nclass ProdukListFragment:Fragment(), ProdukOnTask {\r\n\r\n    private lateinit var searchView: SearchView\r\n    private var valueArgsFromKeranjang: Int? = null\r\n    private var produkAdapter: ProdukListAdapter? = null\r\n    private var idTmpUsaha: String = \"0\"\r\n\r\n    private val _tag = javaClass.simpleName\r\n    private var jsonTask: AsyncTask<String, Void, String?>? = null\r\n    private val favoritedBookNamesKey = \"favoritedBookNamesKey\"\r\n    var produkSerializable: ProdukSerializable? = null\r\n    private var produks:ArrayList<ProdukListElement> = ArrayList()\r\n\r\n    var databaseHandler: DatabaseHandler? = null\r\n\r\n    var nama: String = \"\"\r\n    var email: String = \"\"\r\n    var telp: String = \"\"\r\n    var alamat: String = \"\"\r\n    var isSearch = false\r\n\r\n    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())\r\n    { result ->\r\n        if (result.resultCode == Activity.RESULT_OK) {\r\n            // There are no request codes\r\n//            val data: Intent? = result.data\r\n            for(v in produks){\r\n                if(v.isFavorite)\r\n                    v.toggleFavorite()\r\n            }\r\n            produkAdapter?.notifyDataSetChanged()\r\n        }\r\n    }\r\n\r\n    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {\r\n        return inflater.inflate(R.layout.fragment_produk_list,container,false)\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        setHasOptionsMenu(true)\r\n        Log.i(_tag,\"onCreate\")\r\n\r\n        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)\r\n        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, \"-1\").toString()\r\n\r\n        databaseHandler = DatabaseHandler(requireContext())\r\n\r\n        val alamat = sharedPreferences?.getString(Url.SESSION_ALAMAT, \"0\")\r\n        val email = sharedPreferences?.getString(Url.SESSION_EMAIL, \"0\")\r\n        val telp = sharedPreferences?.getString(Url.SESSION_TELP, \"0\")\r\n        val namausaha = sharedPreferences?.getString(Url.SESSION_NAMA_TEMPAT_USAHA, \"0\")\r\n\r\n//        if(alamat!!.equals(\"0\", ignoreCase = true) || email!!.equals(\"0\", ignoreCase = true) ||\r\n//            telp!!.equals(\"0\", ignoreCase = true) || namausaha!!.equals(\"0\", ignoreCase = true)){\r\n//            DialogKelengkapan()\r\n//        }\r\n\r\n        if(CheckNetwork().checkingNetwork(requireContext())) {\r\n            val stringUrl = \"${Url.getProduk}?idTmpUsaha=$idTmpUsaha\"\r\n            Log.i(_tag,stringUrl)\r\n            jsonTask = ProdukListJsonTask(this).execute(stringUrl)\r\n        } else {\r\n            getDataLokal()\r\n           //Toast.makeText(context, getString(R.string.check_network), Toast.LENGTH_SHORT).show()\r\n        }\r\n\r\n//        getDataLokal()\r\n\r\n        gvMainActivity.setOnItemClickListener { _, _, position, _ ->\r\n            val produk = produks[position]\r\n            produk.toggleFavorite()\r\n            produkAdapter?.notifyDataSetChanged()\r\n        }\r\n\r\n        if(MainActivity.adTransaksi == 1) return\r\n\r\n//        tampilAlertDialogTutorial()\r\n\r\n        MainActivity.adTransaksi = 1\r\n    }\r\n\r\n    private fun tampilAlertDialogTutorial(){\r\n        val alertDialog = AlertDialog.Builder(requireContext()).create()\r\n        alertDialog.setMessage(\"\" +\r\n                \"1. Pilih produk yang akan digunakan\\n\" +\r\n                \"    untuk transaksi, centang hijau\\n\" +\r\n                \"    saat produk terpilih.\\n\" +\r\n                \"2. Tombol icon (+) samping icon [?]\\n\" +\r\n                \"    di kanan atas untuk mulai\\n\" +\r\n                \"    transaksi dengan produk yang\\n\" +\r\n                \"    dipilih.\")\r\n        alertDialog.setButton(\r\n            AlertDialog.BUTTON_NEGATIVE, \"OK\"\r\n        ) { dialog, _ -> dialog.dismiss() }\r\n        alertDialog.show()\r\n    }\r\n\r\n    override fun produkOnTask(result: String?) {\r\n        if (result == null) {\r\n            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()\r\n            return\r\n        } else if (result == \"\") {\r\n            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()\r\n            return\r\n        }\r\n\r\n        Log.e(\"Debug\", \"Response from url:$result\")\r\n        try {\r\n            val jsonObj = JSONObject(result)\r\n            val success = jsonObj.getInt(\"success\")\r\n            val message = jsonObj.getString(\"message\")\r\n            if (success == 1) {\r\n\r\n                val rArray = jsonObj.getJSONArray(\"result\")\r\n                for (i in 0 until rArray.length()) {\r\n\r\n                    val idBarang = rArray.getJSONObject(i).getInt(\"ID_BARANG\")\r\n                    val harga = rArray.getJSONObject(i).getString(\"HARGA\")\r\n                    val foto = rArray.getJSONObject(i).getString(\"FOTO\")\r\n                    val nmBarang = rArray.getJSONObject(i).getString(\"NM_BARANG\")\r\n                    val keterangan = rArray.getJSONObject(i).getString(\"KETERANGAN\")\r\n                    val isPajak = rArray.getJSONObject(i).getInt(\"ISPAJAK\")\r\n                    val jnsProduk = rArray.getJSONObject(i).getInt(\"JENIS_PRODUK\")\r\n\r\n                    produks.add(\r\n                        ProdukListElement(\r\n                            idBarang,nmBarang, harga, foto, keterangan,\"server\",isPajak,jnsProduk)\r\n                    )\r\n                }\r\n\r\n                if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()\r\n                else produkAdapter =\r\n                    ProdukListAdapter(requireContext(), produks)\r\n\r\n                if (gvMainActivity == null) return\r\n                gvMainActivity.adapter = produkAdapter\r\n\r\n            } else {\r\n                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()\r\n            }\r\n        } catch (e: JSONException) {\r\n            e.printStackTrace()\r\n            Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()\r\n        }\r\n    }\r\n\r\n    private fun getDataLokal() {\r\n        produks.clear()\r\n\r\n        val jmlData = databaseHandler!!.CountDataProduk()\r\n        if (jmlData == 0) {\r\n            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()\r\n        }\r\n\r\n        val listProduk: List<ItemProduk> = databaseHandler!!.dataProduk2\r\n\r\n        for(e in listProduk){\r\n            val idBarang = e.id_barang.toInt()\r\n            val harga = e.harga\r\n            val foto = e.url_image\r\n            val nmBarang = e.nama_barang\r\n            val keterangan = e.keterangan\r\n\r\n            produks.add(\r\n                ProdukListElement(\r\n                    idBarang,nmBarang, harga, foto, keterangan, \"lokal\",-1,-1)\r\n            )\r\n        }\r\n\r\n        if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()\r\n        else produkAdapter =\r\n            ProdukListAdapter(requireContext(), produks)\r\n\r\n        if (gvMainActivity == null) return\r\n        gvMainActivity.adapter = produkAdapter\r\n    }\r\n\r\n    override fun onSaveInstanceState(outState: Bundle) {\r\n        super.onSaveInstanceState(outState)\r\n\r\n        val favoritedProdukNames = ArrayList<Int>()\r\n        for (Produk in produks) {\r\n            if (Produk.isFavorite) {\r\n                favoritedProdukNames.add(Produk.idItem)\r\n            }\r\n        }\r\n\r\n        outState.putIntegerArrayList(favoritedBookNamesKey, favoritedProdukNames)\r\n    }\r\n\r\n    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {\r\n        super.onCreateOptionsMenu(menu, inflater)\r\n        // Inflate the menu; this adds items to the action bar if it is present.\r\n        inflater.inflate(R.menu.menu_transaksi, menu)\r\n        val searchItem = menu.findItem(R.id.action_menu_cari)\r\n        searchView = searchItem.actionView as SearchView\r\n        searchView.imeOptions = EditorInfo.IME_ACTION_DONE\r\n        searchView.onActionViewExpanded()\r\n        val stringTextSearch:CharSequence = getString(R.string.cari)\r\n        val ss1 = SpannableString(stringTextSearch)\r\n        ss1.setSpan(RelativeSizeSpan(0.7f), 0, ss1.length, 0) // set size\r\n        val searchEditText = searchView.findViewById<View>(androidx.appcompat.R.id.search_src_text) as EditText\r\n        searchEditText.hint = ss1\r\n\r\n        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {\r\n            override fun onQueryTextSubmit(query: String): Boolean {\r\n                return false\r\n            }\r\n\r\n            override fun onQueryTextChange(newText: String): Boolean {\r\n                if (produkAdapter != null) produkAdapter!!.filter.filter(newText)\r\n                return false\r\n            }\r\n        })\r\n\r\n        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {\r\n            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {\r\n                isSearch = true\r\n                return true\r\n            }\r\n\r\n            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {\r\n                isSearch = false\r\n                if (produkAdapter != null) produkAdapter!!.filter.filter(\"\")\r\n                return true\r\n            }\r\n        })\r\n    }\r\n\r\n    override fun onOptionsItemSelected(item: MenuItem): Boolean {\r\n        // Handle action bar item clicks here. The action bar will\r\n        // automatically handle clicks on the Home/Up button, so long\r\n        // as you specify a parent activity in AndroidManifest.xml.\r\n        return when (item.itemId) {\r\n            R.id.action_menu_lanjut -> {\r\n                (activity as MainActivity).toolbar.collapseActionView()\r\n                val handler = Handler(Looper.getMainLooper())\r\n                val arrayProdukSerialization = ArrayList<ProdukSerializable>()\r\n                handler.postDelayed({\r\n                    produkSerializable = ProdukSerializable()\r\n                    for (value in produks) {\r\n                        if (value.isFavorite) {\r\n                            arrayProdukSerialization.add(\r\n                                ProdukSerializable(\r\n                                    value.idItem, value.name, value.price\r\n                                    , value.imageUrl,value.price.toInt(), 1, value.status\r\n                                )\r\n                            )\r\n//                        produkSerializable?.idItem = value.idItem\r\n//                        produkSerializable?.name = value.name\r\n//                        produkSerializable?.price = value.price\r\n//                        produkSerializable?.imgResource = value.imageResource\r\n//                        produkSerializable?.imgUrl = value.imageUrl\r\n                        }\r\n                    }\r\n                    if (arrayProdukSerialization.size > 0) {\r\n                        val intent = Intent(context, SelectedProdukListActivity::class.java)\r\n                        val args = Bundle()\r\n                        args.putSerializable(\"ARRAYLIST\", arrayProdukSerialization)\r\n                        intent.putExtra(\"BUNDLE\", args)\r\n//                    startActivity(intent)\r\n                        resultLauncher.launch(intent)\r\n                    } else\r\n                        Toast.makeText(requireContext(), R.string.silakan_cek_input_data, Toast.LENGTH_SHORT).show()\r\n                }, 1000)\r\n\r\n                true\r\n            } R.id.action_menu_cari -> {\r\n                true\r\n            } R.id.action_menu_bantuan -> {\r\n                tampilAlertDialogTutorial()\r\n                true\r\n            }else -> super.onOptionsItemSelected(item)\r\n        }\r\n    }\r\n\r\n    override fun onViewStateRestored(savedInstanceState: Bundle?) {\r\n        super.onViewStateRestored(savedInstanceState)\r\n\r\n        val favoritedBookNames = savedInstanceState?.getIntegerArrayList(favoritedBookNamesKey)\r\n\r\n        // warning: typically you should avoid n^2 loops like this, use a Map instead.\r\n        // I'm keeping this because it is more straightforward\r\n        if (favoritedBookNames != null) {\r\n            for (bookName in favoritedBookNames) {\r\n                for (Produk in produks) {\r\n                    if (Produk.idItem == bookName) {\r\n                        Produk.isFavorite = true\r\n                        break\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    fun DialogKelengkapan() {\r\n        val dialogBuilder = AlertDialog.Builder(context).create()\r\n        val inflater = this.layoutInflater\r\n        val dialogView = inflater.inflate(R.layout.dialog_detail_op, null)\r\n\r\n        val etNamaUsaha: EditText\r\n        val etEmail: EditText\r\n        val etTelp: EditText\r\n        val etAlamat: EditText\r\n        val btnSimpan: Button\r\n\r\n        etNamaUsaha = dialogView.findViewById<View>(R.id.etNamaUsaha) as EditText\r\n        etEmail = dialogView.findViewById<View>(R.id.etEmail) as EditText\r\n        etTelp = dialogView.findViewById<View>(R.id.etTelp) as EditText\r\n        etAlamat = dialogView.findViewById<View>(R.id.etAlamat) as EditText\r\n\r\n        btnSimpan = dialogView.findViewById<View>(R.id.btnSimpan) as Button\r\n\r\n\r\n        btnSimpan.setOnClickListener {\r\n            nama = etNamaUsaha.getText().toString()\r\n            email  = etEmail.getText().toString()\r\n            telp = etTelp.getText().toString()\r\n            alamat = etAlamat.getText().toString()\r\n\r\n            if (nama.trim({ it <= ' ' }).equals(\"\", ignoreCase = true)) {\r\n                etNamaUsaha.requestFocus()\r\n                etNamaUsaha.setError(\"Silahkan isi form ini !\")\r\n            } else if (email.trim({ it <= ' ' }).equals(\"\", ignoreCase = true)) {\r\n                etEmail.requestFocus()\r\n                etEmail.setError(\"Silahkan isi form ini !\")\r\n            } else if (telp.trim({ it <= ' ' }).equals(\"\", ignoreCase = true)) {\r\n                etTelp.requestFocus()\r\n                etTelp.setError(\"Silahkan isi form ini !\")\r\n            } else if (alamat.trim({ it <= ' ' }).equals(\"\", ignoreCase = true)) {\r\n                etAlamat.requestFocus()\r\n                etAlamat.setError(\"Silahkan isi form ini !\")\r\n            } else {\r\n                sendData()\r\n                dialogBuilder.dismiss()\r\n            }\r\n        }\r\n\r\n        dialogBuilder.setView(dialogView)\r\n        dialogBuilder.show()\r\n    }\r\n\r\n    private fun sendData() {\r\n        val progressDialog = ProgressDialog(context)\r\n        progressDialog.setMessage(\"Loading...\")\r\n        progressDialog.show()\r\n        val queue = Volley.newRequestQueue(context)\r\n        val url = Url.serverPos + \"setKelengkapanData\"\r\n        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();\r\n        val stringRequest = object : StringRequest(Request.Method.POST, url,\r\n            Response.Listener { response ->\r\n                try {\r\n                    val jsonObject = JSONObject(response)\r\n                    Log.i(\"json\", jsonObject.toString())\r\n                    val jsonArray = jsonObject.getJSONArray(\"result\")\r\n                    var json = jsonArray.getJSONObject(0)\r\n                    val pesan = json.getString(\"pesan\")\r\n                    when {\r\n                        pesan.equals(\"0\", ignoreCase = true) -> {\r\n                            Toast.makeText(\r\n                                context,\r\n                                \"Gagal Melengkapi data\",\r\n                                Toast.LENGTH_SHORT\r\n                            ).show()\r\n                        }\r\n                        pesan.equals(\"1\", ignoreCase = true) -> {\r\n                            Toast.makeText(\r\n                                context,\r\n                                \"Sukses Melengkapi data\",\r\n                                Toast.LENGTH_SHORT\r\n                            ).show()\r\n                            val sharedPreferences =\r\n                                requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)\r\n\r\n                            //membuat editor untuk menyimpan data ke shared preferences\r\n                            val editor = sharedPreferences.edit()\r\n\r\n                            //menambah data ke editor\r\n                            editor.putString(Url.SESSION_NAMA_TEMPAT_USAHA, nama)\r\n                            editor.putString(Url.SESSION_ALAMAT, alamat)\r\n                            editor.putString(Url.SESSION_EMAIL, email)\r\n                            editor.putString(Url.SESSION_TELP, telp)\r\n                            editor.putString(Url.SESSION_KELENGKAPAN, \"1\")\r\n\r\n                            //menyimpan data ke editor\r\n                            editor.apply()\r\n                        }\r\n                        else -> {\r\n                            Toast.makeText(\r\n                                context,\r\n                                \"Jaringan masih sibuk !\",\r\n                                Toast.LENGTH_SHORT\r\n                            ).show()\r\n                        }\r\n                    }\r\n                } catch (e: JSONException) {\r\n                    e.printStackTrace()\r\n                }\r\n\r\n                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();\r\n                progressDialog.dismiss()\r\n            }, Response.ErrorListener { error ->\r\n                progressDialog.dismiss()\r\n                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()\r\n            }) {\r\n            override fun getParams(): Map<String, String> {\r\n                val params = HashMap<String, String>()\r\n                val sharedPreferences: SharedPreferences =\r\n                    context!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)\r\n                val idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, \"-1\")\r\n                params[\"alamat\"] = alamat\r\n                params[\"nama_usaha\"] = nama\r\n                params[\"email\"] = email\r\n                params[\"telp\"] = telp\r\n                params[\"id_pengguna\"] = idPengguna.toString()\r\n\r\n                return params\r\n            }\r\n        }\r\n        stringRequest.retryPolicy = object : RetryPolicy {\r\n            override fun getCurrentTimeout(): Int {\r\n                return 50000\r\n            }\r\n\r\n            override fun getCurrentRetryCount(): Int {\r\n                return 50000\r\n            }\r\n\r\n            override fun retry(error: VolleyError) {\r\n\r\n            }\r\n        }\r\n\r\n        queue.add(stringRequest)\r\n\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListFragment.kt b/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListFragment.kt
+--- a/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListFragment.kt	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListFragment.kt	(date 1633046246906)
+@@ -167,8 +167,8 @@
+                     val foto = rArray.getJSONObject(i).getString("FOTO")
+                     val nmBarang = rArray.getJSONObject(i).getString("NM_BARANG")
+                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
+-                    val isPajak = rArray.getJSONObject(i).getInt("ISPAJAK")
+-                    val jnsProduk = rArray.getJSONObject(i).getInt("JENIS_PRODUK")
++                    val isPajak = rArray.getJSONObject(i).getString("ISPAJAK")
++                    val jnsProduk = rArray.getJSONObject(i).getString("JENIS_PRODUK")
+ 
+                     produks.add(
+                         ProdukListElement(
+@@ -211,7 +211,7 @@
+ 
+             produks.add(
+                 ProdukListElement(
+-                    idBarang,nmBarang, harga, foto, keterangan, "lokal",-1,-1)
++                    idBarang,nmBarang, harga, foto, keterangan, "lokal","","")
+             )
+         }
+ 
+Index: app/src/main/java/com/dnhsolution/restokabmalang/transaksi/selected_produk_list/TambahProdukActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.dnhsolution.restokabmalang.transaksi.selected_produk_list\r\n\r\nimport android.content.Intent\r\nimport android.os.AsyncTask\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.widget.Toast\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport com.dnhsolution.restokabmalang.utilities.ProdukOnTask\r\nimport com.dnhsolution.restokabmalang.R\r\nimport com.dnhsolution.restokabmalang.database.DatabaseHandler\r\nimport com.dnhsolution.restokabmalang.sistem.produk.ItemProduk\r\nimport com.dnhsolution.restokabmalang.transaksi.ProdukSerializable\r\nimport com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListAdapter\r\nimport com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement\r\nimport com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListJsonTask\r\nimport com.dnhsolution.restokabmalang.utilities.CheckNetwork\r\nimport com.dnhsolution.restokabmalang.utilities.Url\r\nimport kotlinx.android.synthetic.main.activity_produk.*\r\nimport kotlinx.android.synthetic.main.fragment_produk_list.gvMainActivity\r\nimport org.json.JSONException\r\nimport org.json.JSONObject\r\n\r\nclass TambahProdukActivity:AppCompatActivity(), ProdukOnTask {\r\n\r\n    private var valueArgsFromKeranjang: ArrayList<Int>? = null\r\n    private var produkAdapter: ProdukListAdapter? = null\r\n    private var idTmpUsaha: String = \"0\"\r\n\r\n    private val _tag = javaClass.simpleName\r\n    private var jsonTask: AsyncTask<String, Void, String?>? = null\r\n    private var produks:ArrayList<ProdukListElement> = ArrayList()\r\n    var databaseHandler: DatabaseHandler? = null\r\n\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        setContentView(R.layout.activity_produk)\r\n\r\n        val i = intent\r\n        valueArgsFromKeranjang = i.getIntegerArrayListExtra(\"ARRAYLIST\")\r\n        Log.i(_tag,\"onResume $valueArgsFromKeranjang\")\r\n\r\n        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)\r\n        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, \"0\").toString()\r\n\r\n        databaseHandler = DatabaseHandler(this)\r\n\r\n        if(CheckNetwork().checkingNetwork(this)) {\r\n            val stringUrl = \"${Url.getProduk}?idTmpUsaha=$idTmpUsaha\"\r\n            Log.i(_tag,stringUrl)\r\n            jsonTask = ProdukListJsonTask(this).execute(stringUrl)\r\n        } else {\r\n            getDataLokal()\r\n            //Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()\r\n        }\r\n\r\n        gvMainActivity.setOnItemClickListener { _, _, position, _ ->\r\n            val produk = produks[position]\r\n            produk.toggleFavorite()\r\n            produkAdapter?.notifyDataSetChanged()\r\n        }\r\n\r\n        bTambah.setOnClickListener {\r\n            val arrayProdukSerialization = ArrayList<ProdukSerializable>()\r\n            for (value in produks) {\r\n                if (value.isFavorite) {\r\n                    arrayProdukSerialization.add(\r\n                        ProdukSerializable(\r\n                            value.idItem, value.name, value.price\r\n                            , value.imageUrl, value.price.toInt(), 1, value.status\r\n                        )\r\n                    )\r\n                } else {\r\n                    println(\"kosong\")\r\n                }\r\n            }\r\n\r\n            if (arrayProdukSerialization.size > 0) {\r\n                val intent = Intent(this, SelectedProdukListActivity::class.java)\r\n                val args = Bundle()\r\n                args.putSerializable(\"ARRAYLIST\", arrayProdukSerialization)\r\n                intent.putExtra(\"BUNDLE\", args)\r\n                intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT\r\n                startActivity(intent)\r\n                finish()\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun produkOnTask(result: String?) {\r\n        if (result == null) {\r\n            Toast.makeText(this,R.string.error_get_data,Toast.LENGTH_SHORT).show()\r\n            return\r\n        } else if (result == \"\") {\r\n            Toast.makeText(this,R.string.empty_data,Toast.LENGTH_SHORT).show()\r\n            return\r\n        }\r\n\r\n        Log.e(\"Debug\", \"Response from url:$result\")\r\n        try {\r\n            val jsonObj = JSONObject(result)\r\n            val success = jsonObj.getInt(\"success\")\r\n            val message = jsonObj.getString(\"message\")\r\n            if (success == 1) {\r\n\r\n                val rArray = jsonObj.getJSONArray(\"result\")\r\n                for (i in 0 until rArray.length()) {\r\n\r\n                    val idBarang = rArray.getJSONObject(i).getInt(\"ID_BARANG\")\r\n                    val harga = rArray.getJSONObject(i).getString(\"HARGA\")\r\n                    val foto = rArray.getJSONObject(i).getString(\"FOTO\")\r\n                    val nmBarang = rArray.getJSONObject(i).getString(\"NM_BARANG\")\r\n                    val keterangan = rArray.getJSONObject(i).getString(\"KETERANGAN\")\r\n\r\n                    produks.add(\r\n                        ProdukListElement(\r\n                            idBarang,nmBarang, harga, foto, keterangan,\"server\",-1,-1)\r\n                    )\r\n                }\r\n\r\n                if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()\r\n                else produkAdapter =\r\n                    ProdukListAdapter(this, produks)\r\n\r\n                if (gvMainActivity == null) return\r\n                gvMainActivity.adapter = produkAdapter\r\n\r\n                if (valueArgsFromKeranjang != null) {\r\n                    for (favoriteId in valueArgsFromKeranjang!!) {\r\n                        for (Produk in produks) {\r\n                            if (Produk.idItem == favoriteId) {\r\n                                Produk.isFavorite = true\r\n                                break\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n\r\n            } else {\r\n                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()\r\n            }\r\n        } catch (e: JSONException) {\r\n            e.printStackTrace()\r\n            Toast.makeText(this, getString(R.string.error_data), Toast.LENGTH_SHORT).show()\r\n        }\r\n    }\r\n\r\n    private fun getDataLokal() {\r\n        produks.clear()\r\n        produkAdapter?.notifyDataSetChanged()\r\n\r\n        val jml_data = databaseHandler!!.CountDataProduk()\r\n        if (jml_data == 0) {\r\n            Toast.makeText(this,R.string.empty_data,Toast.LENGTH_SHORT).show()\r\n        }\r\n\r\n        val listProduk: List<ItemProduk> = databaseHandler!!.dataProduk2\r\n\r\n        for(e in listProduk){\r\n            val idBarang = e.id_barang.toInt()\r\n            val harga = e.harga\r\n            val foto = e.url_image\r\n            val nmBarang = e.nama_barang\r\n            val keterangan = e.keterangan\r\n\r\n            produks.add(\r\n                ProdukListElement(\r\n                    idBarang,nmBarang, harga, foto, keterangan, \"lokal\", -1 , -1)\r\n            )\r\n        }\r\n\r\n        if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()\r\n        else produkAdapter =\r\n            ProdukListAdapter(this, produks)\r\n\r\n        if (gvMainActivity == null) return\r\n        gvMainActivity.adapter = produkAdapter\r\n\r\n        if (valueArgsFromKeranjang != null) {\r\n            for (favoriteId in valueArgsFromKeranjang!!) {\r\n                for (Produk in produks) {\r\n                    if (Produk.idItem == favoriteId) {\r\n                        Produk.isFavorite = true\r\n                        break\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n//    override fun onBackPressed() {\r\n//        val arrayProdukSerialization = ArrayList<ProdukSerializable>()\r\n//        for (value in produks) {\r\n//            if (value.isFavorite) {\r\n//                arrayProdukSerialization.add(\r\n//                    ProdukSerializable(\r\n//                        value.idItem, value.name, value.price\r\n//                        , value.imageUrl,value.price.toInt(), 1\r\n//                    )\r\n//                )\r\n//            } else {\r\n//                println(\"kosong\")\r\n//            }\r\n//        }\r\n//\r\n//        if (arrayProdukSerialization.size > 0) {\r\n//            val intent = Intent(this, SelectedProdukListActivity::class.java)\r\n//            val args = Bundle()\r\n//            args.putSerializable(\"ARRAYLIST\", arrayProdukSerialization)\r\n//            intent.putExtra(\"BUNDLE\", args)\r\n//            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)\r\n//            startActivity(intent)\r\n//            finish()\r\n//        }\r\n//        super.onBackPressed()\r\n//    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/selected_produk_list/TambahProdukActivity.kt b/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/selected_produk_list/TambahProdukActivity.kt
+--- a/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/selected_produk_list/TambahProdukActivity.kt	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/selected_produk_list/TambahProdukActivity.kt	(date 1633046339903)
+@@ -115,7 +115,7 @@
+ 
+                     produks.add(
+                         ProdukListElement(
+-                            idBarang,nmBarang, harga, foto, keterangan,"server",-1,-1)
++                            idBarang,nmBarang, harga, foto, keterangan,"server","","")
+                     )
+                 }
+ 
+@@ -166,7 +166,7 @@
+ 
+             produks.add(
+                 ProdukListElement(
+-                    idBarang,nmBarang, harga, foto, keterangan, "lokal", -1 , -1)
++                    idBarang,nmBarang, harga, foto, keterangan, "lokal", "" , "")
+             )
+         }
+ 
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\r\napply plugin: 'kotlin-android'\r\napply plugin: 'kotlin-android-extensions'\r\n\r\nandroid {\r\n    compileSdkVersion 31\r\n    defaultConfig {\r\n        applicationId \"com.dnhsolution.restokabmalang\"\r\n        minSdkVersion 21\r\n        targetSdkVersion 30\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n        multiDexEnabled true\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n    androidExtensions {\r\n        experimental = true\r\n    }\r\n\r\n    compileOptions {\r\n        sourceCompatibility JavaVersion.VERSION_1_8\r\n        targetCompatibility JavaVersion.VERSION_1_8\r\n    }\r\n}\r\n\r\ndependencies {\r\n    def navigation_version = \"2.3.5\"\r\n    implementation fileTree(dir: 'libs', include: ['*.jar'])\r\n    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version\"\r\n    implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'\r\n    implementation 'androidx.core:core-ktx:1.7.0-beta01'\r\n    implementation 'com.google.android.material:material:1.5.0-alpha03'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'\r\n    implementation 'androidx.vectordrawable:vectordrawable:1.2.0-alpha02'\r\n    implementation \"androidx.navigation:navigation-fragment-ktx:$navigation_version\"\r\n    implementation \"androidx.navigation:navigation-ui-ktx:$navigation_version\"\r\n    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'\r\n    testImplementation 'junit:junit:4.13-beta-3'\r\n    androidTestImplementation 'androidx.test:runner:1.4.1-alpha01'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha01'\r\n    implementation 'com.squareup.picasso:picasso:2.71828'\r\n    implementation 'com.android.support:design:28.0.0'\r\n    implementation 'com.mcxiaoke.volley:library-aar:1.0.1'\r\n    implementation 'com.jaredrummler:animated-svg-view:1.0.6'\r\n    implementation 'me.biubiubiu.justifytext:library:1.1'\r\n\r\n    implementation 'com.jakewharton:butterknife:10.1.0'\r\n    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'\r\n    implementation 'pub.devrel:easypermissions:0.4.3'\r\n    implementation files('libs/bluetoothsdk.jar')\r\n    implementation 'com.google.guava:guava:28.0-jre'\r\n\r\n    implementation(\"com.github.bumptech.glide:glide:4.9.0\") {\r\n        exclude group: \"com.android.support\"\r\n    }\r\n    annotationProcessor 'androidx.annotation:annotation:1.2.0'\r\n    implementation 'com.github.bumptech.glide:glide:4.9.0'\r\n    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'\r\n\r\n    implementation 'com.karumi:dexter:4.2.0'\r\n    implementation 'com.android.support:multidex:1.0.3'\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/app/build.gradle	(date 1633049692664)
+@@ -7,7 +7,7 @@
+     defaultConfig {
+         applicationId "com.dnhsolution.restokabmalang"
+         minSdkVersion 21
+-        targetSdkVersion 30
++        targetSdkVersion 31
+         versionCode 1
+         versionName "1.0"
+         multiDexEnabled true
+@@ -65,4 +65,8 @@
+ 
+     implementation 'com.karumi:dexter:4.2.0'
+     implementation 'com.android.support:multidex:1.0.3'
++
++    // Retrofit components
++    implementation "com.squareup.retrofit2:retrofit:2.4.0"
++    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+ }
+Index: app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/ItemProduk.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.dnhsolution.restokabmalang.sistem.produk;\r\n\r\n/**\r\n * Created by sawrusdino on 09/04/2018.\r\n */\r\n\r\npublic class ItemProduk {\r\n\r\n    private String id_barang;\r\n    private String nama_barang;\r\n    private String url_image;\r\n    private String harga;\r\n    private String keterangan;\r\n    private boolean status;\r\n\r\n\r\n    public ItemProduk() {\r\n    }\r\n\r\n    public ItemProduk(String nama_barang, String url_image){\r\n        this.nama_barang = nama_barang;\r\n        this.url_image = url_image;\r\n    }\r\n\r\n    public String getId_barang() {\r\n        return id_barang;\r\n    }\r\n\r\n    public void setId_barang(String id_barang) {\r\n        this.id_barang = id_barang;\r\n    }\r\n\r\n    public String getNama_barang() {\r\n        return nama_barang;\r\n    }\r\n\r\n    public void setNama_barang(String nama_barang) {\r\n        this.nama_barang = nama_barang;\r\n    }\r\n\r\n    public String getUrl_image() {\r\n        return url_image;\r\n    }\r\n\r\n    public void setUrl_image(String url_image) {\r\n        this.url_image = url_image;\r\n    }\r\n\r\n    public String getHarga() {\r\n        return harga;\r\n    }\r\n\r\n    public void setHarga(String harga) {\r\n        this.harga = harga;\r\n    }\r\n\r\n    public String getKeterangan() {\r\n        return keterangan;\r\n    }\r\n\r\n    public void setKeterangan(String keterangan) {\r\n        this.keterangan = keterangan;\r\n    }\r\n\r\n    public void setStatus(boolean status) {\r\n        this.status = status;\r\n    }\r\n\r\n    public boolean getStatus() {\r\n        return status;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/ItemProduk.java b/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/ItemProduk.java
+--- a/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/ItemProduk.java	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/ItemProduk.java	(date 1633046769573)
+@@ -11,6 +11,8 @@
+     private String url_image;
+     private String harga;
+     private String keterangan;
++    private String isPajak;
++    private String jnsPajak;
+     private boolean status;
+ 
+ 
+@@ -69,4 +71,20 @@
+     public boolean getStatus() {
+         return status;
+     }
++
++    public void setIsPajak(String value) {
++        this.isPajak = value;
++    }
++
++    public String getIsPajak() {
++        return isPajak;
++    }
++
++    public void setJnsPajak(String value) {
++        this.jnsPajak = value;
++    }
++
++    public String getJnsPajak() {
++        return jnsPajak;
++    }
+ }
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CMakeSettings\">\r\n    <configurations>\r\n      <configuration PROFILE_NAME=\"Debug\" CONFIG_NAME=\"Debug\" />\r\n    </configurations>\r\n  </component>\r\n  <component name=\"DesignSurface\">\r\n    <option name=\"filePathToZoomLevelMap\">\r\n      <map>\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_wifi_24_gray.xml\" value=\"0.20277777777777778\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/drawable/news_bottom_nav_bg.xml\" value=\"0.1625\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_keranjang.xml\" value=\"0.1933876811594203\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main.xml\" value=\"0.1933876811594203\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_master.xml\" value=\"0.1933876811594203\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml\" value=\"0.10157041540020263\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_produk.xml\" value=\"0.1234375\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/content_data_tersimpan.xml\" value=\"0.1933876811594203\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/dropdown_bulan.xml\" value=\"0.1\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_dashboard.xml\" value=\"0.21\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_bulanan.xml\" value=\"0.13541666666666666\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_produk.xml\" value=\"0.10416666666666667\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_bulanan.xml\" value=\"0.17552083333333332\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml\" value=\"0.25\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_bulan.xml\" value=\"0.1046875\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/menu/bottom_nav_menu.xml\" value=\"0.21296296296296297\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_help.xml\" value=\"0.20564102564102565\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_lanjut.xml\" value=\"0.20885416666666667\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_master.xml\" value=\"0.22447916666666667\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tambah.xml\" value=\"0.22447916666666667\" />\r\n        <entry key=\"..\\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_transaksi.xml\" value=\"0.22447916666666667\" />\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_11\" default=\"true\" project-jdk-name=\"1.8\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/.idea/misc.xml	(date 1633055093253)
+@@ -16,9 +16,13 @@
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml" value="0.10157041540020263" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_produk.xml" value="0.1234375" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/content_data_tersimpan.xml" value="0.1933876811594203" />
++        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dialog_detail_rekap_harian.xml" value="0.1" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dropdown_bulan.xml" value="0.1" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_dashboard.xml" value="0.21" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_bulanan.xml" value="0.13541666666666666" />
++        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_second.xml" value="0.1265625" />
++        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_d_rekap_harian.xml" value="0.1265625" />
++        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_file.xml" value="0.1265625" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_produk.xml" value="0.10416666666666667" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_bulanan.xml" value="0.17552083333333332" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml" value="0.25" />
+@@ -28,6 +32,7 @@
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_lanjut.xml" value="0.20885416666666667" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_master.xml" value="0.22447916666666667" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tambah.xml" value="0.22447916666666667" />
++        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tersimpan.xml" value="0.11875" />
+         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_transaksi.xml" value="0.22447916666666667" />
+       </map>
+     </option>
+Index: app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.kt b/app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.kt
+new file mode 100644
+--- /dev/null	(date 1633050038471)
++++ b/app/src/main/java/com/dnhsolution/restokabmalang/tersimpan/DataTersimpanActivity.kt	(date 1633050038471)
+@@ -0,0 +1,450 @@
++package com.dnhsolution.restokabmalang.tersimpan
++
++import android.app.*
++import android.content.DialogInterface
++import android.content.Intent
++import android.database.sqlite.SQLiteException
++import android.graphics.BitmapFactory
++import android.os.AsyncTask
++import android.os.Bundle
++import android.util.Log
++import android.view.*
++import android.view.GestureDetector.SimpleOnGestureListener
++import android.widget.LinearLayout
++import android.widget.TextView
++import android.widget.Toast
++import androidx.appcompat.app.AppCompatActivity
++import androidx.appcompat.widget.Toolbar
++import androidx.core.app.NotificationCompat
++import androidx.recyclerview.widget.DefaultItemAnimator
++import androidx.recyclerview.widget.DividerItemDecoration
++import androidx.recyclerview.widget.LinearLayoutManager
++import androidx.recyclerview.widget.RecyclerView
++import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
++import com.dnhsolution.restokabmalang.R
++import com.dnhsolution.restokabmalang.database.DatabaseHandler
++import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity
++import com.dnhsolution.restokabmalang.utilities.CheckNetwork
++import com.dnhsolution.restokabmalang.utilities.Url
++import com.google.android.material.floatingactionbutton.FloatingActionButton
++import org.json.JSONArray
++import org.json.JSONException
++import org.json.JSONObject
++import java.util.*
++
++class DataTersimpanActivity : AppCompatActivity() {
++    var rvData: RecyclerView? = null
++    var dataTersimpan: MutableList<ItemTersimpan>? = null
++    var linearLayout: LinearLayout? = null
++    private var linearLayoutManager: LinearLayoutManager? = null
++    private var dividerItemDecoration: DividerItemDecoration? = null
++    private var adapter: RecyclerView.Adapter<*>? = null
++    var ChildView: View? = null
++    var RecyclerViewClickedItemPos = 0
++    var databaseHandler: DatabaseHandler? = null
++    var tvKet: TextView? = null
++    var fab_upload: FloatingActionButton? = null
++    var detailTersimpanAdater: DetailTersimpanAdapter? = null
++    var itemDetailTersimpans: MutableList<ItemDetailTersimpan> = ArrayList()
++    var tv_count: TextView? = null
++    var jml_data = 0
++    var progressdialog: ProgressDialog? = null
++    var datax = 0
++    var status = 0
++    override fun onCreate(savedInstanceState: Bundle?) {
++        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
++        val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
++        val tema = sharedPreferences.getString(Url.setTema, "0")
++        if (tema.equals("0", ignoreCase = true)) {
++            this@DataTersimpanActivity.setTheme(R.style.Theme_First)
++        } else if (tema.equals("1", ignoreCase = true)) {
++            this@DataTersimpanActivity.setTheme(R.style.Theme_Second)
++        } else if (tema.equals("2", ignoreCase = true)) {
++            this@DataTersimpanActivity.setTheme(R.style.Theme_Third)
++        } else if (tema.equals("3", ignoreCase = true)) {
++            this@DataTersimpanActivity.setTheme(R.style.Theme_Fourth)
++        } else if (tema.equals("4", ignoreCase = true)) {
++            this@DataTersimpanActivity.setTheme(R.style.Theme_Fifth)
++        } else if (tema.equals("5", ignoreCase = true)) {
++            this@DataTersimpanActivity.setTheme(R.style.Theme_Sixth)
++        }
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.activity_data_tersimpan)
++        val toolbar = findViewById<Toolbar>(R.id.toolbar)
++        setSupportActionBar(toolbar)
++        supportActionBar!!.setTitle(label)
++        databaseHandler = DatabaseHandler(this@DataTersimpanActivity)
++        rvData = findViewById<View>(R.id.rvData) as RecyclerView
++        tvKet = findViewById<View>(R.id.tvKet) as TextView
++        tv_count = findViewById<View>(R.id.text_count) as TextView
++        val fab_upload = findViewById<FloatingActionButton>(R.id.fab)
++        fab_upload.setOnClickListener { view: View? ->
++            jml_data = databaseHandler!!.CountDataTersimpanUpload()
++            val builder = AlertDialog.Builder(this@DataTersimpanActivity)
++            builder.setMessage("Lanjut upload $jml_data data ke server ?")
++            builder.setCancelable(true)
++            builder.setPositiveButton(
++                "Ya"
++            ) { dialog: DialogInterface?, id: Int ->
++                if (CheckNetwork().checkingNetwork(
++                        applicationContext
++                    )
++                ) {
++                    SendData()
++                } else {
++                    Toast.makeText(
++                        this@DataTersimpanActivity,
++                        R.string.tidak_terkoneksi_internet,
++                        Toast.LENGTH_SHORT
++                    ).show()
++                }
++            }
++            builder.setNegativeButton(
++                "Tidak"
++            ) { dialog: DialogInterface, id: Int -> dialog.cancel() }
++            val alert = builder.create()
++            alert.show()
++        }
++        dataTersimpan = ArrayList()
++        adapter = TersimpanAdater(dataTersimpan, this@DataTersimpanActivity)
++        linearLayoutManager = LinearLayoutManager(this@DataTersimpanActivity)
++        linearLayoutManager!!.orientation = RecyclerView.VERTICAL
++        dividerItemDecoration =
++            DividerItemDecoration(applicationContext, linearLayoutManager!!.orientation)
++        rvData!!.setHasFixedSize(true)
++        rvData!!.layoutManager = linearLayoutManager
++        //recyclerView.addItemDecoration(dividerItemDecoration);
++        rvData!!.adapter = adapter
++        data
++        rvData!!.addOnItemTouchListener(object : OnItemTouchListener {
++            var gestureDetector =
++                GestureDetector(applicationContext, object : SimpleOnGestureListener() {
++                    override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {
++                        return true
++                    }
++                })
++
++            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
++                ChildView = rvData!!.findChildViewUnder(e.x, e.y)
++                if (ChildView != null && gestureDetector.onTouchEvent(e)) {
++                    RecyclerViewClickedItemPos = rvData!!.getChildAdapterPosition(ChildView!!)
++                    Log.d("hhhhuu", RecyclerViewClickedItemPos.toString())
++                    val id_data = (dataTersimpan as ArrayList<ItemTersimpan>)[RecyclerViewClickedItemPos].getId()
++                    DialogDetailTrx(id_data)
++                    //Toast.makeText(DataTersimpanActivity.this, String.valueOf(id_data), Toast.LENGTH_SHORT).show();
++                }
++                return false
++            }
++
++            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
++            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
++        })
++    }
++
++    private fun SendData() {
++        class SendData : AsyncTask<Void?, Int?, String>() {
++            override fun onPreExecute() {
++                super.onPreExecute()
++                progressdialog = ProgressDialog(this@DataTersimpanActivity)
++                progressdialog!!.isIndeterminate = false
++                progressdialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
++                progressdialog!!.setCancelable(true)
++                progressdialog!!.setMessage("Upload data ke server ...")
++                progressdialog!!.max = jml_data
++                progressdialog!!.show()
++                progressdialog!!.setButton(
++                    DialogInterface.BUTTON_NEGATIVE, "Minimize",
++                    null as DialogInterface.OnClickListener?
++                )
++            }
++
++            override fun onProgressUpdate(vararg values: Int?) {
++                super.onProgressUpdate(*values)
++                progressdialog!!.progress = values[0] ?: 0
++            }
++
++            override fun onPostExecute(s: String) {
++                super.onPostExecute(s)
++                Log.d("HASIL", s)
++                var hasil = ""
++                if (progressdialog!!.isShowing) progressdialog!!.dismiss()
++                try {
++                    val jsonObject = JSONObject(s)
++                    hasil = jsonObject.getString("message")
++                    Log.d("HASIL_JSON", jsonObject.getString("message"))
++                    if (hasil.equals("Berhasil.", ignoreCase = true)) {
++                        if (datax == jml_data) {
++                            sendNotification("$datax data berhasil diupload !")
++                            if (progressdialog!!.isShowing) progressdialog!!.dismiss()
++                            Log.d("INFORMASI", "suksesUpload: ")
++                            for (v in dataTersimpan!!) {
++                                val posisi = v.getNo() - 1
++                                dataTersimpan!![posisi].setStatus("1")
++                                adapter!!.notifyItemChanged(posisi)
++                            }
++                            showHideFabUpload()
++                        }
++                    } else if (hasil.equals("Gagal.", ignoreCase = true)) {
++                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
++                        Log.d("INFORMASI", "gagalUpload: ")
++                    } else {
++                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
++                        Log.d("INFORMASI", "gagalUpload: $s")
++                    }
++                } catch (e: JSONException) {
++                    e.printStackTrace()
++                }
++            }
++
++            override fun doInBackground(vararg params: Void?): String {
++                val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
++                val idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
++                val pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
++                val listDataTersimpanUpload: ArrayList<*>? = databaseHandler!!.dataTersimpanUpload
++                var msg = ""
++                for (f in (listDataTersimpanUpload as ArrayList<ItemTersimpan>)) {
++                    try {
++                        val u = UploadData()
++                        val rootObject = JSONObject()
++                        rootObject.put("idTmptUsaha", idTmptUsaha)
++                        rootObject.put("user", pengguna)
++                        rootObject.put("disc_rp", f.getDisc_rp())
++                        var disc = f.getDisc()
++                        if (disc.isEmpty()) {
++                            disc = f.getDisc_rp()
++                        }
++                        rootObject.put("disc", disc)
++                        rootObject.put("omzet", f.getOmzet())
++                        val jsonArr = JSONArray()
++                        val listDetailTrx: ArrayList<*> =
++                            databaseHandler!!.getDetailTersimpan(f.getId().toString())
++                        for (d in (listDetailTrx as ArrayList<ItemDetailTersimpan>)) {
++                            val pnObj = JSONObject()
++                            pnObj.put("idProduk", d.getId_produk())
++                            pnObj.put("nmProduk", d.getNama())
++                            pnObj.put("qty", d.getQty())
++                            pnObj.put("hrgProduk", d.getHarga())
++                            jsonArr.put(pnObj)
++                        }
++                        rootObject.put("produk", jsonArr)
++                        msg = u.uploadData(rootObject.toString())
++                        Log.e("INFO_PENTING", "NUMBER: $status")
++//                        status++
++//                        publishProgress(status)
++                        val jsonMsg = JSONObject(msg)
++                        if (jsonMsg.getString("message").equals("Berhasil.", ignoreCase = true)) {
++                            datax++
++                            databaseHandler!!.updateDataTersimpan(ItemTersimpan(f.getId(), "1"))
++                        } else {
++                            Log.d("INFO_PENTING", "doInBackground: $msg")
++                        }
++                    } catch (e: Exception) {
++                        cancel(true)
++                        e.printStackTrace()
++                    }
++                }
++                return msg
++            }
++        }
++
++        val uv = SendData()
++        uv.execute()
++    }
++
++    private fun DialogDetailTrx(idTrx: Int) {
++        val dialogBuilder = AlertDialog.Builder(this).create()
++        val inflater = this.layoutInflater
++        val dialogView = inflater.inflate(R.layout.dialog_detail_rekap_harian, null)
++        val rvDetail: RecyclerView
++        val tvTrx: TextView
++        rvDetail = dialogView.findViewById<View>(R.id.recyclerView) as RecyclerView
++        tvTrx = dialogView.findViewById<View>(R.id.tvNoTrx) as TextView
++        tvTrx.text = idTrx.toString()
++        detailTersimpanAdater =
++            DetailTersimpanAdapter(itemDetailTersimpans, this@DataTersimpanActivity)
++        val mLayoutManagerss: RecyclerView.LayoutManager =
++            LinearLayoutManager(this@DataTersimpanActivity)
++        rvDetail.layoutManager = mLayoutManagerss
++        rvDetail.itemAnimator = DefaultItemAnimator()
++        rvDetail.adapter = detailTersimpanAdater
++        getDetailTersimpan(idTrx)
++        dialogBuilder.setView(dialogView)
++        dialogBuilder.show()
++    }
++
++    private fun getDetailTersimpan(idTrx: Int) {
++        itemDetailTersimpans.clear()
++        val db = databaseHandler!!.readableDatabase
++        val mCount = db.rawQuery("select * from detail_transaksi where id_trx='$idTrx'", null)
++        mCount.moveToFirst()
++        val countTersimpan = mCount.getInt(0)
++        Log.d(
++            "DETAIL_TERSIMPAN",
++            "getDetailTersimpan: " + mCount.getInt(0) + "/" + mCount.getInt(1) + "/" + mCount.getString(
++                2
++            ) + "/" + mCount.getString(3) + "/" + mCount.getInt(4) + "/" + mCount.getInt(5)
++        )
++        //  Toast.makeText(this, String.valueOf(idTrx), Toast.LENGTH_LONG).show();
++        mCount.close()
++        try {
++            val listDetailTersimpan: List<*> =
++                databaseHandler!!.getDetailTersimpan(idTrx.toString())
++            var no = 1
++            for (f in listDetailTersimpan as List<ItemDetailTersimpan>) {
++                val it = ItemDetailTersimpan()
++                it.setId(f.getId())
++                it.setNama(f.getNama())
++                it.setQty(f.getQty())
++                it.setHarga(f.getHarga())
++                it.setNo(no)
++                val total = f.getQty().toInt() * f.getHarga().toInt()
++                it.setTotal(total.toString())
++                itemDetailTersimpans.add(it)
++                no++
++            }
++        } catch (e: SQLiteException) {
++            e.printStackTrace()
++        }
++        detailTersimpanAdater!!.notifyDataSetChanged()
++    }
++
++    private val data: Unit
++        get() {
++            dataTersimpan!!.clear()
++            val jml_data = databaseHandler!!.CountDataTersimpan2()
++            if (jml_data == 0) {
++                tvKet!!.visibility = View.VISIBLE
++                fab_upload!!.visibility = View.GONE
++            } else {
++                showHideFabUpload()
++                tvKet!!.visibility = View.GONE
++            }
++            try {
++                val listDataTersimpan: List<*> = databaseHandler!!.dataTersimpan
++                var nomer = 1
++                for (f in listDataTersimpan as List<ItemTersimpan>) {
++                    val it = ItemTersimpan()
++                    it.setId(f.getId())
++                    it.setNo(nomer)
++                    it.setTanggal_trx(f.getTanggal_trx())
++                    it.setDisc(f.getDisc())
++                    it.setOmzet(f.getOmzet())
++                    it.setDisc_rp(f.getDisc_rp())
++                    it.setStatus(f.getStatus())
++                    dataTersimpan!!.add(it)
++                    nomer++
++                }
++            } catch (e: SQLiteException) {
++                e.printStackTrace()
++            }
++            Log.d("OP_TERUPDATE", dataTersimpan!!.size.toString())
++            adapter!!.notifyDataSetChanged()
++        }
++
++    override fun onResume() {
++        super.onResume()
++        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
++        val label = sharedPreferences!!.getString(Url.setLabel, "Belum disetting")
++        supportActionBar!!.title = label
++        val tema = sharedPreferences.getString(Url.setTema, "0")
++        if (tema.equals("0", ignoreCase = true)) {
++            this.setTheme(R.style.Theme_First)
++        } else if (tema.equals("1", ignoreCase = true)) {
++            this.setTheme(R.style.Theme_Second)
++        } else if (tema.equals("2", ignoreCase = true)) {
++            this.setTheme(R.style.Theme_Third)
++        } else if (tema.equals("3", ignoreCase = true)) {
++            this.setTheme(R.style.Theme_Fourth)
++        } else if (tema.equals("4", ignoreCase = true)) {
++            this.setTheme(R.style.Theme_Fifth)
++        } else if (tema.equals("5", ignoreCase = true)) {
++            this.setTheme(R.style.Theme_Sixth)
++        }
++    }
++
++    fun sendNotification(message: String?) {
++        val builder = NotificationCompat.Builder(this)
++        builder.setSmallIcon(android.R.drawable.ic_dialog_info)
++        val intent = Intent(applicationContext, DataTersimpanActivity::class.java)
++        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
++        builder.setContentIntent(pendingIntent)
++        builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.logo_sipanji))
++        val app_name = R.string.app_name.toString()
++        builder.setContentTitle(app_name)
++        builder.setContentText(message)
++        // builder.setSubText("Tap to view the website.");
++        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
++
++        // Will display the notification in the notification bar
++        notificationManager.notify(1, builder.build())
++    }
++
++    private fun showHideFabUpload() {
++        val jmlData = databaseHandler!!.CountDataTersimpanUpload()
++        if (jmlData == 0) {
++            fab_upload!!.visibility = View.GONE
++            tv_count!!.text = ""
++            tv_count!!.visibility = View.INVISIBLE
++        } else if (jmlData <= 9) {
++            tv_count!!.visibility = View.VISIBLE
++            tv_count!!.text = jmlData.toString()
++        } else {
++            tv_count!!.visibility = View.VISIBLE
++            tv_count!!.text = "9+"
++        }
++    }
++
++    override fun onBackPressed() {
++        setResult(RESULT_OK)
++        super.onBackPressed()
++    }
++
++    override fun onCreateOptionsMenu(menu: Menu): Boolean {
++        val inflater = menuInflater
++        inflater.inflate(R.menu.menu_tersimpan, menu)
++        return true
++    }
++
++    override fun onOptionsItemSelected(item: MenuItem): Boolean {
++        if (item.itemId == R.id.action_menu_bantuan) {
++            tampilAlertDialogTutorial()
++            return true
++        } else if (item.itemId == R.id.action_menu_wifi) {
++            return true
++        }
++        return super.onOptionsItemSelected(item)
++    }
++
++    private fun tampilAlertDialogTutorial() {
++        val alertDialog = AlertDialog.Builder(this).create()
++        alertDialog.setMessage(
++            """1. Status Belum Sinkron warna
++    orange : menandakan data
++    transaksi belum tersinkron
++    dengan server.
++2. Status Sudah sinkron warna
++    hijau : menandakan data
++    transaksi sudah tersinkron dengan
++    server.
++3. Saat ada data dengan status
++    Belum Sinkron, akan tampil
++    tombol icon Upload warna hijau.
++    Tombol ini digunakan untuk
++    upload data transaksi yang
++    Belum Sinkron ke server.
++4. Angka background merah diatas
++    tombol upload menandakan
++    jumlah data dengan status
++    Belum Sinkron."""
++        )
++        alertDialog.setButton(
++            AlertDialog.BUTTON_NEGATIVE, "OK"
++        ) { dialog, which -> dialog.dismiss() }
++        alertDialog.show()
++    }
++
++    companion object {
++        const val NOTIFICATION_CHANNEL_ID = "10001"
++        private const val default_notification_channel_id = "default"
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/server/ServerFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.dnhsolution.restokabmalang.sistem.produk.server\r\n\r\nimport android.Manifest\r\nimport com.dnhsolution.restokabmalang.R\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport android.app.ProgressDialog\r\nimport com.dnhsolution.restokabmalang.database.DatabaseHandler\r\nimport com.dnhsolution.restokabmalang.utilities.Url\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport androidx.recyclerview.widget.GridLayoutManager\r\nimport androidx.recyclerview.widget.DefaultItemAnimator\r\nimport androidx.recyclerview.widget.RecyclerView.OnItemTouchListener\r\nimport android.view.GestureDetector.SimpleOnGestureListener\r\nimport com.dnhsolution.restokabmalang.utilities.CheckNetwork\r\nimport com.android.volley.toolbox.Volley\r\nimport com.android.volley.toolbox.StringRequest\r\nimport org.json.JSONObject\r\nimport org.json.JSONArray\r\nimport org.json.JSONException\r\nimport kotlin.Throws\r\nimport android.text.TextWatcher\r\nimport android.text.Editable\r\nimport com.bumptech.glide.Glide\r\nimport com.bumptech.glide.request.RequestListener\r\nimport android.graphics.drawable.Drawable\r\nimport com.bumptech.glide.load.engine.GlideException\r\nimport com.dnhsolution.restokabmalang.sistem.produk.server.ServerFragment\r\nimport android.content.pm.PackageManager\r\nimport android.provider.MediaStore\r\nimport androidx.core.content.FileProvider\r\nimport android.app.Activity\r\nimport android.app.AlertDialog\r\nimport android.content.*\r\nimport android.database.sqlite.SQLiteException\r\nimport android.net.Uri\r\nimport android.os.*\r\nimport android.util.Log\r\nimport android.view.*\r\nimport android.widget.*\r\nimport androidx.fragment.app.Fragment\r\nimport com.android.volley.*\r\nimport com.bumptech.glide.load.DataSource\r\nimport com.bumptech.glide.request.target.Target\r\nimport com.dnhsolution.restokabmalang.BuildConfig\r\nimport com.dnhsolution.restokabmalang.sistem.produk.*\r\nimport java.io.*\r\nimport java.lang.Exception\r\nimport java.lang.NumberFormatException\r\nimport java.text.DecimalFormat\r\nimport java.text.NumberFormat\r\nimport java.text.SimpleDateFormat\r\nimport java.util.*\r\n\r\nclass ServerFragment() : Fragment() {\r\n    // The onCreateView method is called when Fragment should create its View object hierarchy,\r\n    // either dynamically or via XML layout inflation.\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater,\r\n        parent: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        // Defines the xml file for the fragment\r\n        return inflater.inflate(R.layout.fragment_server, parent, false)\r\n    }\r\n\r\n    private var isRunnerRunning: Boolean = false\r\n\r\n    // This event is triggered soon after onCreateView().\r\n    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.\r\n    var rvProduk: RecyclerView? = null\r\n    private var adapterProduk: AdapterProduk? = null\r\n    private val itemProduks: MutableList<ItemProduk> = ArrayList()\r\n    var RecyclerViewClickedItemPos = 0\r\n    var ChildView: View? = null\r\n    var tvKet: TextView? = null\r\n    private var idTmpUsaha: String? = \"-1\"\r\n    private val _tag = javaClass.simpleName\r\n    var tempNameFile = \"POSRestoran.jpg\"\r\n    private var filePath: Uri? = null\r\n    private val destFile: File? = null\r\n    var wallpaperDirectory: File? = null\r\n    var e_nama_file = \"\"\r\n    var t_nama_file = \"\"\r\n    var status = \"\"\r\n    var ivGambarBaru: ImageView? = null\r\n    var ivGambar: ImageView? = null\r\n    var progressdialog: ProgressDialog? = null\r\n    var e_nama: String? = null\r\n    var e_harga: String? = null\r\n    var e_ket: String? = null\r\n    var e_id: String? = null\r\n    var e_gambar_lama: String? = null\r\n    var databaseHandler: DatabaseHandler? = null\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        // Setup any handles to view objects here\r\n        // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);\r\n        val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)\r\n        idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, \"\")\r\n        databaseHandler = DatabaseHandler(context)\r\n        rvProduk = view.findViewById<View>(R.id.rvProduk) as RecyclerView\r\n        tvKet = view.findViewById<View>(R.id.tvKet) as TextView\r\n        adapterProduk = AdapterProduk(itemProduks, context)\r\n        val mLayoutManagerss: RecyclerView.LayoutManager = LinearLayoutManager(context)\r\n        rvProduk!!.layoutManager = GridLayoutManager(context, 3)\r\n        rvProduk!!.itemAnimator = DefaultItemAnimator()\r\n        rvProduk!!.adapter = adapterProduk\r\n        rvProduk!!.addOnItemTouchListener(object : OnItemTouchListener {\r\n            var gestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {\r\n                override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {\r\n                    return true\r\n                }\r\n            })\r\n\r\n            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {\r\n                ChildView = rvProduk!!.findChildViewUnder(e.x, e.y)\r\n                if (ChildView != null && gestureDetector.onTouchEvent(e)) {\r\n                    RecyclerViewClickedItemPos = rvProduk!!.getChildAdapterPosition(ChildView!!)\r\n                    val url_image = itemProduks[RecyclerViewClickedItemPos].url_image\r\n                    val nama_barang = itemProduks[RecyclerViewClickedItemPos].nama_barang\r\n                    val id_barang = itemProduks[RecyclerViewClickedItemPos].id_barang\r\n                    val harga = itemProduks[RecyclerViewClickedItemPos].harga\r\n                    val ket = itemProduks[RecyclerViewClickedItemPos].keterangan\r\n                    DialogEdit(url_image, nama_barang, id_barang, harga, ket)\r\n                    Log.d(\"TAG\", RecyclerViewClickedItemPos.toString())\r\n                }\r\n                return false\r\n            }\r\n\r\n            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}\r\n            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}\r\n        })\r\n        if (CheckNetwork().checkingNetwork((context)!!)) {\r\n            data\r\n            tvKet!!.visibility = View.GONE\r\n            isRunnerRunning = true\r\n        } else {\r\n            dataLokal\r\n        }\r\n\r\n        val mainHandler = Handler(Looper.getMainLooper())\r\n        mainHandler.post(object : Runnable {\r\n            override fun run() {\r\n                if(!isRunnerRunning) {\r\n                    if(context == null) return\r\n                    cekData\r\n                    isRunnerRunning = true\r\n                }\r\n                mainHandler.postDelayed(this, 5000)\r\n            }\r\n        })\r\n    }\r\n\r\n    private val data: Unit\r\n        get() {\r\n            itemProduks.clear()\r\n            adapterProduk!!.notifyDataSetChanged()\r\n            val progressDialog = ProgressDialog(context)\r\n            progressDialog.setMessage(\"Mencari data...\")\r\n            progressDialog.show()\r\n            val queue = Volley.newRequestQueue(context)\r\n            val sharedPreferences =\r\n                requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)\r\n            val id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, \"0\")\r\n            Log.d(\"ID_TEMPAT_USAHA\", (id_tempat_usaha)!!)\r\n            val url = Url.serverPos + \"getProduk?idTmpUsaha=\" + id_tempat_usaha\r\n            //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();\r\n            Log.i(_tag, url)\r\n            val stringRequest: StringRequest =\r\n                object : StringRequest(Method.GET, url, Response.Listener { response: String? ->\r\n                    try {\r\n                        val jsonObject: JSONObject = JSONObject(response)\r\n                        val status: Int = jsonObject.getInt(\"success\")\r\n                        val jsonArray: JSONArray = jsonObject.getJSONArray(\"result\")\r\n                        val json: JSONObject = jsonArray.getJSONObject(0)\r\n                        if (status == 1) {\r\n                            var i: Int\r\n                            i = 0\r\n                            while (i < jsonArray.length()) {\r\n                                try {\r\n                                    val jO: JSONObject = jsonArray.getJSONObject(i)\r\n                                    val id: ItemProduk = ItemProduk()\r\n                                    val idBarang: String = jO.getString(\"ID_BARANG\")\r\n                                    id.setId_barang(idBarang)\r\n                                    id.setNama_barang(jO.getString(\"NM_BARANG\"))\r\n                                    id.setUrl_image(jO.getString(\"FOTO\"))\r\n                                    id.setHarga(jO.getString(\"HARGA\"))\r\n                                    id.setKeterangan(jO.getString(\"KETERANGAN\"))\r\n                                    id.setStatus(true)\r\n                                    Log.d(\"NM_BARANG\", jO.getString(\"NM_BARANG\"))\r\n                                    if (databaseHandler!!.CountDataProdukId(idBarang.toInt()) == 0) tambahDataLokal(\r\n                                        id\r\n                                    )\r\n                                    itemProduks.add(id)\r\n                                } catch (e: JSONException) {\r\n                                    e.printStackTrace()\r\n                                    progressDialog.dismiss()\r\n                                }\r\n                                i++\r\n                            }\r\n                            (activity as MasterProduk).gantiIconWifi(true)\r\n                            isRunnerRunning = false\r\n                        } else {\r\n                            Toast.makeText(\r\n                                getContext(),\r\n                                \"Jaringan masih sibuk !\",\r\n                                Toast.LENGTH_SHORT\r\n                            ).show()\r\n                        }\r\n                    } catch (e: JSONException) {\r\n                        e.printStackTrace()\r\n                    }\r\n                    //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();\r\n                    adapterProduk!!.notifyDataSetChanged()\r\n                    progressDialog.dismiss()\r\n                    isRunnerRunning = false\r\n\r\n                }, Response.ErrorListener { error: VolleyError ->\r\n                    progressDialog.dismiss()\r\n                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()\r\n                    isRunnerRunning = false\r\n                }) {\r\n                    @Throws(AuthFailureError::class)\r\n                    override fun getParams(): Map<String, String> {\r\n                        val params: MutableMap<String, String> = HashMap()\r\n                        params[\"status\"] = \"ok\"\r\n                        return params\r\n                    }\r\n                }\r\n            stringRequest.retryPolicy = object : RetryPolicy {\r\n                override fun getCurrentTimeout(): Int {\r\n                    return 50000\r\n                }\r\n\r\n                override fun getCurrentRetryCount(): Int {\r\n                    return 50000\r\n                }\r\n\r\n                override fun retry(error: VolleyError) {}\r\n            }\r\n            queue.add(stringRequest)\r\n        }\r\n\r\n    private val cekData: Unit\r\n        get() {\r\n            val queue = Volley.newRequestQueue(context)\r\n            Log.d(\"ID_TEMPAT_USAHA\", (idTmpUsaha)!!)\r\n            val url = Url.serverPos + \"getProduk?idTmpUsaha=\" + idTmpUsaha\r\n            //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();\r\n            Log.i(_tag, url)\r\n            val stringRequest: StringRequest =\r\n                object : StringRequest(Method.GET, url, Response.Listener { response: String? ->\r\n                    try {\r\n                        val jsonObject = JSONObject(response)\r\n                        val status: Int = jsonObject.getInt(\"success\")\r\n                        val jsonArray: JSONArray = jsonObject.getJSONArray(\"result\")\r\n                        if (status == 1) {\r\n                            (activity as MasterProduk).gantiIconWifi(true)\r\n                            isRunnerRunning = false\r\n                            return@Listener\r\n                        }\r\n                    } catch (e: JSONException) {\r\n                        e.printStackTrace()\r\n                    }\r\n                    (activity as MasterProduk).gantiIconWifi(false)\r\n                    isRunnerRunning = false\r\n                }, Response.ErrorListener { error: VolleyError ->\r\n                    (activity as MasterProduk).gantiIconWifi(false)\r\n                    isRunnerRunning = false\r\n                }) {\r\n                    @Throws(AuthFailureError::class)\r\n                    override fun getParams(): Map<String, String> {\r\n                        val params: MutableMap<String, String> = HashMap()\r\n                        params[\"status\"] = \"ok\"\r\n                        return params\r\n                    }\r\n                }\r\n            stringRequest.retryPolicy = object : RetryPolicy {\r\n                override fun getCurrentTimeout(): Int {\r\n                    return 50000\r\n                }\r\n\r\n                override fun getCurrentRetryCount(): Int {\r\n                    return 50000\r\n                }\r\n\r\n                override fun retry(error: VolleyError) {}\r\n            }\r\n            queue.add(stringRequest)\r\n        }\r\n\r\n    private fun tambahDataLokal(itemProduk: ItemProduk) {\r\n        try {\r\n            databaseHandler!!.insert_produk(\r\n                com.dnhsolution.restokabmalang.database.ItemProduk(\r\n                    itemProduk.id_barang.toInt(),\r\n                    idTmpUsaha,\r\n                    itemProduk.nama_barang,\r\n                    itemProduk.harga,\r\n                    itemProduk.keterangan,\r\n                    itemProduk.url_image,\r\n                    \"0\"\r\n                )\r\n            )\r\n        } catch (e: Exception) {\r\n            e.printStackTrace()\r\n        }\r\n    }\r\n\r\n    fun DialogEdit(\r\n        url_image: String,\r\n        nama_barang: String?,\r\n        id_barang: String?,\r\n        harga: String,\r\n        ket: String?\r\n    ) {\r\n        val dialogBuilder = AlertDialog.Builder(context).create()\r\n        val inflater = this.layoutInflater\r\n        val dialogView = inflater.inflate(R.layout.dialog_edit_produk, null)\r\n        val etNama: EditText\r\n        val etKeterangan: EditText\r\n        val etHarga: EditText\r\n        val btnSimpan: Button\r\n        val ivGambarLama: ImageView\r\n        val ivTambahGambar: ImageView\r\n        etNama = dialogView.findViewById<View>(R.id.etNama) as EditText\r\n        etKeterangan = dialogView.findViewById<View>(R.id.etKeterangan) as EditText\r\n        etHarga = dialogView.findViewById<View>(R.id.etHarga) as EditText\r\n        btnSimpan = dialogView.findViewById<View>(R.id.btnSimpan) as Button\r\n        ivGambarLama = dialogView.findViewById<View>(R.id.ivGambarLama) as ImageView\r\n        ivGambarBaru = dialogView.findViewById<View>(R.id.ivGambarBaru) as ImageView\r\n        ivTambahGambar = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView\r\n        btnSimpan.setOnClickListener(View.OnClickListener {\r\n            e_nama = etNama.text.toString()\r\n            e_harga = etHarga.text.toString().replace(\".\", \"\")\r\n            e_ket = etKeterangan.text.toString()\r\n            e_id = id_barang\r\n            e_gambar_lama = url_image\r\n            if (e_nama!!.trim { it <= ' ' }.equals(\"\", ignoreCase = true)) {\r\n                etNama.requestFocus()\r\n                etNama.error = \"Silahkan isi form ini !\"\r\n            } else if (e_harga!!.trim { it <= ' ' }.equals(\"\", ignoreCase = true)) {\r\n                etHarga.requestFocus()\r\n                etHarga.error = \"Silahkan isi form ini !\"\r\n            } else if (e_ket!!.trim { it <= ' ' }.equals(\"\", ignoreCase = true)) {\r\n                etKeterangan.requestFocus()\r\n                etKeterangan.error = \"Silahkan isi form ini !\"\r\n            } else {\r\n                UpdateData()\r\n                dialogBuilder.dismiss()\r\n            }\r\n        })\r\n        var originalString = harga\r\n        val longval: Long\r\n        if (originalString.contains(\".\")) {\r\n            originalString = originalString.replace(\".\", \"\")\r\n        }\r\n        longval = originalString.toLong()\r\n        val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat\r\n        formatter.applyPattern(\"#,###,###,###\")\r\n        val formattedString = formatter.format(longval)\r\n\r\n        //setting text after format to EditText\r\n        etHarga.setText(formattedString.replace(\",\", \".\"))\r\n        etHarga.setSelection(etHarga.text.length)\r\n        etNama.setText(nama_barang)\r\n        etKeterangan.setText(ket)\r\n        etHarga.addTextChangedListener(object : TextWatcher {\r\n            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {\r\n\r\n                // TODO Auto-generated method stub\r\n            }\r\n\r\n            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {\r\n\r\n                // TODO Auto-generated method stub\r\n            }\r\n\r\n            override fun afterTextChanged(s: Editable) {\r\n                etHarga.removeTextChangedListener(this)\r\n                try {\r\n                    var originalString = s.toString()\r\n                    val longval: Long\r\n                    if (originalString.contains(\".\")) {\r\n                        originalString = originalString.replace(\".\", \"\")\r\n                    }\r\n                    longval = originalString.toLong()\r\n                    val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat\r\n                    formatter.applyPattern(\"#,###,###,###\")\r\n                    val formattedString = formatter.format(longval)\r\n\r\n                    //setting text after format to EditText\r\n                    etHarga.setText(formattedString.replace(\",\", \".\"))\r\n                    etHarga.setSelection(etHarga.text.length)\r\n                } catch (nfe: NumberFormatException) {\r\n                    nfe.printStackTrace()\r\n                }\r\n                etHarga.addTextChangedListener(this)\r\n                // TODO Auto-generated method stub\r\n            }\r\n        })\r\n        if (CheckNetwork().checkingNetwork((context)!!)) {\r\n            Glide.with(ivGambarLama.context).load(Url.serverFoto + url_image)\r\n                .placeholder(R.mipmap.ic_foto)\r\n                .centerCrop()\r\n                .fitCenter()\r\n                .listener(object : RequestListener<Drawable?> {\r\n                    override fun onLoadFailed(\r\n                        e: GlideException?,\r\n                        model: Any,\r\n                        target: Target<Drawable?>,\r\n                        isFirstResource: Boolean\r\n                    ): Boolean {\r\n                        Log.e(\"xmx1\", \"Error \" + e.toString())\r\n                        return false\r\n                    }\r\n\r\n                    override fun onResourceReady(\r\n                        resource: Drawable?,\r\n                        model: Any,\r\n                        target: Target<Drawable?>,\r\n                        dataSource: DataSource,\r\n                        isFirstResource: Boolean\r\n                    ): Boolean {\r\n                        Log.e(\"xmx1\", \"no Error \")\r\n                        return false\r\n                    }\r\n                })\r\n                .into(ivGambarLama)\r\n        } else {\r\n            Glide.with(ivGambarLama.context).load(File(url_image).toString())\r\n                .placeholder(R.mipmap.ic_foto)\r\n                .centerCrop()\r\n                .fitCenter()\r\n                .listener(object : RequestListener<Drawable?> {\r\n                    override fun onLoadFailed(\r\n                        e: GlideException?,\r\n                        model: Any,\r\n                        target: Target<Drawable?>,\r\n                        isFirstResource: Boolean\r\n                    ): Boolean {\r\n                        Log.e(\"xmx1\", \"Error \" + e.toString())\r\n                        return false\r\n                    }\r\n\r\n                    override fun onResourceReady(\r\n                        resource: Drawable?,\r\n                        model: Any,\r\n                        target: Target<Drawable?>,\r\n                        dataSource: DataSource,\r\n                        isFirstResource: Boolean\r\n                    ): Boolean {\r\n                        Log.e(\"xmx1\", \"no Error \")\r\n                        return false\r\n                    }\r\n                })\r\n                .into(ivGambarLama)\r\n        }\r\n        ivGambarLama.visibility = View.VISIBLE\r\n        ivTambahGambar.setOnClickListener(object : View.OnClickListener {\r\n            override fun onClick(v: View) {\r\n                wallpaperDirectory =\r\n                    File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)\r\n                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.\r\n                    wallpaperDirectory!!.mkdirs()\r\n                }\r\n                val builder = AlertDialog.Builder(context)\r\n                builder.setMessage(\"Pilihan Tambah Foto\")\r\n                    .setPositiveButton(\"Galeri\", object : DialogInterface.OnClickListener {\r\n                        override fun onClick(dialog: DialogInterface, id: Int) {\r\n                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {\r\n                                if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)\r\n                                            != PackageManager.PERMISSION_GRANTED)\r\n                                ) {\r\n                                    requestPermissions(\r\n                                        arrayOf(\r\n                                            Manifest.permission.CAMERA,\r\n                                            Manifest.permission.WRITE_EXTERNAL_STORAGE\r\n                                        ),\r\n                                        MY_CAMERA_PERMISSION_CODE\r\n                                    )\r\n                                    //showFileChooser();\r\n                                } else {\r\n                                    wallpaperDirectory = File(\r\n                                        Environment.getExternalStorageDirectory()\r\n                                            .toString() + IMAGE_DIRECTORY\r\n                                    )\r\n                                    if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.\r\n                                        wallpaperDirectory!!.mkdirs()\r\n                                    }\r\n                                    showFileChooser()\r\n                                    status = \"e\"\r\n                                }\r\n                            } else {\r\n                                wallpaperDirectory = File(\r\n                                    Environment.getExternalStorageDirectory()\r\n                                        .toString() + IMAGE_DIRECTORY\r\n                                )\r\n                                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.\r\n                                    wallpaperDirectory!!.mkdirs()\r\n                                }\r\n                                showFileChooser()\r\n                                status = \"e\"\r\n                            }\r\n                        }\r\n                    })\r\n                    .setNegativeButton(\"Kamera\", object : DialogInterface.OnClickListener {\r\n                        override fun onClick(dialog: DialogInterface, id: Int) {\r\n                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {\r\n                                if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)\r\n                                            != PackageManager.PERMISSION_GRANTED)\r\n                                ) {\r\n                                    requestPermissions(\r\n                                        arrayOf(\r\n                                            Manifest.permission.CAMERA,\r\n                                            Manifest.permission.WRITE_EXTERNAL_STORAGE\r\n                                        ),\r\n                                        MY_CAMERA_PERMISSION_CODE\r\n                                    )\r\n                                    //showFileChooser();\r\n                                } else {\r\n                                    wallpaperDirectory = File(\r\n                                        Environment.getExternalStorageDirectory()\r\n                                            .toString() + IMAGE_DIRECTORY\r\n                                    )\r\n                                    if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.\r\n                                        wallpaperDirectory!!.mkdirs()\r\n                                    }\r\n                                    val cal = Calendar.getInstance()\r\n                                    val sdf = SimpleDateFormat(\"ddMMyyHHmmss\", Locale.getDefault())\r\n                                    tempNameFile = \"Cam_\" + sdf.format(cal.time) + \".jpg\"\r\n                                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)\r\n                                    val f = File(wallpaperDirectory, tempNameFile)\r\n                                    val photoURI = FileProvider.getUriForFile(\r\n                                        (context)!!,\r\n                                        BuildConfig.APPLICATION_ID + \".provider\",\r\n                                        f\r\n                                    )\r\n                                    //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));\r\n                                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)\r\n                                    startActivityForResult(cameraIntent, CAMERA_REQUEST)\r\n                                    status = \"e\"\r\n                                }\r\n                            } else {\r\n                                wallpaperDirectory = File(\r\n                                    Environment.getExternalStorageDirectory()\r\n                                        .toString() + IMAGE_DIRECTORY\r\n                                )\r\n                                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.\r\n                                    wallpaperDirectory!!.mkdirs()\r\n                                }\r\n                                val cal = Calendar.getInstance()\r\n                                val sdf = SimpleDateFormat(\"ddMMyyHHmmss\", Locale.getDefault())\r\n                                tempNameFile = \"Cam_\" + sdf.format(cal.time) + \".jpg\"\r\n                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)\r\n                                val f = File(wallpaperDirectory, tempNameFile)\r\n                                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))\r\n                                startActivityForResult(intent, CAMERA_REQUEST)\r\n                                status = \"e\"\r\n                            }\r\n                        }\r\n                    })\r\n                val alert = builder.create()\r\n                alert.show()\r\n            }\r\n        })\r\n        dialogBuilder.setView(dialogView)\r\n        dialogBuilder.show()\r\n    }\r\n\r\n    private fun showFileChooser() {\r\n        val intent = Intent(Intent.ACTION_GET_CONTENT)\r\n        intent.type = \"*/*\"\r\n        intent.addCategory(Intent.CATEGORY_OPENABLE)\r\n        try {\r\n            startActivityForResult(\r\n                Intent.createChooser(intent, \"Select a File to Upload\"),\r\n                FILE_SELECT_CODE\r\n            )\r\n        } catch (ex: ActivityNotFoundException) {\r\n            // Potentially direct the user to the Market with a Dialog\r\n            Toast.makeText(\r\n                context, \"Please install a File Manager.\",\r\n                Toast.LENGTH_SHORT\r\n            ).show()\r\n        }\r\n    }\r\n\r\n    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {\r\n        super.onActivityResult(requestCode, resultCode, data)\r\n        if (resultCode == Activity.RESULT_CANCELED) {\r\n            return\r\n        }\r\n        if (requestCode == FILE_SELECT_CODE) {\r\n            filePath = data!!.data\r\n            val a = RealPathUtil.getRealPath(context, filePath)\r\n            if (resultCode == Activity.RESULT_OK) {\r\n                // Get the Uri of the selected file\r\n                val uri = data.data\r\n                Log.d(\"Foto\", \"File Uri: \" + uri.toString())\r\n                // Get the path\r\n                val path = a\r\n                Log.d(\"Foto\", \"File Path: $path\")\r\n                val sourceLocation = File(path)\r\n                val cal = Calendar.getInstance()\r\n                val sdf = SimpleDateFormat(\"ddMMyyHHmmss\", Locale.getDefault())\r\n                val filename = \"Gallery_\" + sdf.format(cal.time) + \".jpg\"\r\n                val targetLocation = File(wallpaperDirectory.toString(), filename)\r\n                if (sourceLocation.exists()) {\r\n                    Log.v(\"Pesan\", \"Proses Pindah\")\r\n                    try {\r\n                        val `in`: InputStream = FileInputStream(sourceLocation)\r\n                        val out: OutputStream = FileOutputStream(targetLocation)\r\n                        // Copy the bits from instream to outstream\r\n                        val buf = ByteArray(1024)\r\n                        var len: Int\r\n                        while ((`in`.read(buf).also { len = it }) > 0) {\r\n                            out.write(buf, 0, len)\r\n                        }\r\n                        `in`.close()\r\n                        out.close()\r\n                        Log.v(\"Pesan\", \"Copy file successful.\")\r\n                    } catch (e: FileNotFoundException) {\r\n                        e.printStackTrace()\r\n                    } catch (e: IOException) {\r\n                        e.printStackTrace()\r\n                    }\r\n                } else {\r\n                    Log.v(\"Pesan\", \"Copy file failed. Source file missing.\")\r\n                }\r\n                val file = File(wallpaperDirectory.toString(), filename)\r\n                val file_size = (file.length() / 1024).toString().toInt()\r\n                Log.d(\"PirangMB\", file_size.toString())\r\n                if (status.equals(\"e\", ignoreCase = true)) {\r\n                    Glide.with(ivGambarBaru!!.context).load(File(file.absolutePath).toString())\r\n                        .placeholder(R.mipmap.ic_foto)\r\n                        .centerCrop()\r\n                        .fitCenter()\r\n                        .listener(object : RequestListener<Drawable?> {\r\n                            override fun onLoadFailed(\r\n                                e: GlideException?,\r\n                                model: Any,\r\n                                target: Target<Drawable?>,\r\n                                isFirstResource: Boolean\r\n                            ): Boolean {\r\n                                Log.e(\"xmx1\", \"Error \" + e.toString())\r\n                                return false\r\n                            }\r\n\r\n                            override fun onResourceReady(\r\n                                resource: Drawable?,\r\n                                model: Any,\r\n                                target: Target<Drawable?>,\r\n                                dataSource: DataSource,\r\n                                isFirstResource: Boolean\r\n                            ): Boolean {\r\n                                Log.e(\"xmx1\", \"no Error \")\r\n                                return false\r\n                            }\r\n                        })\r\n                        .into((ivGambarBaru)!!)\r\n                    ivGambarBaru!!.visibility = View.VISIBLE\r\n                    if (e_nama_file.equals(\"\", ignoreCase = true)) {\r\n                    } else {\r\n                        val fl = File(e_nama_file)\r\n                        val deleted = fl.delete()\r\n                    }\r\n                    e_nama_file = file.absolutePath\r\n                } else if (status.equals(\"t\", ignoreCase = true)) {\r\n                    Glide.with(ivGambar!!.context).load(File(file.absolutePath).toString())\r\n                        .placeholder(R.mipmap.ic_foto)\r\n                        .centerCrop()\r\n                        .fitCenter()\r\n                        .listener(object : RequestListener<Drawable?> {\r\n                            override fun onLoadFailed(\r\n                                e: GlideException?,\r\n                                model: Any,\r\n                                target: Target<Drawable?>,\r\n                                isFirstResource: Boolean\r\n                            ): Boolean {\r\n                                Log.e(\"xmx1\", \"Error \" + e.toString())\r\n                                return false\r\n                            }\r\n\r\n                            override fun onResourceReady(\r\n                                resource: Drawable?,\r\n                                model: Any,\r\n                                target: Target<Drawable?>,\r\n                                dataSource: DataSource,\r\n                                isFirstResource: Boolean\r\n                            ): Boolean {\r\n                                Log.e(\"xmx1\", \"no Error \")\r\n                                return false\r\n                            }\r\n                        })\r\n                        .into((ivGambar)!!)\r\n                    ivGambar!!.visibility = View.VISIBLE\r\n                    if (t_nama_file.equals(\"\", ignoreCase = true)) {\r\n                    } else {\r\n                        val fl = File(t_nama_file)\r\n                        val deleted = fl.delete()\r\n                    }\r\n                    t_nama_file = file.absolutePath\r\n                }\r\n            }\r\n        } else if (requestCode == CAMERA_REQUEST) {\r\n            if (resultCode == Activity.RESULT_OK) {\r\n                println(\"CAMERA_REQUEST1\")\r\n                //                        Bitmap photo = (Bitmap) data.getExtras().get(\"data\");\r\n                var f = File(wallpaperDirectory.toString())\r\n                Log.d(\"File\", f.toString())\r\n                for (temp: File in f.listFiles()) {\r\n                    if ((temp.name == tempNameFile)) {\r\n                        f = temp\r\n                        val filePhoto = File(wallpaperDirectory.toString(), tempNameFile)\r\n                        //pic = photo;\r\n                        val file_size = (filePhoto.length() / 1024).toString().toInt()\r\n                        Log.d(\"PirangMB\", file_size.toString())\r\n                        //tvFileName.setVisibility(View.VISIBLE);\r\n                        // ivBerkas.setVisibility(View.VISIBLE);\r\n                        if (status.equals(\"e\", ignoreCase = true)) {\r\n                            Glide.with(ivGambarBaru!!.context).load(File(f.absolutePath).toString())\r\n                                .placeholder(R.mipmap.ic_foto)\r\n                                .centerCrop()\r\n                                .fitCenter()\r\n                                .listener(object : RequestListener<Drawable?> {\r\n                                    override fun onLoadFailed(\r\n                                        e: GlideException?,\r\n                                        model: Any,\r\n                                        target: Target<Drawable?>,\r\n                                        isFirstResource: Boolean\r\n                                    ): Boolean {\r\n                                        Log.e(\"xmx1\", \"Error \" + e.toString())\r\n                                        return false\r\n                                    }\r\n\r\n                                    override fun onResourceReady(\r\n                                        resource: Drawable?,\r\n                                        model: Any,\r\n                                        target: Target<Drawable?>,\r\n                                        dataSource: DataSource,\r\n                                        isFirstResource: Boolean\r\n                                    ): Boolean {\r\n                                        Log.e(\"xmx1\", \"no Error \")\r\n                                        return false\r\n                                    }\r\n                                })\r\n                                .into((ivGambarBaru)!!)\r\n                            ivGambarBaru!!.visibility = View.VISIBLE\r\n                            if (e_nama_file.equals(\"\", ignoreCase = true)) {\r\n                            } else {\r\n                                val fl = File(e_nama_file)\r\n                                val deleted = fl.delete()\r\n                            }\r\n                            e_nama_file = f.absolutePath\r\n                        } else if (status.equals(\"t\", ignoreCase = true)) {\r\n                            Glide.with(ivGambar!!.context).load(File(f.absolutePath).toString())\r\n                                .placeholder(R.mipmap.ic_foto)\r\n                                .centerCrop()\r\n                                .fitCenter()\r\n                                .listener(object : RequestListener<Drawable?> {\r\n                                    override fun onLoadFailed(\r\n                                        e: GlideException?,\r\n                                        model: Any,\r\n                                        target: Target<Drawable?>,\r\n                                        isFirstResource: Boolean\r\n                                    ): Boolean {\r\n                                        Log.e(\"xmx1\", \"Error \" + e.toString())\r\n                                        return false\r\n                                    }\r\n\r\n                                    override fun onResourceReady(\r\n                                        resource: Drawable?,\r\n                                        model: Any,\r\n                                        target: Target<Drawable?>,\r\n                                        dataSource: DataSource,\r\n                                        isFirstResource: Boolean\r\n                                    ): Boolean {\r\n                                        Log.e(\"xmx1\", \"no Error \")\r\n                                        return false\r\n                                    }\r\n                                })\r\n                                .into((ivGambar)!!)\r\n                            ivGambar!!.visibility = View.VISIBLE\r\n                            if (t_nama_file.equals(\"\", ignoreCase = true)) {\r\n                            } else {\r\n                                val fl = File(t_nama_file)\r\n                                val deleted = fl.delete()\r\n                            }\r\n                            t_nama_file = f.absolutePath\r\n                        }\r\n                        break\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    private fun UpdateData() {\r\n        open class UpdateData() : AsyncTask<Void?, Int?, String?>() {\r\n            //ProgressDialog uploading;\r\n            override fun onPreExecute() {\r\n                super.onPreExecute()\r\n                progressdialog = ProgressDialog(context)\r\n                progressdialog!!.setCancelable(false)\r\n                progressdialog!!.setMessage(\"Upload data ke server ...\")\r\n                progressdialog!!.show()\r\n                //uploading = ProgressDialog.show(SinkronActivity.this, \"Mengirim data ke Server\", \"Mohon Tunggu...\", false, false);\r\n            }\r\n\r\n            override fun onPostExecute(s: String?) {\r\n                super.onPostExecute(s)\r\n                // uploading.dismiss();\r\n                Log.d(\"HASIL\", (s)!!)\r\n                //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();\r\n                // tvStatus.setText(s);\r\n                //\r\n                if (s.equals(\"sukses\", ignoreCase = true)) {\r\n                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()\r\n                    Toast.makeText(context, \"Data berhasil diupdate !\", Toast.LENGTH_SHORT).show()\r\n                    val fl = File(e_nama_file)\r\n                    val deleted = fl.delete()\r\n                    e_nama_file = \"\"\r\n                    updateDataLokal()\r\n                    data\r\n                } else if (s.equals(\"gagal\", ignoreCase = true)) {\r\n                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()\r\n                    Toast.makeText(context, \"Data gagal diupdate !\", Toast.LENGTH_SHORT).show()\r\n                } else {\r\n                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()\r\n                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show()\r\n                }\r\n            }\r\n\r\n            override fun doInBackground(vararg p0: Void?): String? {\r\n                val u = UploadData()\r\n                var msg: String? = null\r\n                msg = u.uploadDataUmum(e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file)\r\n                return msg\r\n            }\r\n        }\r\n\r\n        val uv = UpdateData()\r\n        uv.execute()\r\n    }\r\n\r\n    private val dataLokal: Unit\r\n        get() {\r\n            itemProduks.clear()\r\n            adapterProduk!!.notifyDataSetChanged()\r\n            val jml_data = databaseHandler!!.CountDataProduk()\r\n            if (jml_data == 0) {\r\n                tvKet!!.visibility = View.VISIBLE\r\n            } else {\r\n                tvKet!!.visibility = View.GONE\r\n            }\r\n            try {\r\n                val listDataProduk: List<ItemProduk> = databaseHandler!!.dataProduk as List<ItemProduk>\r\n                for (f: ItemProduk in listDataProduk) {\r\n                    val ip = ItemProduk()\r\n                    ip.id_barang = f.id_barang\r\n                    ip.nama_barang = f.nama_barang\r\n                    ip.harga = f.harga\r\n                    ip.url_image = f.url_image\r\n                    ip.keterangan = f.keterangan\r\n                    ip.status = false\r\n                    itemProduks.add(ip)\r\n                }\r\n            } catch (e: SQLiteException) {\r\n                e.printStackTrace()\r\n            }\r\n            adapterProduk!!.notifyDataSetChanged()\r\n        }\r\n\r\n    private fun updateDataLokal() {\r\n        try {\r\n            databaseHandler!!.update_produk(\r\n                com.dnhsolution.restokabmalang.database.ItemProduk(\r\n                    e_id!!.toInt(), idTmpUsaha, e_nama, e_harga, e_ket, e_gambar_lama, \"0\"\r\n                )\r\n            )\r\n        } catch (e: Exception) {\r\n            e.printStackTrace()\r\n        }\r\n    }\r\n\r\n    companion object {\r\n        private val CAMERA_REQUEST = 1888\r\n        private val MY_CAMERA_PERMISSION_CODE = 100\r\n        private val FILE_SELECT_CODE = 5\r\n        private val IMAGE_DIRECTORY = \"/POSRestoran\"\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/server/ServerFragment.kt b/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/server/ServerFragment.kt
+--- a/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/server/ServerFragment.kt	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/app/src/main/java/com/dnhsolution/restokabmalang/sistem/produk/server/ServerFragment.kt	(date 1633047037051)
+@@ -185,6 +185,8 @@
+                                     id.setUrl_image(jO.getString("FOTO"))
+                                     id.setHarga(jO.getString("HARGA"))
+                                     id.setKeterangan(jO.getString("KETERANGAN"))
++                                    id.setIsPajak(jO.getString("ISPAJAK"))
++                                    id.setJnsPajak(jO.getString("JENIS_PRODUK"))
+                                     id.setStatus(true)
+                                     Log.d("NM_BARANG", jO.getString("NM_BARANG"))
+                                     if (databaseHandler!!.CountDataProdukId(idBarang.toInt()) == 0) tambahDataLokal(
+Index: app/src/main/res/menu/menu_tersimpan.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/menu/menu_tersimpan.xml b/app/src/main/res/menu/menu_tersimpan.xml
+new file mode 100644
+--- /dev/null	(date 1633047263073)
++++ b/app/src/main/res/menu/menu_tersimpan.xml	(date 1633047263073)
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="utf-8"?>
++<menu xmlns:android="http://schemas.android.com/apk/res/android"
++      xmlns:app="http://schemas.android.com/apk/res-auto">
++        <item android:id="@+id/action_menu_bantuan"
++            app:showAsAction="ifRoom"
++            android:icon="@drawable/ic_baseline_live_help_24"
++            android:title="@string/title_bantuan"/>
++        <item android:id="@+id/action_menu_wifi"
++            app:showAsAction="ifRoom"
++            android:icon="@drawable/ic_baseline_wifi_24_gray"
++            android:title="@string/title_wifi"/>
++</menu>
+Index: app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListElement.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.dnhsolution.restokabmalang.transaksi.produk_list\r\n\r\nclass ProdukListElement(val idItem: Int, val name: String, val price: String, val imageUrl: String\r\n                        , val description: String, val status: String,isPajak: Int, jnsProduk: Int) {\r\n    var isFavorite = false\r\n\r\n    fun toggleFavorite() {\r\n        isFavorite = !isFavorite\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListElement.kt b/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListElement.kt
+--- a/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListElement.kt	(revision df8c8c3c117362e0ffb806d3229758c8981def61)
++++ b/app/src/main/java/com/dnhsolution/restokabmalang/transaksi/produk_list/ProdukListElement.kt	(date 1633046246895)
+@@ -1,7 +1,7 @@
+ package com.dnhsolution.restokabmalang.transaksi.produk_list
+ 
+ class ProdukListElement(val idItem: Int, val name: String, val price: String, val imageUrl: String
+-                        , val description: String, val status: String,isPajak: Int, jnsProduk: Int) {
++                        , val description: String, val status: String,isPajak: String, jnsProduk: String) {
+     var isFavorite = false
+ 
+     fun toggleFavorite() {
