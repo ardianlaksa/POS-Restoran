@@ -97,12 +97,12 @@
 
                     <ImageView
                         android:id="@+id/tvProdukTersimpan"
-                        android:gravity="center"
                         android:layout_width="@dimen/_64"
                         android:layout_height="@dimen/_64"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="15dp"
-                        android:src="@drawable/logo_sipanji"/>
+                        android:gravity="center"
+                        android:src="@drawable/logo_sipanji" />
 
                 </RelativeLayout>
 
