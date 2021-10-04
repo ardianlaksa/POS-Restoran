@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+        <item android:id="@+id/action_menu_bantuan"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_baseline_live_help_24"
+            android:title="@string/title_bantuan"/>
+        <item android:id="@+id/action_menu_wifi"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_baseline_wifi_24_gray"
+            android:title="@string/title_wifi"/>
+</menu>
