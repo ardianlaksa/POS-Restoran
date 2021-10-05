@@ -1,537 +1,570 @@
-package com.dnhsolution.restokabmalang.sistem.produk;
+package com.dnhsolution.restokabmalang.sistem.produk
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.*;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.FileProvider;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.dnhsolution.restokabmalang.BuildConfig;
-import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.utilities.Url;
-import com.google.android.material.snackbar.Snackbar;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.DexterError;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.PermissionRequestErrorListener;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import android.Manifest
+import androidx.appcompat.app.AppCompatActivity
+import android.content.SharedPreferences
+import android.app.ProgressDialog
+import android.os.Bundle
+import com.dnhsolution.restokabmalang.utilities.Url
+import com.dnhsolution.restokabmalang.R
+import android.text.TextWatcher
+import android.text.Editable
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestListener
+import android.graphics.drawable.Drawable
+import com.bumptech.glide.load.engine.GlideException
+import android.os.Environment
+import com.dnhsolution.restokabmalang.sistem.produk.DetailProduk
+import android.content.DialogInterface
+import android.os.Build
+import android.content.pm.PackageManager
+import android.content.Intent
+import android.provider.MediaStore
+import androidx.core.content.FileProvider
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionRequestErrorListener
+import com.karumi.dexter.listener.DexterError
+import android.content.ActivityNotFoundException
+import android.app.Activity
+import android.app.AlertDialog
+import android.net.Uri
+import android.os.AsyncTask
+import android.provider.Settings
+import android.util.Log
+import android.view.View
+import android.widget.*
+import androidx.appcompat.widget.Toolbar
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.request.target.Target
+import com.dnhsolution.restokabmalang.BuildConfig
+import com.dnhsolution.restokabmalang.sistem.produk.MasterProduk
+import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakListElement
+import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukListElement
+import com.karumi.dexter.listener.PermissionRequest
+import java.io.*
+import java.lang.NumberFormatException
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
-import java.io.*;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+class DetailProduk() : AppCompatActivity() {
+    lateinit var sharedPreferences: SharedPreferences
+    var ivFotoLama: ImageView? = null
+    var ivFotoBaru: ImageView? = null
+    var btnSimpan: Button? = null
+    var btnGanti: Button? = null
+    var etNama: EditText? = null
+    var etHarga: EditText? = null
+    var etKeterangan: EditText? = null
+    var url_image: String? = null
+    var nama: String? = null
+    var id: String? = null
+    var harga: String? = null
+    var ket: String? = null
+    var tempNameFile = "POSRestoran.jpg"
+    private var filePath: Uri? = null
+    private val destFile: File? = null
+    private val dateFormatter: SimpleDateFormat? = null
+    var wallpaperDirectory: File? = null
+    var nama_file = ""
+    var progressdialog: ProgressDialog? = null
 
-public class DetailProduk extends AppCompatActivity {
-
-    SharedPreferences sharedPreferences;
-    ImageView ivFotoLama, ivFotoBaru;
-    Button btnSimpan, btnGanti;
-    EditText etNama, etHarga, etKeterangan;
-    String url_image, nama, id, harga, ket;
-
-    private static final int CAMERA_REQUEST = 1888;
-    private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    String tempNameFile = "POSRestoran.jpg";
-    private static final int FILE_SELECT_CODE = 5;
-    private Uri filePath;
-    private static final String IMAGE_DIRECTORY = "/POSRestoran";
-    private File destFile;
-    private SimpleDateFormat dateFormatter;
-    File wallpaperDirectory;
-    String nama_file = "";
-
-    ProgressDialog progressdialog;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
-        String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
-        String tema = sharedPreferences.getString(Url.setTema, "0");
-        if(tema.equalsIgnoreCase("0")){
-            DetailProduk.this.setTheme(R.style.Theme_First);
-        }else if(tema.equalsIgnoreCase("1")){
-            DetailProduk.this.setTheme(R.style.Theme_Second);
-        }else if(tema.equalsIgnoreCase("2")){
-            DetailProduk.this.setTheme(R.style.Theme_Third);
-        }else if(tema.equalsIgnoreCase("3")){
-            DetailProduk.this.setTheme(R.style.Theme_Fourth);
-        }else if(tema.equalsIgnoreCase("4")){
-            DetailProduk.this.setTheme(R.style.Theme_Fifth);
-        }else if(tema.equalsIgnoreCase("5")){
-            DetailProduk.this.setTheme(R.style.Theme_Sixth);
+    private val isPajakList: ArrayList<IsPajakListElement>
+        get(){
+            val isPajak = ArrayList<IsPajakListElement>()
+            isPajak.add(IsPajakListElement("1","Pajak"))
+            isPajak.add(IsPajakListElement("2","Tanpa Pajak"))
+            return isPajak
         }
-        
-        setContentView(R.layout.activity_detail_produk);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(label);
-
-        ivFotoBaru = (ImageView)findViewById(R.id.ivFotoBaru);
-        ivFotoLama = (ImageView)findViewById(R.id.ivFotoLama);
-        btnGanti = (Button) findViewById(R.id.btnGantiFoto);
-        btnSimpan = (Button) findViewById(R.id.btnSimpan);
-        etNama = (EditText) findViewById(R.id.etNama);
-        etHarga = (EditText) findViewById(R.id.etHarga);
-        etKeterangan = (EditText) findViewById(R.id.etKeterangan);
-
-        url_image = getIntent().getStringExtra("url_image");
-        nama = getIntent().getStringExtra("nama_barang");
-        id = getIntent().getStringExtra("id_barang");
-        harga = getIntent().getStringExtra("harga");
-        ket = getIntent().getStringExtra("ket");
-
-        requestMultiplePermissions();
-
-        String originalString = harga;
-
-        Long longval;
-        if (originalString.contains(".")) {
-            originalString = originalString.replace(".", "");
+    private val tipeProdukList: ArrayList<TipeProdukListElement>
+        get(){
+            val tipeProduk = ArrayList<TipeProdukListElement>()
+            tipeProduk.add(TipeProdukListElement("1","Beverage"))
+            tipeProduk.add(TipeProdukListElement("2","Food"))
+            tipeProduk.add(TipeProdukListElement("3","Dll"))
+            return tipeProduk
         }
-        longval = Long.parseLong(originalString);
 
-        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        formatter.applyPattern("#,###,###,###");
-        String formattedString = formatter.format(longval);
+    private lateinit var slctdTipeProduk: String
+    private lateinit var slctdIspajak: String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
+        val tema = sharedPreferences.getString(Url.setTema, "0")
+        if (tema.equals("0", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_First)
+        } else if (tema.equals("1", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Second)
+        } else if (tema.equals("2", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Third)
+        } else if (tema.equals("3", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Fourth)
+        } else if (tema.equals("4", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Fifth)
+        } else if (tema.equals("5", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Sixth)
+        }
+        setContentView(R.layout.activity_detail_produk)
+        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setTitle(label)
+        ivFotoBaru = findViewById<View>(R.id.ivFotoBaru) as ImageView
+        ivFotoLama = findViewById<View>(R.id.ivFotoLama) as ImageView
+        btnGanti = findViewById<View>(R.id.btnGantiFoto) as Button
+        btnSimpan = findViewById<View>(R.id.btnSimpan) as Button
+        etNama = findViewById<View>(R.id.etNama) as EditText
+        etHarga = findViewById<View>(R.id.etHarga) as EditText
+        etKeterangan = findViewById<View>(R.id.etKeterangan) as EditText
+        val spiIsPajak = findViewById<View>(R.id.spiIsPajak) as Spinner
+        val spiTipeProduk = findViewById<View>(R.id.spiTipeProduk) as Spinner
+
+        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdIspajak = isPajakList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdTipeProduk = tipeProdukList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        url_image = intent.getStringExtra("url_image")
+        nama = intent.getStringExtra("nama_barang")
+        id = intent.getStringExtra("id_barang")
+        harga = intent.getStringExtra("harga")
+        ket = intent.getStringExtra("ket")
+        requestMultiplePermissions()
+        var originalString = harga
+        val longval: Long
+        if (originalString!!.contains(".")) {
+            originalString = originalString.replace(".", "")
+        }
+        longval = originalString.toLong()
+        val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
+        formatter.applyPattern("#,###,###,###")
+        val formattedString = formatter.format(longval)
 
         //setting text after format to EditText
-        etHarga.setText(formattedString.replace(",", "."));
-        etHarga.setSelection(etHarga.getText().length());
-
-        etNama.setText(nama);
-        etKeterangan.setText(ket);
-
-
-
-        etHarga.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        etHarga!!.setText(formattedString.replace(",", "."))
+        etHarga!!.setSelection(etHarga!!.text.length)
+        etNama!!.setText(nama)
+        etKeterangan!!.setText(ket)
+        etHarga!!.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
                 // TODO Auto-generated method stub
             }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
                 // TODO Auto-generated method stub
             }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                etHarga.removeTextChangedListener(this);
-
+            override fun afterTextChanged(s: Editable) {
+                etHarga!!.removeTextChangedListener(this)
                 try {
-                    String originalString = s.toString();
-
-                    Long longval;
+                    var originalString = s.toString()
+                    val longval: Long
                     if (originalString.contains(".")) {
-                        originalString = originalString.replace(".", "");
+                        originalString = originalString.replace(".", "")
                     }
-                    longval = Long.parseLong(originalString);
-
-                    DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-                    formatter.applyPattern("#,###,###,###");
-                    String formattedString = formatter.format(longval);
+                    longval = originalString.toLong()
+                    val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
+                    formatter.applyPattern("#,###,###,###")
+                    val formattedString = formatter.format(longval)
 
                     //setting text after format to EditText
-                    etHarga.setText(formattedString.replace(",", "."));
-                    etHarga.setSelection(etHarga.getText().length());
-
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
+                    etHarga!!.setText(formattedString.replace(",", "."))
+                    etHarga!!.setSelection(etHarga!!.text.length)
+                } catch (nfe: NumberFormatException) {
+                    nfe.printStackTrace()
                 }
-
-                etHarga.addTextChangedListener(this);
+                etHarga!!.addTextChangedListener(this)
                 // TODO Auto-generated method stub
             }
-        });
+        })
 
-        Glide.with(ivFotoLama.getContext()).load(Url.serverFoto+url_image)
-                .centerCrop()
-                .fitCenter()
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("xmx1","Error "+e.toString());
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Log.e("xmx1","no Error ");
-                        return false;
-                    }
-                })
-                .into(ivFotoLama);
-
-        btnGanti.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-                if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-                    wallpaperDirectory.mkdirs();
+        Glide.with(ivFotoLama!!.context).load(Url.serverFoto + url_image)
+            .centerCrop()
+            .fitCenter()
+            .listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    Log.e("xmx1", "Error " + e.toString())
+                    return false
                 }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(DetailProduk.this);
-                    builder.setMessage("Pilihan Tambah Foto")
-                            .setPositiveButton("Galeri", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
 
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        if (checkSelfPermission(Manifest.permission.CAMERA)
-                                                != PackageManager.PERMISSION_GRANTED) {
-                                            requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                    MY_CAMERA_PERMISSION_CODE);
-                                            //showFileChooser();
-                                        } else {
-                                            wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-                                            if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-                                                wallpaperDirectory.mkdirs();
-                                            }
-
-                                            showFileChooser();
-                                        }
-                                    } else {
-                                        wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-                                        if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-                                            wallpaperDirectory.mkdirs();
-                                        }
-
-                                        showFileChooser();
-                                    }
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    Log.e("xmx1", "no Error ")
+                    return false
+                }
+            })
+            .into((ivFotoLama)!!)
+        btnGanti!!.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View) {
+                wallpaperDirectory =
+                    File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
+                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                    wallpaperDirectory!!.mkdirs()
+                }
+                val builder = AlertDialog.Builder(this@DetailProduk)
+                builder.setMessage("Pilihan Tambah Foto")
+                    .setPositiveButton("Galeri", DialogInterface.OnClickListener { dialog, id ->
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if ((checkSelfPermission(Manifest.permission.CAMERA)
+                                        != PackageManager.PERMISSION_GRANTED)
+                            ) {
+                                requestPermissions(
+                                    arrayOf(
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    ),
+                                    MY_CAMERA_PERMISSION_CODE
+                                )
+                                //showFileChooser();
+                            } else {
+                                wallpaperDirectory = File(
+                                    Environment.getExternalStorageDirectory()
+                                        .toString() + IMAGE_DIRECTORY
+                                )
+                                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                    wallpaperDirectory!!.mkdirs()
                                 }
-                            })
-                            .setNegativeButton("Kamera", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        if (checkSelfPermission(Manifest.permission.CAMERA)
-                                                != PackageManager.PERMISSION_GRANTED) {
-                                            requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                    MY_CAMERA_PERMISSION_CODE);
-                                            //showFileChooser();
-                                        } else {
-                                            wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-                                            if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-                                                wallpaperDirectory.mkdirs();
-                                            }
-
-                                            Calendar cal = Calendar.getInstance();
-                                            SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault());
-                                            tempNameFile = "Cam_"+sdf.format(cal.getTime())+".jpg";
-                                            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                            File f = new File(wallpaperDirectory, tempNameFile);
-                                            Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                                                    BuildConfig.APPLICATION_ID + ".provider",
-                                                    f);
-                                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-
-                                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                                        }
-                                    } else {
-                                        wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-                                        if (!wallpaperDirectory.exists()) {  // have the object build the directory structure, if needed.
-                                            wallpaperDirectory.mkdirs();
-                                        }
-
-                                        Calendar cal = Calendar.getInstance();
-                                        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault());
-                                        tempNameFile = "Cam_"+sdf.format(cal.getTime())+".jpg";
-                                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                        File f = new File(wallpaperDirectory, tempNameFile);
-                                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                        startActivityForResult(intent, CAMERA_REQUEST);
+                                showFileChooser()
+                            }
+                        } else {
+                            wallpaperDirectory = File(
+                                Environment.getExternalStorageDirectory()
+                                    .toString() + IMAGE_DIRECTORY
+                            )
+                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                wallpaperDirectory!!.mkdirs()
+                            }
+                            showFileChooser()
+                        }
+                    })
+                    .setNegativeButton("Kamera", object : DialogInterface.OnClickListener {
+                        override fun onClick(dialog: DialogInterface, id: Int) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if ((checkSelfPermission(Manifest.permission.CAMERA)
+                                            != PackageManager.PERMISSION_GRANTED)
+                                ) {
+                                    requestPermissions(
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ),
+                                        MY_CAMERA_PERMISSION_CODE
+                                    )
+                                    //showFileChooser();
+                                } else {
+                                    wallpaperDirectory = File(
+                                        Environment.getExternalStorageDirectory()
+                                            .toString() + IMAGE_DIRECTORY
+                                    )
+                                    if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                        wallpaperDirectory!!.mkdirs()
                                     }
-
+                                    val cal = Calendar.getInstance()
+                                    val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                                    tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+                                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                    val f = File(wallpaperDirectory, tempNameFile)
+                                    val photoURI = FileProvider.getUriForFile(
+                                        applicationContext,
+                                        BuildConfig.APPLICATION_ID + ".provider",
+                                        f
+                                    )
+                                    //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                                    startActivityForResult(cameraIntent, CAMERA_REQUEST)
                                 }
-                            });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                            } else {
+                                wallpaperDirectory = File(
+                                    Environment.getExternalStorageDirectory()
+                                        .toString() + IMAGE_DIRECTORY
+                                )
+                                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                    wallpaperDirectory!!.mkdirs()
+                                }
+                                val cal = Calendar.getInstance()
+                                val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                                tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                val f = File(wallpaperDirectory, tempNameFile)
+                                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
+                                startActivityForResult(intent, CAMERA_REQUEST)
+                            }
+                        }
+                    })
+                val alert = builder.create()
+                alert.show()
             }
-        });
-
-        btnSimpan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SendData();
+        })
+        btnSimpan!!.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View) {
+                SendData()
             }
-        });
+        })
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
-        String tema = sharedPreferences.getString(Url.setTema, "0");
-        if(tema.equalsIgnoreCase("0")){
-            DetailProduk.this.setTheme(R.style.Theme_First);
-        }else if(tema.equalsIgnoreCase("1")){
-            DetailProduk.this.setTheme(R.style.Theme_Second);
-        }else if(tema.equalsIgnoreCase("2")){
-            DetailProduk.this.setTheme(R.style.Theme_Third);
-        }else if(tema.equalsIgnoreCase("3")){
-            DetailProduk.this.setTheme(R.style.Theme_Fourth);
-        }else if(tema.equalsIgnoreCase("4")){
-            DetailProduk.this.setTheme(R.style.Theme_Fifth);
-        }else if(tema.equalsIgnoreCase("5")){
-            DetailProduk.this.setTheme(R.style.Theme_Sixth);
+    override fun onResume() {
+        super.onResume()
+        val label = sharedPreferences!!.getString(Url.setLabel, "Belum disetting")
+        val tema = sharedPreferences!!.getString(Url.setTema, "0")
+        if (tema.equals("0", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_First)
+        } else if (tema.equals("1", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Second)
+        } else if (tema.equals("2", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Third)
+        } else if (tema.equals("3", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Fourth)
+        } else if (tema.equals("4", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Fifth)
+        } else if (tema.equals("5", ignoreCase = true)) {
+            this@DetailProduk.setTheme(R.style.Theme_Sixth)
         }
     }
 
-    private void requestMultiplePermissions() {
+    private fun requestMultiplePermissions() {
         Dexter.withActivity(this)
-                .withPermissions(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
-                            //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        if (report.isAnyPermissionPermanentlyDenied()) { // check for permanent denial of any permission
-                            // show alert dialog navigating to Settings
-                            showSettingsDialog();
-                        }
+            .withPermissions(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
+                        //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
                     }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
+                    if (report.isAnyPermissionPermanentlyDenied) { // check for permanent denial of any permission
+                        // show alert dialog navigating to Settings
+                        showSettingsDialog()
                     }
+                }
 
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        // check for permanent denial of permission
-                        if (response.isPermanentlyDenied()) {
-                            showSettingsDialog();
-                        }
-                    }
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest>,
+                    token: PermissionToken
+                ) {
+                    token.continuePermissionRequest()
+                }
 
-//                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-//                        token.continuePermissionRequest();
-//                    }
-                }).
-                withErrorListener(new PermissionRequestErrorListener() {
-                    @Override
-                    public void onError(DexterError error) {
-                        Toast.makeText(getApplicationContext(), "Some Error! ", Toast.LENGTH_SHORT).show();
+                fun onPermissionDenied(response: PermissionDeniedResponse) {
+                    // check for permanent denial of permission
+                    if (response.isPermanentlyDenied) {
+                        showSettingsDialog()
                     }
-                })
-                .onSameThread()
-                .check();
+                } //                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                //                        token.continuePermissionRequest();
+                //                    }
+            }).withErrorListener(object : PermissionRequestErrorListener {
+                override fun onError(error: DexterError) {
+                    Toast.makeText(applicationContext, "Some Error! ", Toast.LENGTH_SHORT).show()
+                }
+            })
+            .onSameThread()
+            .check()
     }
 
-    private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DetailProduk.this);
-        builder.setTitle("Perizian dibutuhkan !");
-        builder.setMessage("Aplikasi ini membutuhkan perizinan untuk akses beberapa feature. Anda dapat mengatur di Pengaturan Aplikasi.");
-        builder.setPositiveButton("Pengaturan", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                openSettings();
+    private fun showSettingsDialog() {
+        val builder = AlertDialog.Builder(this@DetailProduk)
+        builder.setTitle("Perizian dibutuhkan !")
+        builder.setMessage("Aplikasi ini membutuhkan perizinan untuk akses beberapa feature. Anda dapat mengatur di Pengaturan Aplikasi.")
+        builder.setPositiveButton("Pengaturan", object : DialogInterface.OnClickListener {
+            override fun onClick(dialog: DialogInterface, which: Int) {
+                dialog.cancel()
+                openSettings()
             }
-        });
-        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+        })
+        builder.setNegativeButton("Batal", object : DialogInterface.OnClickListener {
+            override fun onClick(dialog: DialogInterface, which: Int) {
+                dialog.cancel()
             }
-        });
-        builder.show();
-
+        })
+        builder.show()
     }
 
-    private void openSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivityForResult(intent, 101);
+    private fun openSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.data = uri
+        startActivityForResult(intent, 101)
     }
 
-    private void showFileChooser() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
+    private fun showFileChooser() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
         try {
             startActivityForResult(
-                    Intent.createChooser(intent, "Select a File to Upload"),
-                    FILE_SELECT_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
+                Intent.createChooser(intent, "Select a File to Upload"),
+                FILE_SELECT_CODE
+            )
+        } catch (ex: ActivityNotFoundException) {
             // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(this, "Please install a File Manager.",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                this, "Please install a File Manager.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == this.RESULT_CANCELED){
-            return;
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_CANCELED) {
+            return
         }
-        if(requestCode == FILE_SELECT_CODE){
-            filePath = data.getData();
-            String a = RealPathUtil.getRealPath(getApplicationContext(), filePath);
-
+        if (requestCode == FILE_SELECT_CODE) {
+            filePath = data!!.data
+            val a = RealPathUtil.getRealPath(
+                applicationContext, filePath
+            )
             if (resultCode == RESULT_OK) {
                 // Get the Uri of the selected file
-                Uri uri = data.getData();
-                Log.d("Foto", "File Uri: " + uri.toString());
+                val uri = data.data
+                Log.d("Foto", "File Uri: " + uri.toString())
                 // Get the path
-                String path = a;
-
-                Log.d("Foto", "File Path: " + path);
-                File sourceLocation = new File (path);
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault());
-                String filename = "Gallery_"+sdf.format(cal.getTime())+".jpg";
-                File targetLocation = new File (wallpaperDirectory.toString(), filename);
-
-                if(sourceLocation.exists()){
-
-                    Log.v("Pesan", "Proses Pindah");
+                val path = a
+                Log.d("Foto", "File Path: $path")
+                val sourceLocation = File(path)
+                val cal = Calendar.getInstance()
+                val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                val filename = "Gallery_" + sdf.format(cal.time) + ".jpg"
+                val targetLocation = File(wallpaperDirectory.toString(), filename)
+                if (sourceLocation.exists()) {
+                    Log.v("Pesan", "Proses Pindah")
                     try {
-                        InputStream in = new FileInputStream(sourceLocation);
-                        OutputStream out = new FileOutputStream(targetLocation);
+                        val `in`: InputStream = FileInputStream(sourceLocation)
+                        val out: OutputStream = FileOutputStream(targetLocation)
                         // Copy the bits from instream to outstream
-                        byte[] buf = new byte[1024];
-                        int len;
-                        while ((len = in.read(buf)) > 0) {
-                            out.write(buf, 0, len);
+                        val buf = ByteArray(1024)
+                        var len: Int
+                        while ((`in`.read(buf).also { len = it }) > 0) {
+                            out.write(buf, 0, len)
                         }
-                        in.close();
-                        out.close();
-                        Log.v("Pesan", "Copy file successful.");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        `in`.close()
+                        out.close()
+                        Log.v("Pesan", "Copy file successful.")
+                    } catch (e: FileNotFoundException) {
+                        e.printStackTrace()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
                     }
-                }else{
-                    Log.v("Pesan", "Copy file failed. Source file missing.");
+                } else {
+                    Log.v("Pesan", "Copy file failed. Source file missing.")
                 }
+                val file = File(wallpaperDirectory.toString(), filename)
+                val file_size = (file.length() / 1024).toString().toInt()
+                Log.d("PirangMB", file_size.toString())
+                Glide.with(ivFotoBaru!!.context).load(File(file.absolutePath).toString())
+                    .centerCrop()
+                    .fitCenter()
+                    .listener(object : RequestListener<Drawable?> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any,
+                            target: Target<Drawable?>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            Log.e("xmx1", "Error " + e.toString())
+                            return false
+                        }
 
-                File file = new File(wallpaperDirectory.toString(),filename);
-                int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
-
-                Log.d("PirangMB", String.valueOf(file_size));
-
-                Glide.with(ivFotoBaru.getContext()).load(new File(file.getAbsolutePath()).toString())
-                        .centerCrop()
-                        .fitCenter()
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                Log.e("xmx1","Error "+e.toString());
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                Log.e("xmx1","no Error ");
-                                return false;
-                            }
-                        })
-                        .into(ivFotoBaru);
-
-                if(nama_file.equalsIgnoreCase("")){}
-                else{
-                    File fl = new File(nama_file);
-                    boolean deleted = fl.delete();
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any,
+                            target: Target<Drawable?>,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            Log.e("xmx1", "no Error ")
+                            return false
+                        }
+                    })
+                    .into((ivFotoBaru)!!)
+                if (nama_file.equals("", ignoreCase = true)) {
+                } else {
+                    val fl = File(nama_file)
+                    val deleted = fl.delete()
                 }
-
-                nama_file = file.getAbsolutePath();
+                nama_file = file.absolutePath
 
 //                Berkas berkas = new Berkas(file.getAbsolutePath(), file_size);
 //                berkasList.add(berkas);
 //                bAdapter.notifyDataSetChanged();
             }
-        }else if(requestCode == CAMERA_REQUEST){
+        } else if (requestCode == CAMERA_REQUEST) {
             if (resultCode == RESULT_OK) {
-                System.out.println("CAMERA_REQUEST1");
-//                        Bitmap photo = (Bitmap) data.getExtras().get("data");
-                File f = new File(wallpaperDirectory.toString());
-                Log.d("File", String.valueOf(f));
-                for (File temp : f.listFiles()) {
-                    if (temp.getName().equals(tempNameFile)) {
-                        f = temp;
-                        File filePhoto = new File(wallpaperDirectory.toString(), tempNameFile);
+                println("CAMERA_REQUEST1")
+                //                        Bitmap photo = (Bitmap) data.getExtras().get("data");
+                var f = File(wallpaperDirectory.toString())
+                Log.d("File", f.toString())
+                for (temp: File in f.listFiles()) {
+                    if ((temp.name == tempNameFile)) {
+                        f = temp
+                        val filePhoto = File(wallpaperDirectory.toString(), tempNameFile)
                         //pic = photo;
-
-                        int file_size = Integer.parseInt(String.valueOf(filePhoto.length() / 1024));
-
-                        Log.d("PirangMB", String.valueOf(file_size));
+                        val file_size = (filePhoto.length() / 1024).toString().toInt()
+                        Log.d("PirangMB", file_size.toString())
                         //tvFileName.setVisibility(View.VISIBLE);
                         // ivBerkas.setVisibility(View.VISIBLE);
-                        Glide.with(ivFotoBaru.getContext()).load(new File(f.getAbsolutePath()).toString())
-                                .centerCrop()
-                                .fitCenter()
-                                .listener(new RequestListener<Drawable>() {
-                                    @Override
-                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                        Log.e("xmx1","Error "+e.toString());
-                                        return false;
-                                    }
+                        Glide.with(ivFotoBaru!!.context).load(File(f.absolutePath).toString())
+                            .centerCrop()
+                            .fitCenter()
+                            .listener(object : RequestListener<Drawable?> {
+                                override fun onLoadFailed(
+                                    e: GlideException?,
+                                    model: Any,
+                                    target: Target<Drawable?>,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    Log.e("xmx1", "Error " + e.toString())
+                                    return false
+                                }
 
-                                    @Override
-                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                        Log.e("xmx1","no Error ");
-                                        return false;
-                                    }
-                                })
-                                .into(ivFotoBaru);
-
-                        if(nama_file.equalsIgnoreCase("")){}
-                        else{
-                            File fl = new File(nama_file);
-                            boolean deleted = fl.delete();
+                                override fun onResourceReady(
+                                    resource: Drawable?,
+                                    model: Any,
+                                    target: Target<Drawable?>,
+                                    dataSource: DataSource,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    Log.e("xmx1", "no Error ")
+                                    return false
+                                }
+                            })
+                            .into((ivFotoBaru)!!)
+                        if (nama_file.equals("", ignoreCase = true)) {
+                        } else {
+                            val fl = File(nama_file)
+                            val deleted = fl.delete()
                         }
-
-                        nama_file = f.getAbsolutePath();
+                        nama_file = f.absolutePath
 
 //                        Berkas berkas = new Berkas(f.getAbsolutePath(), file_size);
 //                        berkasList.add(berkas);
@@ -539,77 +572,71 @@ public class DetailProduk extends AppCompatActivity {
 //
 //                        bAdapter.notifyDataSetChanged();
                         //gbAdapter.notifyDataSetChanged();
-                        break;
+                        break
                     }
-
                 }
-
             }
         }
     }
 
-    private void SendData() {
-        class SendData extends AsyncTask<Void, Integer, String> {
-
+    private fun SendData() {
+        class SendData() : AsyncTask<Void?, Int?, String?>() {
             //ProgressDialog uploading;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                progressdialog = new ProgressDialog(DetailProduk.this);
-                progressdialog.setCancelable(false);
-                progressdialog.setMessage("Upload data ke server ...");
-                progressdialog.show();
+            override fun onPreExecute() {
+                super.onPreExecute()
+                progressdialog = ProgressDialog(this@DetailProduk)
+                progressdialog!!.setCancelable(false)
+                progressdialog!!.setMessage("Upload data ke server ...")
+                progressdialog!!.show()
                 //uploading = ProgressDialog.show(SinkronActivity.this, "Mengirim data ke Server", "Mohon Tunggu...", false, false);
             }
 
-            protected void onProgressUpdate(Integer... values)
-            {
-                //progressdialog.setProgress(values[0]);
-
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
+            override fun onPostExecute(s: String?) {
+                super.onPostExecute(s)
                 // uploading.dismiss();
-                Log.d("HASIL", s);
+                Log.d("HASIL", (s)!!)
                 //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
                 // tvStatus.setText(s);
                 //
-                if(s.equalsIgnoreCase("sukses")){
-
-                    if (progressdialog.isShowing())
-                        progressdialog.dismiss();
-                    Toast.makeText(DetailProduk.this, "Data berhasil diupdate !", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(DetailProduk.this, MasterProduk.class));
-                    finish();
-                }else if(s.equalsIgnoreCase("gagal")){
-                    if (progressdialog.isShowing())
-                        progressdialog.dismiss();
-                    Toast.makeText(DetailProduk.this, "Data gagal diupdate !", Toast.LENGTH_SHORT).show();
-                }else{
-                    if (progressdialog.isShowing())
-                        progressdialog.dismiss();
-                    Toast.makeText(DetailProduk.this, s, Toast.LENGTH_SHORT).show();
+                if (s.equals("sukses", ignoreCase = true)) {
+                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                    Toast.makeText(
+                        this@DetailProduk,
+                        "Data berhasil diupdate !",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    startActivity(Intent(this@DetailProduk, MasterProduk::class.java))
+                    finish()
+                } else if (s.equals("gagal", ignoreCase = true)) {
+                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                    Toast.makeText(this@DetailProduk, "Data gagal diupdate !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                    Toast.makeText(this@DetailProduk, s, Toast.LENGTH_SHORT).show()
                 }
-
             }
 
-            @Override
-            protected String doInBackground(Void... params) {
-
-                UploadData u = new UploadData();
-                String msg = null;
-                msg = u.uploadDataUmum(etNama.getText().toString(),etKeterangan.getText().toString(),
-                        etHarga.getText().toString().replace(".", ""), id, url_image, nama_file);
-
-                return msg;
+            override fun doInBackground(vararg p0: Void?): String? {
+                val u = UploadData()
+                var msg: String? = null
+                msg = u.uploadDataUmum(
+                    etNama!!.text.toString(), etKeterangan!!.text.toString(),
+                    etHarga!!.text.toString().replace(".", ""), id, url_image, nama_file,
+                    slctdIspajak,slctdTipeProduk
+                )
+                return msg
             }
         }
-        SendData uv = new SendData();
-        uv.execute();
+
+        val uv = SendData()
+        uv.execute()
     }
 
-
+    companion object {
+        private val CAMERA_REQUEST = 1888
+        private val MY_CAMERA_PERMISSION_CODE = 100
+        private val FILE_SELECT_CODE = 5
+        private val IMAGE_DIRECTORY = "/POSRestoran"
+    }
 }

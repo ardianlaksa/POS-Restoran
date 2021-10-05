@@ -14,12 +14,9 @@ import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import com.dnhsolution.restokabmalang.MainActivity
 import androidx.core.content.ContextCompat
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
-import android.content.DialogInterface
 import android.os.Environment
-import com.dnhsolution.restokabmalang.sistem.produk.MasterProduk
 import android.os.Build
 import android.content.pm.PackageManager
 import android.content.Intent
@@ -32,8 +29,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionRequestErrorListener
-import com.karumi.dexter.listener.DexterError
 import android.content.ActivityNotFoundException
 import android.app.Activity
 import android.app.AlertDialog
@@ -64,6 +59,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MasterProduk : AppCompatActivity() {
+
+    private lateinit var slctdTipeProduk: String
+    private lateinit var slctdIspajak: String
+
     lateinit var sharedPreferences: SharedPreferences
     var rvProduk: RecyclerView? = null
     private val adapterProduk: AdapterProduk? = null
@@ -92,8 +91,8 @@ class MasterProduk : AppCompatActivity() {
     var t_id: String? = null
     var tvKet: TextView? = null
     var databaseHandler: DatabaseHandler? = null
-    var fab: FloatingActionButton? = null
-    var tv_count: TextView? = null
+//    var fab: FloatingActionButton? = null
+//    var tv_count: TextView? = null
     var jml_data = 0
     private var toolbar: Toolbar? = null
     private var menuTemp: Menu? = null
@@ -126,8 +125,8 @@ class MasterProduk : AppCompatActivity() {
         viewPager.adapter = sectionsPagerAdapter
         val tabs = findViewById<TabLayout>(R.id.tabs)
         tabs.setupWithViewPager(viewPager)
-        fab = findViewById(R.id.fab)
-        tv_count = findViewById<View>(R.id.text_count) as TextView
+//        fab = findViewById(R.id.fab)
+//        tv_count = findViewById<View>(R.id.text_count) as TextView
         requestMultiplePermissions()
         if (adMasterProduk == 1) return
 
@@ -252,6 +251,20 @@ class MasterProduk : AppCompatActivity() {
         ivTambahFoto = dialogView.findViewById<View>(R.id.ivTambahFoto) as ImageView
         val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
         val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+
+        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdIspajak = isPajakList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdTipeProduk = tipeProdukList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
 
         val spinIsPajakAdapter = IsPajakSpinAdapter(
                 this,
@@ -766,7 +779,7 @@ class MasterProduk : AppCompatActivity() {
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha)
+                msg = u.uploadDataBaru(t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdTipeProduk)
                 return msg
             }
         }

@@ -63,6 +63,8 @@ class ServerFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_server, parent, false)
     }
 
+    private lateinit var slctdTipeProduk: String
+    private lateinit var slctdIspajak: String
     private var isRunnerRunning: Boolean = false
 
     // This event is triggered soon after onCreateView().
@@ -311,7 +313,7 @@ class ServerFragment() : Fragment() {
         get(){
             val isPajak = ArrayList<IsPajakListElement>()
             isPajak.add(IsPajakListElement("1","Pajak"))
-            isPajak.add(IsPajakListElement("2","Non Pajak"))
+            isPajak.add(IsPajakListElement("2","Tanpa Pajak"))
             return isPajak
         }
 
@@ -345,6 +347,20 @@ class ServerFragment() : Fragment() {
         ivTambahGambar = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView
         val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
         val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+
+        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdIspajak = isPajakList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdTipeProduk = tipeProdukList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
 
         val spinIsPajakAdapter = context?.let {
             IsPajakSpinAdapter(
@@ -872,7 +888,8 @@ class ServerFragment() : Fragment() {
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
                 var msg: String? = null
-                msg = u.uploadDataUmum(e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file)
+                msg = u.uploadDataUmum(e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file
+                    , slctdIspajak, slctdTipeProduk)
                 return msg
             }
         }
