@@ -45,7 +45,6 @@ public class MainMaster extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(label);
 
-
         btnInput = (Button)findViewById(R.id.bInput);
         btnTheme = (Button)findViewById(R.id.bTheme);
         btnProduk = (Button)findViewById(R.id.bProduk);
@@ -123,5 +122,4 @@ public class MainMaster extends AppCompatActivity {
             MainMaster.this.setTheme(R.style.Theme_Sixth);
         }
     }
-
 }

@@ -555,10 +555,10 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
 
     public void gantiIconWifi(Boolean value){
         if(value) {
-            menuTemp.getItem(2).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green));
+            menuTemp.getItem(1).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green));
             statusJaringan = 1;
         } else {
-            menuTemp.getItem(2).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_wifi_24_gray));
+            menuTemp.getItem(1).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_wifi_24_gray));
             statusJaringan = 0;
         }
     }

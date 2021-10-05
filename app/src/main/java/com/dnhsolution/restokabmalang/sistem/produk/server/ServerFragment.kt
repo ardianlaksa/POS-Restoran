@@ -24,7 +24,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.load.engine.GlideException
-import com.dnhsolution.restokabmalang.sistem.produk.server.ServerFragment
 import android.content.pm.PackageManager
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
@@ -50,6 +49,7 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ServerFragment() : Fragment() {
     // The onCreateView method is called when Fragment should create its View object hierarchy,
@@ -91,6 +91,7 @@ class ServerFragment() : Fragment() {
     var e_id: String? = null
     var e_gambar_lama: String? = null
     var databaseHandler: DatabaseHandler? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Setup any handles to view objects here
         // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
@@ -120,7 +121,7 @@ class ServerFragment() : Fragment() {
                     val id_barang = itemProduks[RecyclerViewClickedItemPos].id_barang
                     val harga = itemProduks[RecyclerViewClickedItemPos].harga
                     val ket = itemProduks[RecyclerViewClickedItemPos].keterangan
-                    DialogEdit(url_image, nama_barang, id_barang, harga, ket)
+                    dialogEdit(url_image, nama_barang, id_barang, harga, ket)
                     Log.d("TAG", RecyclerViewClickedItemPos.toString())
                 }
                 return false
@@ -306,13 +307,26 @@ class ServerFragment() : Fragment() {
         }
     }
 
-    fun DialogEdit(
-        url_image: String,
-        nama_barang: String?,
-        id_barang: String?,
-        harga: String,
-        ket: String?
-    ) {
+    private val isPajakList: ArrayList<IsPajakListElement>
+        get(){
+            val isPajak = ArrayList<IsPajakListElement>()
+            isPajak.add(IsPajakListElement("1","Pajak"))
+            isPajak.add(IsPajakListElement("2","Non Pajak"))
+            return isPajak
+        }
+
+    private val tipeProdukList: ArrayList<TipeProdukListElement>
+        get(){
+            val tipeProduk = ArrayList<TipeProdukListElement>()
+            tipeProduk.add(TipeProdukListElement("1","Beverage"))
+            tipeProduk.add(TipeProdukListElement("2","Food"))
+            tipeProduk.add(TipeProdukListElement("3","Dll"))
+            return tipeProduk
+        }
+
+    fun dialogEdit(url_image: String, nama_barang: String?,
+        id_barang: String?, harga: String, ket: String?) {
+
         val dialogBuilder = AlertDialog.Builder(context).create()
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_edit_produk, null)
@@ -329,6 +343,29 @@ class ServerFragment() : Fragment() {
         ivGambarLama = dialogView.findViewById<View>(R.id.ivGambarLama) as ImageView
         ivGambarBaru = dialogView.findViewById<View>(R.id.ivGambarBaru) as ImageView
         ivTambahGambar = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView
+        val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
+        val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+
+        val spinIsPajakAdapter = context?.let {
+            IsPajakSpinAdapter(
+                it,
+                R.layout.item_spi_ispajak,
+                isPajakList
+            )
+        }
+
+        spiIsPajak.adapter = spinIsPajakAdapter
+
+        val spinTipeProdukAdapter = context?.let {
+            TipeProdukSpinAdapter(
+                it,
+                R.layout.item_spi_tipe_produk,
+                tipeProdukList
+            )
+        }
+
+        spiTipeProduk.adapter = spinTipeProdukAdapter
+
         btnSimpan.setOnClickListener(View.OnClickListener {
             e_nama = etNama.text.toString()
             e_harga = etHarga.text.toString().replace(".", "")
@@ -345,7 +382,7 @@ class ServerFragment() : Fragment() {
                 etKeterangan.requestFocus()
                 etKeterangan.error = "Silahkan isi form ini !"
             } else {
-                UpdateData()
+                updateData()
                 dialogBuilder.dismiss()
             }
         })
@@ -398,6 +435,7 @@ class ServerFragment() : Fragment() {
                 // TODO Auto-generated method stub
             }
         })
+
         if (CheckNetwork().checkingNetwork((context)!!)) {
             Glide.with(ivGambarLama.context).load(Url.serverFoto + url_image)
                 .placeholder(R.mipmap.ic_foto)
@@ -795,7 +833,7 @@ class ServerFragment() : Fragment() {
         }
     }
 
-    private fun UpdateData() {
+    private fun updateData() {
         open class UpdateData() : AsyncTask<Void?, Int?, String?>() {
             //ProgressDialog uploading;
             override fun onPreExecute() {
