@@ -219,6 +219,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                                 id.setNo(i);
                                 id.setNama_produk(jO.getString("nama_produk"));
                                 id.setQty(jO.getString("qty"));
+                                id.setIsPajak(jO.getString("ispajak"));
                                 id.setHarga(jO.getString("harga"));
                                 id.setTotal_harga(jO.getString("total_harga"));
 
@@ -374,14 +375,16 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             mService.sendMessage("--------------------------------", "");
 
             for (int i=0; i<itemProduk.size(); i++) {
-                String nama_produk = itemProduk.get(i).getNama_produk();
-                String qty = itemProduk.get(i).getQty();
-                String harga = itemProduk.get(i).getHarga();
-                String total_harga = itemProduk.get(i).getTotal_harga();
+//                if(itemProduk.get(i).getIsPajak().equalsIgnoreCase("1")) {
+                    String nama_produk = itemProduk.get(i).getNama_produk();
+                    String qty = itemProduk.get(i).getQty();
+                    String harga = itemProduk.get(i).getHarga();
+                    String total_harga = itemProduk.get(i).getTotal_harga();
 
-                mService.write(PrinterCommands.ESC_ALIGN_LEFT);
-                mService.sendMessage(nama_produk, "");
-                writePrint(PrinterCommands.ESC_ALIGN_CENTER, gantiKetitik(harga)+" x "+qty+" : "+gantiKetitik(total_harga));
+                    mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+                    mService.sendMessage(nama_produk, "");
+                    writePrint(PrinterCommands.ESC_ALIGN_CENTER, gantiKetitik(harga) + " x " + qty + " : " + gantiKetitik(total_harga));
+//                }
             }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);

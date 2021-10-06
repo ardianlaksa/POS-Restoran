@@ -7,6 +7,7 @@ public class ItemProduk {
     public String qty;
     public String harga;
     public String total_harga;
+    private String isPajak;
 
     public ItemProduk() {
     }
@@ -41,6 +42,14 @@ public class ItemProduk {
 
     public void setQty(String qty) {
         this.qty = qty;
+    }
+
+    public String getIsPajak() {
+        return isPajak;
+    }
+
+    public void setIsPajak(String value) {
+        this.isPajak = value;
     }
 
     public String getHarga() {
