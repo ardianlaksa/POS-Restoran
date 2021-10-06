@@ -31,3 +31,9 @@ interface KeranjangProdukItemOnTask {
 interface KeranjangProdukItemDeleteOnTask {
     fun keranjangProdukItemOnTask(position:Int,totalPrice:Int,qty:Int)
 }
+
+internal interface OnDataFetched {
+    fun showProgressBar()
+    fun hideProgressBar()
+    fun setDataInPageWithResult(result: Any?)
+}

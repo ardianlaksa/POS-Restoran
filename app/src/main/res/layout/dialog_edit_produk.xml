@@ -60,7 +60,24 @@
                 android:fontFamily="@font/nunitosansregular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <Spinner
+                android:id="@+id/spiIsPajak"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_24"
+                android:layout_weight=".5"/>
+
+            <Spinner
+                android:id="@+id/spiTipeProduk"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_24"
+                android:layout_weight=".5"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_marginLeft="2dp"

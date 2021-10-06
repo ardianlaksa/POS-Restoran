@@ -14,6 +14,8 @@ import android.database.sqlite.SQLiteException;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,9 +29,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +42,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.database.DatabaseHandler;
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork;
+import com.dnhsolution.restokabmalang.utilities.OnDataFetched;
+import com.dnhsolution.restokabmalang.utilities.TaskRunner;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard;
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView;
@@ -50,7 +56,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataTersimpanActivity extends AppCompatActivity {
+public class DataTersimpanActivity extends AppCompatActivity implements OnDataFetched {
 
     public static final String NOTIFICATION_CHANNEL_ID = "10001" ;
     private final static String default_notification_channel_id = "default" ;
@@ -77,6 +83,9 @@ public class DataTersimpanActivity extends AppCompatActivity {
     ProgressDialog progressdialog;
     int datax = 0;
     int status = 0;
+    private boolean isRunnerRunning = false;
+    private Menu menuTemp;
+    private int statusJaringan = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,27 +120,29 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
         fab_upload = findViewById(R.id.fab);
         fab_upload.setOnClickListener(view -> {
-            jml_data = databaseHandler.CountDataTersimpanUpload();
-            AlertDialog.Builder builder = new AlertDialog.Builder(DataTersimpanActivity.this);
-            builder.setMessage("Lanjut upload " + jml_data + " data ke server ?");
-            builder.setCancelable(true);
+            if(new CheckNetwork().checkingNetwork(this) && statusJaringan == 1){
+                jml_data = databaseHandler.CountDataTersimpanUpload();
+                AlertDialog.Builder builder = new AlertDialog.Builder(DataTersimpanActivity.this);
+                builder.setMessage("Lanjut upload " + jml_data + " data ke server ?");
+                builder.setCancelable(true);
 
-            builder.setPositiveButton(
-                    "Ya",
-                    (dialog, id) -> {
-                        if(new CheckNetwork().checkingNetwork(getApplicationContext())){
-                            SendData();
-                        }else{
-                            Toast.makeText(DataTersimpanActivity.this, R.string.tidak_terkoneksi_internet, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                builder.setPositiveButton(
+                        "Ya",
+                        (dialog, id) -> {
+                            if(new CheckNetwork().checkingNetwork(getApplicationContext())){
+                                SendData();
+                            }else{
+                                Toast.makeText(DataTersimpanActivity.this, R.string.tidak_terkoneksi_internet, Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-            builder.setNegativeButton(
-                    "Tidak",
-                    (dialog, id) -> dialog.cancel());
+                builder.setNegativeButton(
+                        "Tidak",
+                        (dialog, id) -> dialog.cancel());
 
-            AlertDialog alert = builder.create();
-            alert.show();
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else Toast.makeText(this, R.string.tidak_terkoneksi_internet, Toast.LENGTH_SHORT).show();
         });
 
         dataTersimpan = new ArrayList<>();
@@ -143,8 +154,22 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
         rvData.setHasFixedSize(true);
         rvData.setLayoutManager(linearLayoutManager);
-        //recyclerView.addItemDecoration(dividerItemDecoration);
         rvData.setAdapter(adapter);
+
+        String idTempatUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
+        String url = Url.serverPos + "getProduk?idTmpUsaha=" + idTempatUsaha;
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(!isRunnerRunning) {
+                    TaskRunner runner1 = new TaskRunner();
+                    runner1.executeAsync(new CekDataTersimpanNetworkTask(DataTersimpanActivity.this, url));
+                    isRunnerRunning = true;
+                }
+                handler.postDelayed(this, 5000);
+            }
+        });
 
         getData();
 
@@ -366,7 +391,6 @@ public class DataTersimpanActivity extends AppCompatActivity {
 
     private void getData() {
         dataTersimpan.clear();
-
         int jml_data = databaseHandler.CountDataTersimpan2();
 
         if(jml_data==0){
@@ -464,13 +488,16 @@ public class DataTersimpanActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_help, menu);
+        inflater.inflate(R.menu.menu_tersimpan, menu);
+        menuTemp = menu;
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_menu_bantuan) {
             tampilAlertDialogTutorial();
+            return true;
+        }else if (item.getItemId() == R.id.action_menu_wifi) {
             return true;
         }
 
@@ -522,5 +549,37 @@ public class DataTersimpanActivity extends AppCompatActivity {
         listView.setAdapter(tutorialArrayAdapter);
         alertDialog.setView(rowList);
         alertDialog.show();
+    }
+
+    @Override
+    public void showProgressBar() {
+
+    }
+
+    @Override
+    public void hideProgressBar() {
+
+    }
+
+    @Override
+    public void setDataInPageWithResult(@Nullable Object result) {
+//        try {
+            if(result == null) return;
+            //                JSONArray jsonArray = jsonObject.getJSONArray("result");
+            gantiIconWifi(result.toString().equalsIgnoreCase("1"));
+            isRunnerRunning = false;
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public void gantiIconWifi(Boolean value){
+        if(value) {
+            menuTemp.getItem(1).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green));
+            statusJaringan = 1;
+        } else {
+            menuTemp.getItem(1).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_wifi_24_gray));
+            statusJaringan = 0;
+        }
     }
 }

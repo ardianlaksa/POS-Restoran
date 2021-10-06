@@ -71,6 +71,8 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml" value="0.10157041540020263" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_produk.xml" value="0.1234375" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/content_data_tersimpan.xml" value="0.1933876811594203" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dialog_edit_produk.xml" value="0.33" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dialog_tambah_produk.xml" value="0.17916666666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dropdown_bulan.xml" value="0.1" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_dashboard.xml" value="0.21" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_bulanan.xml" value="0.13541666666666666" />
@@ -78,11 +80,14 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_bulanan.xml" value="0.17552083333333332" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml" value="0.25" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_bulan.xml" value="0.1046875" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_ispajak.xml" value="0.14479166666666668" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_tipe_produk.xml" value="0.1" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/bottom_nav_menu.xml" value="0.21296296296296297" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_help.xml" value="0.20564102564102565" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_lanjut.xml" value="0.20885416666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_master.xml" value="0.22447916666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tambah.xml" value="0.22447916666666667" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tersimpan.xml" value="0.22447916666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_transaksi.xml" value="0.22447916666666667" />
       </map>
     </option>
