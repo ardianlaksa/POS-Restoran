@@ -44,7 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //kolom detail_transaksi
     public final String col_id_trx= "id_trx";
-    public final String col_id_produk = "id_id_produk";
+    public final String col_id_produk = "id_produk";
     public final String col_qty = "qty";
 
     public DatabaseHandler(Context context) {
