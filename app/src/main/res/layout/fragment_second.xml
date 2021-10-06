@@ -7,6 +7,7 @@
     tools:context=".tersimpan.SecondFragment">
 
     <TextView
+        android:fontFamily="@font/nunitosansregular"
         android:id="@+id/textview_second"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/previous"
+        android:fontFamily="@font/nunitosansregular"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -17,5 +17,6 @@
         android:gravity="center"
         android:padding="2dp"
         tools:text="9+"
+        android:fontFamily="@font/nunitosansregular"
         android:layout_marginLeft="16dp" />
 </FrameLayout>

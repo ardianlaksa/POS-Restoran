@@ -17,6 +17,8 @@
             android:text="Tambah Barang"
             android:gravity="center"
             android:layout_marginBottom="20dp"
+            android:fontFamily="@font/nunitosansregular"
+            android:textStyle="bold"
             android:textSize="20dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -27,7 +29,8 @@
                 android:id="@+id/etNama"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nama Barang"/>
+                android:hint="Nama Barang"
+                android:fontFamily="@font/nunitosansregular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -39,7 +42,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Harga"
-                android:inputType="number"/>
+                android:inputType="number"
+                android:fontFamily="@font/nunitosansregular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -52,7 +56,8 @@
                 android:hint="Keterangan"
                 android:gravity="top"
                 android:layout_height="150dp"
-                android:inputType="text|textMultiLine"/>
+                android:inputType="text|textMultiLine"
+                android:fontFamily="@font/nunitosansregular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -61,7 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Foto"
-            android:textSize="17dp"/>
+            android:textSize="17dp"
+            android:fontFamily="@font/nunitosansregular"/>
 
         <LinearLayout
             android:layout_marginLeft="2dp"
@@ -97,7 +103,9 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Simpan"/>
+            android:text="Simpan"
+            android:textStyle="bold"
+            android:fontFamily="@font/nunitosansregular"/>
 
     </LinearLayout>
 

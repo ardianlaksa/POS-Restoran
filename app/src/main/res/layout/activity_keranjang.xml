@@ -28,7 +28,7 @@
             android:layout_gravity="end"
             android:layout_width="@dimen/_32"
             android:layout_height="@dimen/_32"
-            android:background="@drawable/ic_baseline_live_help_24_gray" />
+            android:background="@drawable/ic_help_black" />
 
     </LinearLayout>
 
@@ -93,6 +93,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/tvTotal"
                         app:layout_constraintRight_toLeftOf="@id/tvTotal"
                         android:text="@string/title_sub_total"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textColor="@color/colorPrimary"/>
 
                     <TextView
@@ -110,6 +111,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/etDiskon"
                         android:text="@string/rp_0"
                         android:textStyle="bold"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textColor="@android:color/holo_red_light"
                         android:textSize="@dimen/f_22"/>
                 </LinearLayout>
@@ -131,6 +133,7 @@
                         app:layout_constraintRight_toLeftOf="@id/tvDisc"
                         app:layout_constraintBottom_toBottomOf="@id/tvDisc"
                         android:text="@string/title_diskon"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textColor="@color/colorPrimaryDark"/>
 
                     <EditText
@@ -170,6 +173,7 @@
                             app:layout_constraintBottom_toBottomOf="@id/etDiskon"
                             android:text="Rp"
                             android:textStyle="bold"
+                            android:fontFamily="@font/nunitosansregular"
                             android:textColor="@android:color/holo_red_light"
                             android:textSize="@dimen/f_22"/>
 
@@ -183,6 +187,7 @@
                             android:gravity="right"
                             android:autofillHints="@string/_0"
                             android:hint="@string/_0"
+                            android:fontFamily="@font/nunitosansregular"
                             android:ems="2" />
 
                     </LinearLayout>
@@ -220,6 +225,7 @@
                         app:layout_constraintRight_toLeftOf="@id/etDiskon"
                         app:layout_constraintBottom_toBottomOf="@id/etDiskon"
                         android:text="@string/title_total"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textColor="@color/colorPrimaryDark"/>
 
 
@@ -238,6 +244,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/etDiskon"
                         android:text="@string/rp_0"
                         android:textStyle="bold"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textColor="@android:color/holo_red_light"
                         android:textSize="@dimen/f_22"/>
                 </LinearLayout>
@@ -251,6 +258,7 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_8"
                 android:text="@string/title_proses"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintTop_toBottomOf="@id/clBottom"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

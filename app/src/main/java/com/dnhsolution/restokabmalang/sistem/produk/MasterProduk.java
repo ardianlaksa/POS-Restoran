@@ -25,6 +25,7 @@ import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -58,8 +59,11 @@ import com.dnhsolution.restokabmalang.sistem.MainMaster;
 import com.dnhsolution.restokabmalang.sistem.produk.lokal.LokalFragment;
 import com.dnhsolution.restokabmalang.sistem.produk.server.ServerFragment;
 import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter;
+import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity;
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork;
 import com.dnhsolution.restokabmalang.utilities.Url;
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard;
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -224,26 +228,42 @@ public class MasterProduk extends AppCompatActivity {
     }
 
     private void tampilAlertDialogTutorial(){
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setMessage("" +
-                "1. Saat ada icon refresh warna\n" +
-                "    kuning dimasing-masing daftar\n" +
-                "    produk, menandakan jika produk\n" +
-                "    diload dari peralatan lokal.\n" +
-                "2. Saat ada icon panah kanan kiri\n" +
-                "    warna hijau dimasing-masing\n" +
-                "    daftar produk, menandakan jika\n" +
-                "    produk tersinkron dengan server.\n" +
-                "3. Tombol icon (+) samping icon [?]\n" +
-                "    di kanan atas untuk mulai\n" +
-                "    transaksi dengan produk yang\n" +
-                "    dipilih.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+//        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//        alertDialog.setMessage("" +
+//                "1. Saat ada icon refresh warna\n" +
+//                "    kuning dimasing-masing daftar\n" +
+//                "    produk, menandakan jika produk\n" +
+//                "    diload dari peralatan lokal.\n" +
+//                "2. Saat ada icon panah kanan kiri\n" +
+//                "    warna hijau dimasing-masing\n" +
+//                "    daftar produk, menandakan jika\n" +
+//                "    produk tersinkron dengan server.\n" +
+//                "3. Tombol icon (+) samping icon [?]\n" +
+//                "    di kanan atas untuk mulai\n" +
+//                "    transaksi dengan produk yang\n" +
+//                "    dipilih.");
+//        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//        alertDialog.show();
+        openDialog();
+    }
+
+    private void openDialog(){
+        AlertDialog alertDialog = new AlertDialog.Builder(MasterProduk.this).create();
+        final View rowList = getLayoutInflater().inflate(R.layout.dialog_tutorial, null);
+        ListView listView = rowList.findViewById(R.id.listView);
+        AdapterWizard tutorialArrayAdapter;
+        ArrayList arrayList = new ArrayList<ItemView>();
+        arrayList.add(new ItemView("1", "Saat ada icon refresh warna kuning dimasing-masing daftar produk, menandakan jika produk diload dari peralatan lokal."));
+        arrayList.add(new ItemView("2", "Saat ada icon panah kanan kiri warna hijau dimasing-masing daftar produk, menandakan jika produk tersinkron dengan server."));
+        arrayList.add(new ItemView("3", "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."));
+        tutorialArrayAdapter = new AdapterWizard(MasterProduk.this, arrayList);
+        listView.setAdapter(tutorialArrayAdapter);
+        alertDialog.setView(rowList);
         alertDialog.show();
     }
 

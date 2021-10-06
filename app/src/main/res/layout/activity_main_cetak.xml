@@ -62,6 +62,7 @@
                         android:paddingBottom="@dimen/_4"
                         android:text="No"
                         android:textSize="@dimen/f_16"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textStyle="bold" />
 
                     <TextView
@@ -75,6 +76,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:paddingTop="@dimen/_4"
+                        android:fontFamily="@font/nunitosansregular"
                         android:paddingBottom="@dimen/_4"/>
 
                     <TextView
@@ -86,6 +88,7 @@
                         android:paddingTop="@dimen/_4"
                         android:text="Qty"
                         android:textSize="@dimen/f_16"
+                        android:fontFamily="@font/nunitosansregular"
                         android:textStyle="bold" />
 
                     <TextView
@@ -97,6 +100,7 @@
                         android:textStyle="bold"
                         android:gravity="center_horizontal"
                         android:paddingTop="@dimen/_4"
+                        android:fontFamily="@font/nunitosansregular"
                         android:paddingBottom="@dimen/_4"/>
 
                 </LinearLayout>
@@ -136,6 +140,7 @@
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:layout_width="match_parent"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_height="wrap_content" />
 
                 <TextView
@@ -145,6 +150,7 @@
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:text="0"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -164,6 +170,7 @@
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:layout_width="match_parent"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_height="wrap_content" />
 
                 <TextView
@@ -173,6 +180,7 @@
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:text="0"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -198,6 +206,7 @@
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:layout_width="match_parent"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_height="wrap_content" />
 
                 <TextView
@@ -207,6 +216,7 @@
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:text="0"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -231,6 +241,7 @@
                     android:layout_weight="1"
                     android:text="Kembali"
                     android:textSize="@dimen/f_16"
+                    android:fontFamily="@font/nunitosansregular"
                     android:maxLines="1"/>
 
                 <Button
@@ -243,6 +254,7 @@
                     android:text="Cetak"
                     android:textColor="#fff"
                     android:textSize="@dimen/f_16"
+                    android:fontFamily="@font/nunitosansregular"
                     android:maxLines="1"/>
 
             </LinearLayout>
@@ -256,6 +268,7 @@
                 android:layout_height="wrap_content"
                 android:text="Pilih Perangkat Bluetooth"
                 android:textSize="@dimen/f_16"
+                android:fontFamily="@font/nunitosansregular"
                 android:maxLines="1"/>
 
             <TextView
@@ -264,6 +277,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_status"
+                android:fontFamily="@font/nunitosansregular"
                 android:text="status koneksi bluetooth"
                 />
 

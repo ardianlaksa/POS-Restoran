@@ -51,6 +51,7 @@
             android:layout_width="0dp"
             android:textColor="#363636"
             android:text="10-20-2019"
+            android:fontFamily="@font/nunitosansregular"
             android:layout_height="wrap_content" />
         <Spinner
             android:visibility="gone"
@@ -86,7 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/_4"
             android:layout_marginEnd="@dimen/_4"
-            android:text="@string/title_total" />
+            android:text="@string/title_total"
+            android:fontFamily="@font/nunitosansregular" />
 
         <TextView
             android:id="@+id/tvTotal"
@@ -95,7 +97,8 @@
             android:textColor="@android:color/black"
             android:textStyle="bold"
             android:textSize="@dimen/f_24"
-            android:text="@string/rp_0"/>
+            android:text="@string/rp_0"
+            android:fontFamily="@font/nunitosansregular"/>
 
     </LinearLayout>
 

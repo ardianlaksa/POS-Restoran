@@ -26,10 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -46,6 +48,8 @@ import com.dnhsolution.restokabmalang.database.DatabaseHandler;
 import com.dnhsolution.restokabmalang.sistem.produk.RealPathUtil;
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity;
 import com.dnhsolution.restokabmalang.utilities.Url;
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard;
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -64,6 +68,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -78,12 +83,13 @@ public class DashFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         // Layout tampilan untuk fragment ini
         setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_dashboard, parent, false);
+//        return inflater.inflate(R.layout.fragment_dashboard, parent, false);
+        return inflater.inflate(R.layout.fragment_dashboard2, parent, false);
     }
 
     DatabaseHandler databaseHandler;
     TextView tvTrxTersimpan, tvBatas;
-    CardView cvTransaksi;
+//    CardView cvTransaksi;
     SharedPreferences sharedPreferences;
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -93,7 +99,9 @@ public class DashFragment extends Fragment {
     private static final String IMAGE_DIRECTORY = "/POSRestoran";
     File wallpaperDirectory;
     String t_nama_file = "";
-    ImageView ivGambar;
+    ImageView ivGambar, ivInfo;
+    AlertDialog alertDialog;
+
 
     Handler mHandler;
     @Override
@@ -104,12 +112,19 @@ public class DashFragment extends Fragment {
 
         tvTrxTersimpan = view.findViewById(R.id.tvTransaksiTersimpan);
         tvBatas= view.findViewById(R.id.tvBatas);
-        cvTransaksi= view.findViewById(R.id.cvTransaksi);
+        ivInfo= view.findViewById(R.id.ivInfo);
+//        cvTransaksi= view.findViewById(R.id.cvTransaksi);
 
         batasSinkronAngka = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "7");
         db = databaseHandler.getReadableDatabase();
         batasSinkron();
 
+        ivInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDialog();
+            }
+        });
 //        cvTransaksi.setOnClickListener(v -> startActivity(new Intent(getContext(), DataTersimpanActivity.class)));
 
 //        cvProduk.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +139,7 @@ public class DashFragment extends Fragment {
 //        tampilAlertDialogTutorial();
 
         MainActivity.Companion.setAdDashboard(1);
+
 
         // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
     }
@@ -147,21 +163,36 @@ public class DashFragment extends Fragment {
     }
 
     private void tampilAlertDialogTutorial(){
+//        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+//        alertDialog.setMessage("" +
+//                "1. Transaksi tersimpan : Transaksi\n" +
+//                "    yang dilakukan saat tidak ada\n" +
+//                "    koneksi.\n" +
+//                "2. Batas Waktu Sinkron : Batasan\n" +
+//                "   waktu maksimal untuk upload\n" +
+//                "   transaksi saat tidak ada koneksi\n" +
+//                "   internet.");
+//        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//        alertDialog.show();
+        openDialog();
+    }
+
+    private void openDialog(){
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setMessage("" +
-                "1. Transaksi tersimpan : Transaksi\n" +
-                "    yang dilakukan saat tidak ada\n" +
-                "    koneksi.\n" +
-                "2. Batas Waktu Sinkron : Batasan\n" +
-                "   waktu maksimal untuk upload\n" +
-                "   transaksi saat tidak ada koneksi\n" +
-                "   internet.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+        final View rowList = getLayoutInflater().inflate(R.layout.dialog_tutorial, null);
+        ListView listView = rowList.findViewById(R.id.listView);
+        AdapterWizard tutorialArrayAdapter;
+        ArrayList arrayList = new ArrayList<ItemView>();
+        arrayList.add(new ItemView("1", "Transaksi tersimpan : Transaksi yang dilakukan saat tidak ada koneksi."));
+        arrayList.add(new ItemView("2", "Batas Waktu Sinkron : Batasan waktu maksimal untuk upload transaksi saat tidak ada koneksi internet."));
+        tutorialArrayAdapter = new AdapterWizard(getContext(), arrayList);
+        listView.setAdapter(tutorialArrayAdapter);
+        alertDialog.setView(rowList);
         alertDialog.show();
     }
 
@@ -590,6 +621,13 @@ public class DashFragment extends Fragment {
         tvTrxTersimpan.setText(String.valueOf(jml_trx));
         this.mHandler = new Handler();
         this.mHandler.postDelayed(m_Runnable,3000);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
     }
 
     @Override

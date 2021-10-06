@@ -76,7 +76,7 @@
         <item>Ungu</item>
     </string-array>
 
-    <string name="tanggal_kosong">--/--/----</string>
+    <string name="tanggal_kosong">-- / -- / ----</string>
     <string name="batas_waktu_sinkron">Batas Waktu Sinkron</string>
     <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>
     <string name="login">Login</string>

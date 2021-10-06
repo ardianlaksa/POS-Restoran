@@ -12,6 +12,6 @@
             android:title="@string/cari"/>
         <item android:id="@+id/action_menu_bantuan"
             app:showAsAction="ifRoom"
-            android:icon="@drawable/ic_baseline_live_help_24"
+            android:icon="@drawable/ic_help"
             android:title="@string/title_bantuan"/>
 </menu>

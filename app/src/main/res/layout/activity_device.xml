@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:padding="8dp"
+        android:fontFamily="@font/nunitosansregular"
         android:text="Perangkat terpasang"
         android:textColor="#fff"
         android:visibility="gone"/>
@@ -48,6 +49,7 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:padding="8dp"
+        android:fontFamily="@font/nunitosansregular"
         android:text="Perangkat lain tersedia"
         android:textColor="#fff"
         android:visibility="gone"/>
@@ -63,6 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cari Perangkat"
+        android:fontFamily="@font/nunitosansregular"
         android:background="@android:color/darker_gray"/>
 
 </LinearLayout>

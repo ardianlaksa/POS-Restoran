@@ -14,12 +14,14 @@
             android:layout_height="wrap_content"
             android:text="No. Transaksi : "
             android:textStyle="bold"
+            android:fontFamily="@font/nunitosansregular"
             android:textSize="@dimen/f_18"/>
         <TextView
             android:id="@+id/tvNoTrx"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="0 "
+            android:fontFamily="@font/nunitosansregular"
             android:textSize="@dimen/f_18"
             android:textColor="@color/colorAccent"/>
     </LinearLayout>

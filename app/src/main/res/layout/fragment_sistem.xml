@@ -42,6 +42,7 @@
             <TextView
                 android:id="@+id/tvSelectTheme"
                 style="?textLarge"
+                android:fontFamily="@font/nunitosansregular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_text_select_theme" />
@@ -51,12 +52,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/tvSelectTheme"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_marginStart="@dimen/spinner_margin_left"
                 android:layout_marginLeft="@dimen/spinner_margin_left"
-                android:layout_toRightOf="@+id/tvSelectTheme"
                 android:layout_toEndOf="@+id/tvSelectTheme"
+                android:layout_toRightOf="@+id/tvSelectTheme"
                 android:entries="@array/theme_array"
                 android:spinnerMode="dropdown" />
 
@@ -75,7 +76,8 @@
                 style="?textSubheader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Judul App" />
+                android:text="Judul App"
+                android:fontFamily="@font/nunitosansregular" />
 
             <EditText
                 android:id="@+id/etLabel"
@@ -85,7 +87,8 @@
                 android:layout_below="@+id/tvCredentials"
                 android:hint="@string/text"
                 android:inputType="text"
-                android:lines="1" />
+                android:lines="1"
+                android:fontFamily="@font/nunitosansregular" />
 
         </RelativeLayout>
 
@@ -94,9 +97,11 @@
             style="?button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/rlTitleApp"
             android:layout_marginTop="@dimen/_16"
             android:text="@string/title_simpan"
-            android:layout_below="@id/rlTitleApp"/>
+            android:textStyle="bold"
+            android:fontFamily="@font/nunitosansregular"/>
 
     </RelativeLayout>
 

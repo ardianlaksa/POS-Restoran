@@ -13,7 +13,8 @@
         android:id="@+id/mId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:fontFamily="@font/nunitosansregular"/>
 
     <TextView
         android:id="@+id/tvItem"
@@ -21,6 +22,7 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:maxLines="2"
-        android:ellipsize="end"/>
+        android:ellipsize="end"
+        android:fontFamily="@font/nunitosansregular"/>
 
 </LinearLayout>

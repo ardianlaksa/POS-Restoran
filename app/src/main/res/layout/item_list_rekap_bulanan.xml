@@ -30,6 +30,7 @@
             android:layout_marginLeft="@dimen/_8"
             android:layout_marginEnd="@dimen/_16"
             android:layout_marginRight="@dimen/_8"
+            android:fontFamily="@font/nunitosansregular"
             android:gravity="center"/>
 
         <LinearLayout
@@ -46,6 +47,7 @@
                 android:gravity="center"
                 android:text="@string/tanggal_kosong"
                 android:textSize="@dimen/f_16"
+                android:fontFamily="@font/nunitosansregular"
                 android:textColor="@android:color/holo_red_light"/>
 
             <TextView
@@ -57,6 +59,7 @@
                 android:text="@string/rp_0"
                 android:textStyle="bold"
                 android:textSize="@dimen/f_18"
+                android:fontFamily="@font/nunitosansregular"
                 android:textColor="@android:color/holo_red_light"/>
 
 
