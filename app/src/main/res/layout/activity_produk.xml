@@ -22,6 +22,8 @@
         android:layout_height="wrap_content"
         android:text="@string/title_tambah"
         android:textStyle="bold"
+        android:textColor="#fff"
+        android:background="#4CAF50"
         android:fontFamily="@font/nunitosansregular"
         android:layout_alignParentBottom="true"/>
 
