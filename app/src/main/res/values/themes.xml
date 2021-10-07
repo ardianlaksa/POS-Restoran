@@ -9,6 +9,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_wh</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
     <style name="Theme.Second" parent="AppTheme.NoActionBar">
