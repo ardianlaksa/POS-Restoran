@@ -41,6 +41,7 @@
             android:textColor="@android:color/white"
             android:textSize="12sp"
             android:textStyle="bold"
+            android:fontFamily="@font/nunitosansregular"
             tools:text="Judul" />
 
     </RelativeLayout>
@@ -50,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/f_10"
+        android:fontFamily="@font/nunitosansregular"
         android:maxLines="3"/>
 
     <TextView
@@ -63,6 +65,7 @@
         android:textColor="@android:color/holo_red_light"
         android:textSize="12sp"
         tools:text="Rp 0"
+        android:fontFamily="@font/nunitosansregular"
         android:layout_gravity="start"/>
 
 </LinearLayout>

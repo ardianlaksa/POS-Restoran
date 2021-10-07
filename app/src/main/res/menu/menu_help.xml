@@ -3,6 +3,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
         <item android:id="@+id/action_menu_bantuan"
             app:showAsAction="always"
-            android:icon="@drawable/ic_baseline_live_help_24"
+            android:icon="@drawable/ic_help"
             android:title="@string/title_bantuan"/>
 </menu>

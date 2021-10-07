@@ -16,7 +16,8 @@
             android:id="@+id/mId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:fontFamily="@font/nunitosansregular"/>
 
         <TextView
             android:id="@+id/tvNumItem"
@@ -29,6 +30,7 @@
             android:layout_marginLeft="@dimen/_8"
             android:layout_marginEnd="@dimen/_16"
             android:layout_marginRight="@dimen/_8"
+            android:fontFamily="@font/nunitosansregular"
             android:gravity="center"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,6 +46,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvNama"
                 android:text="@string/title_nama"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -56,6 +59,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center_horizontal"
                 android:text="@string/text"
+                android:fontFamily="@font/nunitosansregular"
                 android:textStyle="bold"
                 android:textColor="@android:color/holo_red_light" />
 
@@ -66,6 +70,7 @@
                 android:layout_marginRight="@dimen/_8"
                 android:text="@string/title_total"
                 android:textSize="@dimen/f_10"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintBottom_toBottomOf="@id/tvDisc"
                 app:layout_constraintRight_toLeftOf="@id/tvDisc" />
 
@@ -88,20 +93,22 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvHarga"
                 android:text="@string/title_harga"
-                android:textSize="@dimen/f_10"/>
+                android:textSize="@dimen/f_10"
+                android:fontFamily="@font/nunitosansregular"/>
 
             <TextView
                 android:id="@+id/tvHarga"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_4"
+                android:gravity="center"
                 android:paddingStart="@dimen/_4"
                 android:paddingEnd="@dimen/_4"
-                app:layout_constraintLeft_toRightOf="@id/tvTitleHarga"
-                app:layout_constraintTop_toBottomOf="@id/tvNama"
-                android:gravity="center"
                 android:text="@string/text"
-                android:textColor="@android:color/holo_red_light"/>
+                android:fontFamily="@font/nunitosansregular"
+                android:textColor="@android:color/holo_red_light"
+                app:layout_constraintLeft_toRightOf="@id/tvTitleHarga"
+                app:layout_constraintTop_toBottomOf="@id/tvNama" />
 
             <TextView
                 android:id="@+id/tvTotal"
@@ -114,6 +121,7 @@
                 android:layout_marginTop="@dimen/_4"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintTop_toBottomOf="@id/tvDisc"
                 app:layout_constraintRight_toRightOf="parent" />
 
@@ -124,6 +132,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvQty"
                 android:text="@string/title_qty"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -137,6 +146,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tvHarga"
                 android:gravity="center"
                 android:text="@string/text"
+                android:fontFamily="@font/nunitosansregular"
                 android:textColor="@android:color/holo_red_light"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

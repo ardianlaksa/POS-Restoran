@@ -16,6 +16,8 @@
             android:layout_height="wrap_content"
             android:text="Tambah Barang"
             android:gravity="center"
+            android:fontFamily="@font/nunitosansregular"
+            android:textStyle="bold"
             android:layout_marginBottom="20dp"
             android:textSize="20dp"/>
 
@@ -28,6 +30,7 @@
                 android:id="@+id/etNama"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/nunitosansregular"
                 android:hint="Nama Barang"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -41,6 +44,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Harga"
+                android:fontFamily="@font/nunitosansregular"
                 android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,6 +57,7 @@
                 android:layout_width="fill_parent"
                 android:hint="Keterangan"
                 android:gravity="top"
+                android:fontFamily="@font/nunitosansregular"
                 android:layout_height="150dp"
                 android:inputType="text|textMultiLine"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -82,6 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Foto"
+            android:fontFamily="@font/nunitosansregular"
             android:textSize="17dp"/>
 
         <LinearLayout
@@ -118,6 +124,8 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/nunitosansregular"
+            android:textStyle="bold"
             android:text="Simpan"/>
 
     </LinearLayout>

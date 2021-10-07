@@ -8,10 +8,61 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/drawable/custom_rectangle.xml" value="1.3892857142857142" />
-        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_main.xml" value="0.10099637681159421" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/drawable/custom_rectangle.xml" value="0.5" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/drawable/ic_help_black.xml" value="0.151953125" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/drawable/ic_tutorial.xml" value="0.151953125" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/drawable/item_nomer.xml" value="0.151953125" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_data_tersimpan.xml" value="0.13353825136612021" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_detail_produk.xml" value="0.2" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_device.xml" value="0.22" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_keranjang.xml" value="0.14" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_login.xml" value="0.33" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_main_cetak.xml" value="0.18" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_main_master.xml" value="0.18" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_master_produk.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_master_sistem.xml" value="0.2" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_produk.xml" value="0.21" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_splash.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/content_data_tersimpan.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/device_name.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_action.xml" value="0.25" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_detail_op.xml" value="0.25" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_detail_rekap_harian.xml" value="0.25" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_edit_produk.xml" value="0.22" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_form_logo.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_tambah_produk.xml" value="0.2" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/dialog_tutorial.xml" value="0.16" />
         <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_dashboard.xml" value="0.15217391304347827" />
-        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_dashboard2.xml" value="0.2" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_dashboard2.xml" value="0.18" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_data.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_first.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_home.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_lokal.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_produk_list.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_rekap_bulanan.xml" value="0.18" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_rekap_harian.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_second.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_server.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_sistem.xml" value="0.25" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_keranjang_produk.xml" value="0.22" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_d_rekap_harian.xml" value="0.22" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_file.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_produk.xml" value="0.25" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_rekap_bulanan.xml" value="0.33" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_rekap_harian.xml" value="0.33" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_rekap_harian2.xml" value="0.33" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_list_tutorial.xml" value="0.22" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_produk.xml" value="0.22" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_produk_cetak.xml" value="0.2" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/item_spi_bulan.xml" value="0.13148907103825136" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/layout_news_badge.xml" value="0.14" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/menu/bottom_nav_menu.xml" value="0.13984375" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/menu/menu_help.xml" value="0.13984375" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/menu/menu_lanjut.xml" value="0.13984375" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/menu/menu_master.xml" value="0.13984375" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/menu/menu_tambah.xml" value="0.13984375" />
+        <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/menu/menu_transaksi.xml" value="0.25" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_wifi_24_gray.xml" value="0.20277777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/news_bottom_nav_bg.xml" value="0.1625" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_detail_produk.xml" value="0.16354166666666667" />

@@ -20,7 +20,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_blue</item>
-        <item name="android:fontFamily">@font/sinethar</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
     <style name="Theme.Third" parent="AppTheme.NoActionBar">
@@ -32,7 +32,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_green</item>
-        <item name="android:fontFamily">@font/sinethar</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
     <style name="Theme.Fourth" parent="AppTheme.NoActionBar">
@@ -44,7 +44,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_yellow</item>
-        <item name="android:fontFamily">@font/sinethar</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
     <style name="Theme.Fifth" parent="AppTheme.NoActionBar">
@@ -56,7 +56,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_red</item>
-        <item name="android:fontFamily">@font/sinethar</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
     <style name="Theme.Sixth" parent="AppTheme.NoActionBar">
@@ -68,7 +68,7 @@
         <item name="button">@style/button_wh</item>
         <item name="spinner">@style/spinner_wh</item>
         <item name="actionBarStyle">@style/actionbar_purple</item>
-        <item name="android:fontFamily">@font/sinethar</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
     <style name="Theme.Blue" parent="AppTheme.NoActionBar">
@@ -137,7 +137,7 @@
     </style>
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:fontFamily">@font/sinethar</item>
+        <item name="android:fontFamily">@font/nunitosansregular</item>
     </style>
 
 </resources>

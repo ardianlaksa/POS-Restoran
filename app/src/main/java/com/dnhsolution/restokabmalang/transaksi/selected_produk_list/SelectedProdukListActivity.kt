@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -27,6 +28,8 @@ import com.dnhsolution.restokabmalang.database.ItemDetailTransaksi
 import com.dnhsolution.restokabmalang.database.ItemTransaksi
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.utilities.*
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
 import kotlinx.android.synthetic.main.activity_keranjang.*
 import org.json.JSONArray
 import org.json.JSONException
@@ -64,6 +67,9 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var valueTotalPrice: Int = 0
     private var obyek:ArrayList<ProdukSerializable>? = null
     var databaseHandler: DatabaseHandler? = null
+
+    lateinit var alertDialog: android.app.AlertDialog.Builder
+    lateinit var dialog: android.app.AlertDialog
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     { result ->
@@ -202,23 +208,39 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     }
 
     private fun tampilAlertDialogTutorial() {
-        val alertDialog = android.app.AlertDialog.Builder(this).create()
-        alertDialog.setMessage(
-            """
-            1. Icon (+) dan (-) digunakan untuk
-                menambah dan mengurangi
-                jumlah pesanan.
-            2. Disc digunakan untuk
-                menambahkan diskon.
-            3. Tombol proses untuk mengirim
-                data transaksi ke server dan
-                melanjutkan proses cetak.
-            """.trimIndent()
-        )
-        alertDialog.setButton(
-            android.app.AlertDialog.BUTTON_NEGATIVE, "OK"
-        ) { dialog, _ -> dialog.dismiss() }
-        alertDialog.show()
+//        val alertDialog = android.app.AlertDialog.Builder(this).create()
+//        alertDialog.setMessage(
+//            """
+//            1. Icon (+) dan (-) digunakan untuk
+//                menambah dan mengurangi
+//                jumlah pesanan.
+//            2. Disc digunakan untuk
+//                menambahkan diskon.
+//            3. Tombol proses untuk mengirim
+//                data transaksi ke server dan
+//                melanjutkan proses cetak.
+//            """.trimIndent()
+//        )
+//        alertDialog.setButton(
+//            android.app.AlertDialog.BUTTON_NEGATIVE, "OK"
+//        ) { dialog, _ -> dialog.dismiss() }
+//        alertDialog.show()
+        openDialog()
+    }
+
+    fun openDialog() {
+        alertDialog = android.app.AlertDialog.Builder(this)
+        val rowList: View = layoutInflater.inflate(R.layout.dialog_tutorial, null)
+        var listView = rowList.findViewById<ListView>(R.id.listView)
+        val arrayList: ArrayList<ItemView> = ArrayList<ItemView>()
+        arrayList.add(ItemView("1", "Icon (+) dan (-) digunakan untuk menambah dan mengurangi jumlah pesanan."))
+        arrayList.add(ItemView("2", "Disc digunakan untuk menambahkan diskon."))
+        arrayList.add(ItemView("3", "Tombol proses untuk mengirim data transaksi ke server dan melanjutkan proses cetak."))
+        val tutorialArrayAdapter = AdapterWizard(this, arrayList)
+        listView.setAdapter(tutorialArrayAdapter)
+        alertDialog.setView(rowList)
+        dialog = alertDialog.create()
+        dialog.show()
     }
 
     override fun onNewIntent(intent: Intent) {

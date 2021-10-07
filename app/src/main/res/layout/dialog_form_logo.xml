@@ -17,6 +17,8 @@
             android:text="Tambah Logo"
             android:gravity="center"
             android:textSize="20dp"
+            android:fontFamily="@font/nunitosansregular"
+            android:textStyle="bold"
             android:layout_marginBottom="20dp"/>
 
         <View
@@ -31,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Gambar"
+            android:fontFamily="@font/nunitosansregular"
             android:textSize="17dp"/>
 
         <LinearLayout
@@ -67,7 +70,9 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Simpan"/>
+            android:text="Simpan"
+            android:textStyle="bold"
+            android:fontFamily="@font/nunitosansregular"/>
 
     </LinearLayout>
 

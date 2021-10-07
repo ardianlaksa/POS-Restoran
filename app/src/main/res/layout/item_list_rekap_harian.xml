@@ -29,6 +29,7 @@
             android:layout_marginLeft="@dimen/_8"
             android:layout_marginEnd="@dimen/_16"
             android:layout_marginRight="@dimen/_8"
+            android:fontFamily="@font/nunitosansregular"
             android:gravity="center"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,6 +45,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvNama"
                 android:text="No. Trx"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -57,6 +59,7 @@
                 android:gravity="center_horizontal"
                 android:text="@string/text"
                 android:textStyle="bold"
+                android:fontFamily="@font/nunitosansregular"
                 android:textColor="@android:color/holo_red_light" />
 
             <TextView
@@ -67,6 +70,7 @@
                 android:textSize="@dimen/f_10"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintBottom_toBottomOf="@id/tvDisc"
                 app:layout_constraintRight_toLeftOf="@id/tvDisc"/>
 
@@ -79,6 +83,7 @@
                 android:textColor="@color/colorAccent"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -89,6 +94,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvHarga"
                 android:text="Tanggal"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -98,6 +104,7 @@
                 android:layout_marginTop="@dimen/_4"
                 android:paddingStart="@dimen/_4"
                 android:paddingEnd="@dimen/_4"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleHarga"
                 app:layout_constraintTop_toBottomOf="@id/tvNama"
                 android:gravity="center"
@@ -115,6 +122,7 @@
                 android:layout_marginTop="@dimen/_4"
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintTop_toBottomOf="@id/tvDisc"
                 app:layout_constraintRight_toRightOf="parent" />
 
@@ -125,6 +133,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvQty"
                 android:text="Disc"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
@@ -134,6 +143,7 @@
                 android:layout_marginTop="@dimen/_4"
                 android:paddingStart="@dimen/_4"
                 android:paddingEnd="@dimen/_4"
+                android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleQty"
                 app:layout_constraintTop_toBottomOf="@id/tvHarga"
                 android:gravity="center"

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     style="?pageBackground"
+    android:background="@drawable/bg_dashboard2"
     android:focusableInTouchMode="true">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -43,11 +44,12 @@
             <Button
                 android:id="@+id/bInput"
                 style="?button"
-                android:background="#4CAF50"
-                android:textColor="#fff"
+                android:fontFamily="@font/nunitosansregular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title_tambah_data"/>
+                android:background="#4CAF50"
+                android:text="@string/title_tambah_data"
+                android:textColor="#fff" />
 
 
         </RelativeLayout>
@@ -60,33 +62,36 @@
             android:layout_below="@+id/rlbtnInput">
 
             <Button
-                android:layout_marginTop="@dimen/_8"
                 android:id="@+id/bTheme"
                 style="?button"
-                android:textColor="#fff"
-                android:background="#2196F3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title_theme"/>
+                android:layout_marginTop="@dimen/_8"
+                android:background="#2196F3"
+                android:fontFamily="@font/nunitosansregular"
+                android:text="@string/title_theme"
+                android:textColor="#fff" />
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_marginTop="@dimen/_8"
             android:id="@+id/llbtnProduk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/llbtnTheme">
+            android:layout_below="@+id/llbtnTheme"
+            android:fontFamily="@font/nunitosansregular"
+            android:layout_marginTop="@dimen/_8">
 
             <Button
-                android:layout_marginTop="@dimen/_8"
                 android:id="@+id/bProduk"
                 style="?button"
-                android:textColor="#fff"
-                android:background="#4CAF50"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title_produk"/>
+                android:layout_marginTop="@dimen/_8"
+                android:background="#FF9800"
+                android:text="@string/title_produk"
+                android:fontFamily="@font/nunitosansregular"
+                android:textColor="#fff" />
 
         </RelativeLayout>
 
@@ -98,14 +103,15 @@
             android:layout_below="@+id/llbtnProduk">
 
             <Button
-                android:layout_marginTop="@dimen/_8"
                 android:id="@+id/bLogout"
                 style="?button"
-                android:textColor="#fff"
-                android:background="#F44336"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Logout"/>
+                android:layout_marginTop="@dimen/_8"
+                android:background="#737373"
+                android:text="Logout"
+                android:fontFamily="@font/nunitosansregular"
+                android:textColor="#fff" />
 
         </RelativeLayout>
 

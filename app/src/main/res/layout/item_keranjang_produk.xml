@@ -39,7 +39,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
-            android:text="@string/judul"/>
+            android:text="@string/judul"
+            android:fontFamily="@font/nunitosansregular"/>
 
         <TextView
             android:id="@+id/tvPrice"
@@ -49,6 +50,7 @@
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light"
             android:textSize="@dimen/f_14"
+            android:fontFamily="@font/nunitosansregular"
             android:text="@string/rp_0"/>
 
     </LinearLayout>
@@ -106,6 +108,7 @@
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light"
             android:textSize="@dimen/f_18"
+            android:fontFamily="@font/nunitosansregular"
             android:text="@string/rp_0"/>
 
     </LinearLayout>

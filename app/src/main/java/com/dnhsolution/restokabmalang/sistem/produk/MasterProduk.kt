@@ -57,6 +57,9 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
+
 
 class MasterProduk : AppCompatActivity() {
 
@@ -196,24 +199,55 @@ class MasterProduk : AppCompatActivity() {
     }
 
     private fun tampilAlertDialogTutorial() {
-        val alertDialog = AlertDialog.Builder(this).create()
-        alertDialog.setMessage(
-            """1. Saat ada icon refresh warna
-    kuning dimasing-masing daftar
-    produk, menandakan jika produk
-    diload dari peralatan lokal.
-2. Saat ada icon panah kanan kiri
-    warna hijau dimasing-masing
-    daftar produk, menandakan jika
-    produk tersinkron dengan server.
-3. Tombol icon (+) samping icon [?]
-    di kanan atas untuk mulai
-    transaksi dengan produk yang
-    dipilih."""
+//        val alertDialog = AlertDialog.Builder(this).create()
+//        alertDialog.setMessage(
+//            """1. Saat ada icon refresh warna
+//    kuning dimasing-masing daftar
+//    produk, menandakan jika produk
+//    diload dari peralatan lokal.
+//2. Saat ada icon panah kanan kiri
+//    warna hijau dimasing-masing
+//    daftar produk, menandakan jika
+//    produk tersinkron dengan server.
+//3. Tombol icon (+) samping icon [?]
+//    di kanan atas untuk mulai
+//    transaksi dengan produk yang
+//    dipilih."""
+//        )
+//        alertDialog.setButton(
+//            AlertDialog.BUTTON_NEGATIVE, "OK"
+//        ) { dialog, which -> dialog.dismiss() }
+//        alertDialog.show()
+        openDialog()
+    }
+
+    private fun openDialog() {
+        val alertDialog = AlertDialog.Builder(this@MasterProduk).create()
+        val rowList = layoutInflater.inflate(R.layout.dialog_tutorial, null)
+        val listView: ListView = rowList.findViewById(R.id.listView)
+        val tutorialArrayAdapter: AdapterWizard
+        val arrayList = ArrayList<ItemView>()
+        arrayList.add(
+            ItemView(
+                "1",
+                "Saat ada icon refresh warna kuning dimasing-masing daftar produk, menandakan jika produk diload dari peralatan lokal."
+            )
         )
-        alertDialog.setButton(
-            AlertDialog.BUTTON_NEGATIVE, "OK"
-        ) { dialog, which -> dialog.dismiss() }
+        arrayList.add(
+            ItemView(
+                "2",
+                "Saat ada icon panah kanan kiri warna hijau dimasing-masing daftar produk, menandakan jika produk tersinkron dengan server."
+            )
+        )
+        arrayList.add(
+            ItemView(
+                "3",
+                "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."
+            )
+        )
+        tutorialArrayAdapter = AdapterWizard(this@MasterProduk, arrayList)
+        listView.adapter = tutorialArrayAdapter
+        alertDialog.setView(rowList)
         alertDialog.show()
     }
 

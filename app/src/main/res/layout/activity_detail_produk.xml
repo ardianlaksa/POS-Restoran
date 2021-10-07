@@ -74,6 +74,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="@font/nunitosansregular"
                     android:layout_marginRight="2.5dp"
                     android:textSize="16dp"
                     />
@@ -86,6 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginLeft="2.5dp"
+                    android:fontFamily="@font/nunitosansregular"
                     android:textSize="16dp"
                     />
             </LinearLayout>
@@ -99,6 +101,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
+                android:fontFamily="@font/nunitosansregular"
                 android:text="Ganti Foto"/>
 
             <TextView
@@ -108,12 +111,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="16dp"/>
 
             <EditText
                 android:id="@+id/etNama"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/nunitosansregular"
                 android:hint="Masukkan karakter disini"
                 />
 
@@ -124,6 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="16dp"/>
 
             <EditText
@@ -132,6 +138,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:hint="0"
+                android:fontFamily="@font/nunitosansregular"
                 />
 
             <TextView
@@ -141,6 +148,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:fontFamily="@font/nunitosansregular"
                 android:textSize="16dp"/>
 
             <EditText
@@ -148,6 +156,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Masukkan karakter disini"
+                android:fontFamily="@font/nunitosansregular"
                 />
 
             <LinearLayout
@@ -176,7 +185,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Simpan"
-                android:textColor="#fff"/>
+                android:textColor="#fff"
+                android:fontFamily="@font/nunitosansregular"/>
 
         </LinearLayout>
 

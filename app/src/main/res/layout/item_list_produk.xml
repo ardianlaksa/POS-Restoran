@@ -36,13 +36,14 @@
         app:layout_constraintLeft_toLeftOf="parent">
 
         <TextView
-            android:textColor="#fff"
             android:id="@+id/tvNama"
-            android:textSize="@dimen/f_12"
-            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_nama"/>
+            android:text="@string/title_nama"
+            android:textColor="#fff"
+            android:textSize="@dimen/f_12"
+            android:fontFamily="@font/nunitosansregular"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 

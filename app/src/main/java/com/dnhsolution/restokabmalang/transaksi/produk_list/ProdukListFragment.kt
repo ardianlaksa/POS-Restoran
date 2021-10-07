@@ -17,6 +17,7 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
@@ -36,6 +37,8 @@ import com.dnhsolution.restokabmalang.transaksi.selected_produk_list.SelectedPro
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.utilities.Url
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_produk_list.*
 import org.json.JSONException
@@ -64,6 +67,9 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     var telp: String = ""
     var alamat: String = ""
     var isSearch = false
+
+    lateinit var alertDialog: AlertDialog.Builder
+    lateinit var dialog: AlertDialog
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     { result ->
@@ -128,19 +134,34 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     }
 
     private fun tampilAlertDialogTutorial(){
-        val alertDialog = AlertDialog.Builder(requireContext()).create()
-        alertDialog.setMessage("" +
-                "1. Pilih produk yang akan digunakan\n" +
-                "    untuk transaksi, centang hijau\n" +
-                "    saat produk terpilih.\n" +
-                "2. Tombol icon (+) samping icon [?]\n" +
-                "    di kanan atas untuk mulai\n" +
-                "    transaksi dengan produk yang\n" +
-                "    dipilih.")
-        alertDialog.setButton(
-            AlertDialog.BUTTON_NEGATIVE, "OK"
-        ) { dialog, _ -> dialog.dismiss() }
-        alertDialog.show()
+//        val alertDialog = AlertDialog.Builder(requireContext()).create()
+//        alertDialog.setMessage("" +
+//                "1. Pilih produk yang akan digunakan\n" +
+//                "    untuk transaksi, centang hijau\n" +
+//                "    saat produk terpilih.\n" +
+//                "2. Tombol icon (+) samping icon [?]\n" +
+//                "    di kanan atas untuk mulai\n" +
+//                "    transaksi dengan produk yang\n" +
+//                "    dipilih.")
+//        alertDialog.setButton(
+//            AlertDialog.BUTTON_NEGATIVE, "OK"
+//        ) { dialog, _ -> dialog.dismiss() }
+//        alertDialog.show()
+        openDialog()
+    }
+
+    fun openDialog() {
+        alertDialog = AlertDialog.Builder(requireContext())
+        val rowList: View = layoutInflater.inflate(R.layout.dialog_tutorial, null)
+        var listView = rowList.findViewById<ListView>(R.id.listView)
+        val arrayList: ArrayList<ItemView> = ArrayList<ItemView>()
+        arrayList.add(ItemView("1", "Pilih produk yang akan digunakan untuk transaksi, centang hijau saat produk terpilih."))
+        arrayList.add(ItemView("2", "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."))
+        val tutorialArrayAdapter = AdapterWizard(requireContext(), arrayList)
+        listView.setAdapter(tutorialArrayAdapter)
+        alertDialog.setView(rowList)
+        dialog = alertDialog.create()
+        dialog.show()
     }
 
     override fun produkOnTask(result: String?) {

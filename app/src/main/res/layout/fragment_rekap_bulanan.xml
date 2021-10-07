@@ -55,6 +55,7 @@
             android:layout_weight="0.19"
             android:id="@+id/btnCari"
             android:textColor="#fff"
+            android:fontFamily="@font/nunitosansregular"
             android:text="Cari"/>
 
         <Button
@@ -86,7 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/_4"
             android:layout_marginEnd="@dimen/_4"
-            android:text="@string/title_total" />
+            android:text="@string/title_total"
+            android:fontFamily="@font/nunitosansregular"/>
 
         <TextView
             android:id="@+id/tvTotal"
@@ -95,7 +97,8 @@
             android:textColor="@android:color/black"
             android:textStyle="bold"
             android:textSize="@dimen/f_24"
-            android:text="@string/rp_0"/>
+            android:text="@string/rp_0"
+            android:fontFamily="@font/nunitosansregular"/>
 
     </LinearLayout>
 
@@ -122,7 +125,8 @@
             android:layout_marginStart="@dimen/_8"
             android:layout_marginLeft="@dimen/_8"
             android:layout_marginEnd="@dimen/_16"
-            android:layout_marginRight="@dimen/_8"/>
+            android:layout_marginRight="@dimen/_8"
+            android:fontFamily="@font/nunitosansregular"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -137,6 +141,7 @@
                 android:gravity="center"
                 android:text="Tanggal"
                 android:textSize="@dimen/f_16"
+                android:fontFamily="@font/nunitosansregular"
                 />
 
             <TextView
@@ -145,7 +150,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Omzet"
-                android:textSize="@dimen/f_16"/>
+                android:textSize="@dimen/f_16"
+                android:fontFamily="@font/nunitosansregular"/>
 
 
 

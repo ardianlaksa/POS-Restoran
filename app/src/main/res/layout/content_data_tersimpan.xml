@@ -14,7 +14,7 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fontFamily="@font/sinethar"
+        android:fontFamily="@font/nunitosansregular"
         android:text="@string/data_kosong"
         android:textSize="@dimen/f_16"/>
 

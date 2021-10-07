@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,8 @@ import com.dnhsolution.restokabmalang.utilities.CheckNetwork;
 import com.dnhsolution.restokabmalang.utilities.OnDataFetched;
 import com.dnhsolution.restokabmalang.utilities.TaskRunner;
 import com.dnhsolution.restokabmalang.utilities.Url;
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard;
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -502,32 +505,49 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
     }
 
     private void tampilAlertDialogTutorial(){
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setMessage("" +
-                "1. Status Belum Sinkron warna\n" +
-                "    orange : menandakan data\n" +
-                "    transaksi belum tersinkron\n" +
-                "    dengan server.\n" +
-                "2. Status Sudah sinkron warna\n" +
-                "    hijau : menandakan data\n" +
-                "    transaksi sudah tersinkron dengan\n" +
-                "    server.\n" +
-                "3. Saat ada data dengan status\n" +
-                "    Belum Sinkron, akan tampil\n" +
-                "    tombol icon Upload warna hijau.\n" +
-                "    Tombol ini digunakan untuk\n" +
-                "    upload data transaksi yang\n" +
-                "    Belum Sinkron ke server.\n" +
-                "4. Angka background merah diatas\n" +
-                "    tombol upload menandakan\n" +
-                "    jumlah data dengan status\n" +
-                "    Belum Sinkron.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+//        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//        alertDialog.setMessage("" +
+//                "1. Status Belum Sinkron warna\n" +
+//                "    orange : menandakan data\n" +
+//                "    transaksi belum tersinkron\n" +
+//                "    dengan server.\n" +
+//                "2. Status Sudah sinkron warna\n" +
+//                "    hijau : menandakan data\n" +
+//                "    transaksi sudah tersinkron dengan\n" +
+//                "    server.\n" +
+//                "3. Saat ada data dengan status\n" +
+//                "    Belum Sinkron, akan tampil\n" +
+//                "    tombol icon Upload warna hijau.\n" +
+//                "    Tombol ini digunakan untuk\n" +
+//                "    upload data transaksi yang\n" +
+//                "    Belum Sinkron ke server.\n" +
+//                "4. Angka background merah diatas\n" +
+//                "    tombol upload menandakan\n" +
+//                "    jumlah data dengan status\n" +
+//                "    Belum Sinkron.");
+//        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//        alertDialog.show();
+        openDialog();
+    }
+
+    private void openDialog(){
+        AlertDialog alertDialog = new AlertDialog.Builder(DataTersimpanActivity.this).create();
+        final View rowList = getLayoutInflater().inflate(R.layout.dialog_tutorial, null);
+        ListView listView = rowList.findViewById(R.id.listView);
+        AdapterWizard tutorialArrayAdapter;
+        ArrayList arrayList = new ArrayList<ItemView>();
+        arrayList.add(new ItemView("1", "Status Belum Sinkron warna orange : menandakan data transaksi belum tersinkron dengan server."));
+        arrayList.add(new ItemView("2", "Status Sudah sinkron warna hijau : menandakan data transaksi sudah tersinkron dengan server."));
+        arrayList.add(new ItemView("3", "Saat ada data dengan status Belum Sinkron, akan tampil tombol icon Upload warna hijau. Tombol ini digunakan untuk upload data transaksi yang Belum Sinkron ke server."));
+        arrayList.add(new ItemView("4", "Angka background merah diatas tombol upload menandakan jumlah data dengan status Belum Sinkron."));
+        tutorialArrayAdapter = new AdapterWizard(DataTersimpanActivity.this, arrayList);
+        listView.setAdapter(tutorialArrayAdapter);
+        alertDialog.setView(rowList);
         alertDialog.show();
     }
 
