@@ -52,7 +52,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     private DividerItemDecoration dividerItemDecoration;
     private RecyclerView.Adapter adapter;
 
-    TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status;
+    TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status,tvJmlPajak;
     Button btnKembali, btnCetak, btnPilih;
 
     private final String _tag = getClass().getSimpleName();
@@ -102,6 +102,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         linearLayout = findViewById(R.id.linearLayout);
 
         tvSubtotal = findViewById(R.id.tvSubtotal);
+        tvJmlPajak = findViewById(R.id.tvJmlPajak);
         tvDisc = findViewById(R.id.tvDisc);
         tvJmlDisc = findViewById(R.id.tvJmlDisc);
         tvTotal = findViewById(R.id.tvTotal);
@@ -197,19 +198,21 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         SQLiteDatabase db = databaseHandler.getReadableDatabase();
 
         //data transaksi
-        Cursor cTrx = db.rawQuery("select id, omzet, disc_rp from transaksi where id='" + idTrx + "'", null);
+        Cursor cTrx = db.rawQuery("select id, omzet, disc_rp, pajak_rp from transaksi where id='" + idTrx + "'", null);
         cTrx.moveToFirst();
         int id_trx = cTrx.getInt(0);
         int omzet = Integer.parseInt(cTrx.getString(1));
         int disc_rp = Integer.parseInt(cTrx.getString(2));
+        int pajak_rp = Integer.parseInt(cTrx.getString(3));
         int sub_total = omzet+disc_rp;
         tvSubtotal.setText(currencyFormatter(String.valueOf(sub_total)));
+        tvJmlPajak.setText(currencyFormatter(String.valueOf(pajak_rp)));
         tvJmlDisc.setText(currencyFormatter(String.valueOf(disc_rp)));
         tvTotal.setText(currencyFormatter(String.valueOf(omzet)));
         cTrx.close();
 
         //detail transaksi
-        Cursor cDetailTrx = db.rawQuery("select nama_produk, qty, harga,p.ispajak " +
+        Cursor cDetailTrx = db.rawQuery("select dt.nama_produk, dt.qty, dt.harga,p.ispajak " +
                 "from detail_transaksi dt LEFT JOIN produk p ON dt.id_produk = p.id " +
                 "where id_trx ='" + idTrx + "'", null);
         if (cDetailTrx.moveToFirst()){
@@ -361,7 +364,6 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
 //                requestBluetooth();
             if (!mService.isBTopen())
                 requestBluetooth();
-
         }
     }
 

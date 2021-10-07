@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import androidx.recyclerview.widget.RecyclerView
 import android.app.ProgressDialog
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.os.Bundle
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.R
@@ -30,7 +29,6 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import android.content.ActivityNotFoundException
-import android.app.Activity
 import android.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
@@ -63,7 +61,7 @@ import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
 
 class MasterProduk : AppCompatActivity() {
 
-    private lateinit var slctdTipeProduk: String
+    private lateinit var slctdJenisProduk: String
     private lateinit var slctdIspajak: String
 
     lateinit var sharedPreferences: SharedPreferences
@@ -295,7 +293,7 @@ class MasterProduk : AppCompatActivity() {
 
         spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                slctdTipeProduk = tipeProdukList[position].idItem
+                slctdJenisProduk = tipeProdukList[position].idItem
             }
             override fun onNothingSelected(parent: AdapterView<*>?) { }
         }
@@ -801,7 +799,7 @@ class MasterProduk : AppCompatActivity() {
                 val id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
                 databaseHandler!!.insert_produk(
                     com.dnhsolution.restokabmalang.database.ItemProduk(
-                        0, id_tmp_usaha, t_nama, t_harga, t_ket, t_nama_file, "1"
+                        0, id_tmp_usaha, t_nama, t_harga, t_ket, t_nama_file, "1",slctdIspajak,slctdJenisProduk
                     )
                 )
 
@@ -813,7 +811,7 @@ class MasterProduk : AppCompatActivity() {
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdTipeProduk)
+                msg = u.uploadDataBaru(t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
                 return msg
             }
         }

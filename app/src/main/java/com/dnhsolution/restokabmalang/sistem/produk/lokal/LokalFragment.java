@@ -615,7 +615,8 @@ public class LokalFragment extends Fragment {
                 f_gambar =  e_nama_file;
             }
             databaseHandler.update_produk(new com.dnhsolution.restokabmalang.database.ItemProduk(
-                    Integer.parseInt(e_id), id_tmp_usaha,e_nama,e_harga,e_ket,f_gambar,"0"
+                    Integer.parseInt(e_id), id_tmp_usaha,e_nama,e_harga,e_ket
+                    ,f_gambar,"0","",""
             ));
 
         } catch (Exception e) {

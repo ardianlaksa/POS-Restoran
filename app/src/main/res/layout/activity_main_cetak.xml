@@ -184,6 +184,35 @@
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="right"
+                android:gravity="right"
+                >
+
+                <TextView
+                    android:id="@+id/tvPajak"
+                    android:layout_marginLeft="150dp"
+                    android:text="@string/pajak"
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:layout_width="match_parent"
+                    android:fontFamily="@font/nunitosansregular"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvJmlPajak"
+                    android:gravity="right"
+                    android:layout_width="150dp"
+                    android:textColor="#000"
+                    android:textSize="18dp"
+                    android:text="0"
+                    android:fontFamily="@font/nunitosansregular"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
             <View
                 android:layout_marginTop="10dp"
