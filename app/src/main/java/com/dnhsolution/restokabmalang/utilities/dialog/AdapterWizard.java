@@ -1,6 +1,8 @@
 package com.dnhsolution.restokabmalang.utilities.dialog;
 
 import android.content.Context;
+import android.graphics.text.LineBreaker;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,10 @@ public class AdapterWizard  extends ArrayAdapter<ItemView> {
         // then according to the position of the view assign the desired TextView 2 for the same
         TextView textView2 = currentItemView.findViewById(R.id.tvIsi);
         textView2.setText(currentNumberPosition.getInText());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            textView2.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+        }
+
 
         // then return the recyclable view
         return currentItemView;

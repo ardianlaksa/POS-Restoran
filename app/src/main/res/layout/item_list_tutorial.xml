@@ -16,12 +16,12 @@
         android:layout_marginRight="5dp">
         <TextView
             android:id="@+id/tvNomor"
-            android:layout_width="35dp"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="12."
+            android:text="12"
             android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:fontFamily="@font/nunitosanslight"
             android:background="@drawable/item_nomer"/>
@@ -39,6 +39,8 @@
             android:textColor="#2B2A2A"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:layout_gravity="center_vertical|end"
+            android:justificationMode="inter_word"
             android:text="Often we might have a requirement to create a custom dialog with title, list of items and OK and Cancel buttons. Here I have implemented this very efficiently by using components like RecyclerView, CardView and Custom Layout."
             android:fontFamily="@font/nunitosanslight"
             tools:ignore="RtlHardcoded" />
