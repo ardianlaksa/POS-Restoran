@@ -67,6 +67,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     SharedPreferences sharedPreferences;
     String idTrx="";
     DatabaseHandler databaseHandler;
+    private String tipeStruk;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
         String tema = sharedPreferences.getString(Url.setTema, "0");
+        tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "");
 
         databaseHandler = new DatabaseHandler(MainCetakLokal.this);
 
@@ -204,7 +206,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         int omzet = Integer.parseInt(cTrx.getString(1));
         int disc_rp = Integer.parseInt(cTrx.getString(2));
         int pajak_rp = Integer.parseInt(cTrx.getString(3));
-        int sub_total = omzet+disc_rp;
+        int sub_total = omzet+disc_rp-pajak_rp;
         tvSubtotal.setText(currencyFormatter(String.valueOf(sub_total)));
         tvJmlPajak.setText(currencyFormatter(String.valueOf(pajak_rp)));
         tvJmlDisc.setText(currencyFormatter(String.valueOf(disc_rp)));
@@ -340,8 +342,14 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
+            String subTotal = tvSubtotal.getText().toString().replace(".","");
 
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(tvSubtotal.getText().toString()));
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(subTotal));
+
+            if(tipeStruk.equalsIgnoreCase("1")) {
+                writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : " + tvJmlPajak.getText().toString());
+            }
+
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);

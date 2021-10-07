@@ -301,7 +301,7 @@ public class LoginActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
+                System.out.println(response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     Log.i("json",jsonObject.toString());

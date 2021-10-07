@@ -59,7 +59,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
     private var omzetRp: Int = 0
     private var tipeStruk: String? = null
-    private var pajakRp: Int = 0
+    private var pajakRp: Float = 0F
     private var produkAdapter: SelectedProdukListAdapter? = null
     private val _tag: String = javaClass.simpleName
     private var idPengguna: String? = null
@@ -318,6 +318,15 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
+        println("d :$tipeStruk")
+        if(tipeStruk == "1")
+            pajakRp = totalPrice.toFloat()*10/100
+
+        tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+//        tvPajak.text = "asdf"
+
+        totalPrice +=pajakRp.toInt()
+
         var diskon = 0
 //        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
         if (!etDiskon.text.toString().isEmpty()) {
@@ -356,10 +365,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
-        if(tipeStruk == "1")
-            pajakRp = totalPrice*10/100
-
-        totalPrice +=pajakRp
+        totalPrice +=pajakRp.toInt()
 
         var diskonRupiah = 0
 //        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
@@ -530,7 +536,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         rootObject.put("idTmptUsaha",idTmpUsaha)
         rootObject.put("user",idPengguna)
         rootObject.put("disc_rp",valueDiskonRupiah)
-        rootObject.put("pajakRp",pajakRp)
+        rootObject.put("pajakRp",pajakRp.toInt())
         if(!etRupiahDiskon.text.toString().isEmpty()){
             rootObject.put("disc",valueDR)
         }else{
@@ -584,7 +590,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             databaseHandler!!.insert_transaksi(
                 ItemTransaksi(
                     0, tglTrx, disc, omzet, idPengguna, idTmpUsaha, valueDiskonRupiah.toString()
-                    , "0",pajakRp.toString()
+                    , "0",pajakRp.toInt().toString()
                 )
             )
 

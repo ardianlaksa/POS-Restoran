@@ -20,11 +20,12 @@
         android:id="@+id/bTambah"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/title_tambah"
-        android:textStyle="bold"
-        android:textColor="#fff"
+        android:padding="@dimen/_8"
+        android:layout_alignParentBottom="true"
         android:background="#4CAF50"
         android:fontFamily="@font/nunitosansregular"
-        android:layout_alignParentBottom="true"/>
+        android:text="@string/title_tambah"
+        android:textColor="#fff"
+        android:textStyle="bold" />
 
 </RelativeLayout>

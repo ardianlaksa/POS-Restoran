@@ -59,6 +59,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
     private BluetoothService mService = null;
     private boolean isPrinterReady = false;
+    private String tipeStruk;
 
     SharedPreferences sharedPreferences;
 
@@ -69,6 +70,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
         String tema = sharedPreferences.getString(Url.setTema, "0");
+        tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "");
 
         if(tema.equalsIgnoreCase("0")){
             MainCetak.this.setTheme(R.style.Theme_First);
@@ -393,15 +395,13 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
             String subTotal = tvSubtotal.getText().toString().replace(".","");
-            int subTotalInt = 0;
-            if(subTotal.equalsIgnoreCase("")){
-                subTotal = "0";
-            } else {
-                subTotalInt = Integer.parseInt(subTotal)*10/100;
-            }
 
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(subTotal));
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : "+subTotalInt);
+
+            if(tipeStruk.equalsIgnoreCase("1")) {
+                writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : " + tvJmlPajak.getText().toString());
+            }
+
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
