@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true"
     android:focusable="true"
     style="?pageBackground"
+    android:background="@drawable/bg_dashboard2"
     android:focusableInTouchMode="true">
 
 

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     style="?pageBackground"
+    android:background="@drawable/bg_dashboard2"
     android:focusableInTouchMode="true">
 
     <com.google.android.material.appbar.AppBarLayout
