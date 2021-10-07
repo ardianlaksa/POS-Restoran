@@ -63,6 +63,8 @@ class ServerFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_server, parent, false)
     }
 
+    private var slctdTipeProduk: String? = null
+    private var slctdIspajak: String? = null
     private var isRunnerRunning: Boolean = false
 
     // This event is triggered soon after onCreateView().
@@ -121,7 +123,9 @@ class ServerFragment() : Fragment() {
                     val id_barang = itemProduks[RecyclerViewClickedItemPos].id_barang
                     val harga = itemProduks[RecyclerViewClickedItemPos].harga
                     val ket = itemProduks[RecyclerViewClickedItemPos].keterangan
-                    dialogEdit(url_image, nama_barang, id_barang, harga, ket)
+                    val isPajak = itemProduks[RecyclerViewClickedItemPos].isPajak
+                    val jenisProduk = itemProduks[RecyclerViewClickedItemPos].jenisProduk
+                    dialogEdit(url_image, nama_barang, id_barang, harga, ket, isPajak, jenisProduk)
                     Log.d("TAG", RecyclerViewClickedItemPos.toString())
                 }
                 return false
@@ -181,12 +185,14 @@ class ServerFragment() : Fragment() {
                                     val jO: JSONObject = jsonArray.getJSONObject(i)
                                     val id: ItemProduk = ItemProduk()
                                     val idBarang: String = jO.getString("ID_BARANG")
-                                    id.setId_barang(idBarang)
-                                    id.setNama_barang(jO.getString("NM_BARANG"))
-                                    id.setUrl_image(jO.getString("FOTO"))
-                                    id.setHarga(jO.getString("HARGA"))
-                                    id.setKeterangan(jO.getString("KETERANGAN"))
-                                    id.setStatus(true)
+                                    id.id_barang = idBarang
+                                    id.nama_barang = jO.getString("NM_BARANG")
+                                    id.url_image = jO.getString("FOTO")
+                                    id.harga = jO.getString("HARGA")
+                                    id.keterangan = jO.getString("KETERANGAN")
+                                    id.isPajak = jO.getString("ISPAJAK")
+                                    id.jenisProduk = jO.getString("JENIS_PRODUK")
+                                    id.status = true
                                     Log.d("NM_BARANG", jO.getString("NM_BARANG"))
                                     if (databaseHandler!!.CountDataProdukId(idBarang.toInt()) == 0) tambahDataLokal(
                                         id
@@ -255,6 +261,7 @@ class ServerFragment() : Fragment() {
                         val status: Int = jsonObject.getInt("success")
                         val jsonArray: JSONArray = jsonObject.getJSONArray("result")
                         if (status == 1) {
+                            if(activity == null) return@Listener
                             (activity as MasterProduk).gantiIconWifi(true)
                             isRunnerRunning = false
                             return@Listener
@@ -299,7 +306,9 @@ class ServerFragment() : Fragment() {
                     itemProduk.harga,
                     itemProduk.keterangan,
                     itemProduk.url_image,
-                    "0"
+                    "0",
+                    itemProduk.isPajak,
+                    itemProduk.jenisProduk
                 )
             )
         } catch (e: Exception) {
@@ -311,7 +320,7 @@ class ServerFragment() : Fragment() {
         get(){
             val isPajak = ArrayList<IsPajakListElement>()
             isPajak.add(IsPajakListElement("1","Pajak"))
-            isPajak.add(IsPajakListElement("2","Non Pajak"))
+            isPajak.add(IsPajakListElement("2","Tanpa Pajak"))
             return isPajak
         }
 
@@ -325,7 +334,9 @@ class ServerFragment() : Fragment() {
         }
 
     fun dialogEdit(url_image: String, nama_barang: String?,
-        id_barang: String?, harga: String, ket: String?) {
+        id_barang: String?, harga: String, ket: String?, isPajak: String?, jenisProduk: String?) {
+        slctdIspajak = null
+        slctdTipeProduk = null
 
         val dialogBuilder = AlertDialog.Builder(context).create()
         val inflater = this.layoutInflater
@@ -345,6 +356,33 @@ class ServerFragment() : Fragment() {
         ivTambahGambar = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView
         val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
         val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+
+        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                println("a :$isPajak")
+                if(slctdIspajak == null)
+                    isPajakList.forEachIndexed { index, element ->
+                        if(element.idItem == isPajak) parent?.setSelection(index)
+                    }
+                slctdIspajak = isPajakList[position].idItem
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
+        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                println("b :$jenisProduk")
+                if(slctdTipeProduk == null)
+                    tipeProdukList.forEachIndexed { index, element ->
+                        if(element.idItem == jenisProduk) parent?.setSelection(index)
+                    }
+                slctdTipeProduk = tipeProdukList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
 
         val spinIsPajakAdapter = context?.let {
             IsPajakSpinAdapter(
@@ -872,7 +910,8 @@ class ServerFragment() : Fragment() {
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
                 var msg: String? = null
-                msg = u.uploadDataUmum(e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file)
+                msg = u.uploadDataUmum(e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file
+                    , slctdIspajak, slctdTipeProduk)
                 return msg
             }
         }
@@ -901,6 +940,8 @@ class ServerFragment() : Fragment() {
                     ip.url_image = f.url_image
                     ip.keterangan = f.keterangan
                     ip.status = false
+                    ip.isPajak = f.isPajak
+                    ip.jenisProduk = f.jenisProduk
                     itemProduks.add(ip)
                 }
             } catch (e: SQLiteException) {
@@ -913,7 +954,8 @@ class ServerFragment() : Fragment() {
         try {
             databaseHandler!!.update_produk(
                 com.dnhsolution.restokabmalang.database.ItemProduk(
-                    e_id!!.toInt(), idTmpUsaha, e_nama, e_harga, e_ket, e_gambar_lama, "0"
+                    e_id!!.toInt(), idTmpUsaha, e_nama, e_harga, e_ket, e_gambar_lama
+                    , "0",slctdIspajak,slctdTipeProduk
                 )
             )
         } catch (e: Exception) {

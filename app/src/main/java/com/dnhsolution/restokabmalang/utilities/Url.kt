@@ -17,6 +17,7 @@ object Url {
     const val SESSION_ALAMAT = "alamat"
     const val SESSION_EMAIL = "email"
     const val SESSION_TELP = "telp"
+    const val SESSION_TIPE_STRUK = "tipeStruk"
     const val SESSION_STS_LOGIN = "status"
     const val SESSION_NAME = "pos"
     const val SESSION_TEMP_TEMA = "temp_tema"

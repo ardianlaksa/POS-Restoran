@@ -65,6 +65,7 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.MyViewHold
         final ItemProduk itemProduk = itemProdukList.get(position);
         holder.ivIcSync.setImageResource(itemProduk.getStatus() ? R.drawable.ic_baseline_sync_alt_24_green : R.drawable.ic_baseline_sync_24_yellow);
 
+//        holder.nama.setText(itemProduk.getNama_barang()+" "+itemProduk.getIsPajak()+" "+itemProduk.getJenisProduk());
         holder.nama.setText(itemProduk.getNama_barang());
 
 //        if(new CheckNetwork().checkingNetwork(context)){

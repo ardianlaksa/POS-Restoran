@@ -188,8 +188,8 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     val foto = rArray.getJSONObject(i).getString("FOTO")
                     val nmBarang = rArray.getJSONObject(i).getString("NM_BARANG")
                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
-                    val isPajak = rArray.getJSONObject(i).getInt("ISPAJAK")
-                    val jnsProduk = rArray.getJSONObject(i).getInt("JENIS_PRODUK")
+                    val isPajak = rArray.getJSONObject(i).getString("ISPAJAK")
+                    val jnsProduk = rArray.getJSONObject(i).getString("JENIS_PRODUK")
 
                     produks.add(
                         ProdukListElement(
@@ -232,7 +232,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
             produks.add(
                 ProdukListElement(
-                    idBarang,nmBarang, harga, foto, keterangan, "lokal",-1,-1)
+                    idBarang,nmBarang, harga, foto, keterangan, "lokal",e.isPajak,e.jenisProduk)
             )
         }
 

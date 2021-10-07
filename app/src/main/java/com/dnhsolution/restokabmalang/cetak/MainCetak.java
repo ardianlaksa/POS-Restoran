@@ -49,6 +49,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     private RecyclerView.Adapter adapter;
 
     TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status;
+    private TextView tvJmlPajak;
     Button btnKembali, btnCetak, btnPilih;
 
     private final String TAG = MainActivity.class.getSimpleName();
@@ -95,6 +96,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
         tvSubtotal = (TextView)findViewById(R.id.tvSubtotal);
         tvDisc = (TextView)findViewById(R.id.tvDisc);
         tvJmlDisc = (TextView)findViewById(R.id.tvJmlDisc);
+        tvJmlPajak = (TextView)findViewById(R.id.tvJmlPajak);
         tvTotal = (TextView)findViewById(R.id.tvTotal);
         tv_status = (TextView)findViewById(R.id.tv_status);
 
@@ -208,6 +210,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                         tvSubtotal.setText(json.getString("sub_total"));
 //                        tvDisc.setText(json.getString("disc"));
                         tvJmlDisc.setText(json.getString("jml_disc"));
+                        tvJmlPajak.setText(json.getString("jml_pajak"));
                         tvTotal.setText(json.getString("total"));
 
                         int i;
@@ -219,6 +222,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                                 id.setNo(i);
                                 id.setNama_produk(jO.getString("nama_produk"));
                                 id.setQty(jO.getString("qty"));
+                                id.setIsPajak(jO.getString("ispajak"));
                                 id.setHarga(jO.getString("harga"));
                                 id.setTotal_harga(jO.getString("total_harga"));
 
@@ -374,20 +378,30 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             mService.sendMessage("--------------------------------", "");
 
             for (int i=0; i<itemProduk.size(); i++) {
-                String nama_produk = itemProduk.get(i).getNama_produk();
-                String qty = itemProduk.get(i).getQty();
-                String harga = itemProduk.get(i).getHarga();
-                String total_harga = itemProduk.get(i).getTotal_harga();
+//                if(itemProduk.get(i).getIsPajak().equalsIgnoreCase("1")) {
+                    String nama_produk = itemProduk.get(i).getNama_produk();
+                    String qty = itemProduk.get(i).getQty();
+                    String harga = itemProduk.get(i).getHarga();
+                    String total_harga = itemProduk.get(i).getTotal_harga();
 
-                mService.write(PrinterCommands.ESC_ALIGN_LEFT);
-                mService.sendMessage(nama_produk, "");
-                writePrint(PrinterCommands.ESC_ALIGN_CENTER, gantiKetitik(harga)+" x "+qty+" : "+gantiKetitik(total_harga));
+                    mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+                    mService.sendMessage(nama_produk, "");
+                    writePrint(PrinterCommands.ESC_ALIGN_CENTER, gantiKetitik(harga) + " x " + qty + " : " + gantiKetitik(total_harga));
+//                }
             }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");
+            String subTotal = tvSubtotal.getText().toString().replace(".","");
+            int subTotalInt = 0;
+            if(subTotal.equalsIgnoreCase("")){
+                subTotal = "0";
+            } else {
+                subTotalInt = Integer.parseInt(subTotal)*10/100;
+            }
 
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(tvSubtotal.getText().toString()));
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(subTotal));
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : "+subTotalInt);
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);

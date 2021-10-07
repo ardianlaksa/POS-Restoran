@@ -24,7 +24,7 @@ public class UploadData {
 
     public String uploadDataUmum(
             String nama_barang, String keterangan, String harga, String id_barang,
-            String foto_lama, String foto_baru) {
+            String foto_lama, String foto_baru, String slctdIspajak, String slctdTipeProduk) {
 
         HttpURLConnection conn = null;
         DataOutputStream dos = null;
@@ -33,8 +33,7 @@ public class UploadData {
         String boundary = "*****";
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-
+        int maxBufferSize = 1024 * 1024;
 
         try {
 
@@ -62,6 +61,20 @@ public class UploadData {
                     + lineEnd);
             dos.writeBytes(lineEnd);
             dos.writeBytes(keterangan);
+            dos.writeBytes(lineEnd);
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"isPajak\""
+                    + lineEnd);
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(slctdIspajak);
+            dos.writeBytes(lineEnd);
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"tipeProduk\""
+                    + lineEnd);
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(slctdTipeProduk);
             dos.writeBytes(lineEnd);
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);
@@ -155,7 +168,8 @@ public class UploadData {
     }
 
     public String uploadDataBaru(
-            String nama_barang, String keterangan, String harga, String foto, String id_tmp_usaha) {
+            String nama_barang, String keterangan, String harga, String foto, String id_tmp_usaha
+            , String slctdIspajak, String slctdTipeProduk) {
 
         HttpURLConnection conn = null;
         DataOutputStream dos = null;
@@ -164,8 +178,7 @@ public class UploadData {
         String boundary = "*****";
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-
+        int maxBufferSize = 1024 * 1024;
 
         try {
 
@@ -193,6 +206,20 @@ public class UploadData {
                     + lineEnd);
             dos.writeBytes(lineEnd);
             dos.writeBytes(keterangan);
+            dos.writeBytes(lineEnd);
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"isPajak\""
+                    + lineEnd);
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(slctdIspajak);
+            dos.writeBytes(lineEnd);
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"tipeProduk\""
+                    + lineEnd);
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(slctdTipeProduk);
             dos.writeBytes(lineEnd);
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);

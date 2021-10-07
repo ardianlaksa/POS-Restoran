@@ -52,7 +52,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     private DividerItemDecoration dividerItemDecoration;
     private RecyclerView.Adapter adapter;
 
-    TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status;
+    TextView tvSubtotal, tvDisc, tvJmlDisc, tvTotal, tv_status,tvJmlPajak;
     Button btnKembali, btnCetak, btnPilih;
 
     private final String _tag = getClass().getSimpleName();
@@ -94,22 +94,23 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
 
 
         setContentView(R.layout.activity_main_cetak);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(label);
 
-        rvData = (RecyclerView) findViewById(R.id.recyclerView);
-        linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
+        rvData = findViewById(R.id.recyclerView);
+        linearLayout = findViewById(R.id.linearLayout);
 
-        tvSubtotal = (TextView)findViewById(R.id.tvSubtotal);
-        tvDisc = (TextView)findViewById(R.id.tvDisc);
-        tvJmlDisc = (TextView)findViewById(R.id.tvJmlDisc);
-        tvTotal = (TextView)findViewById(R.id.tvTotal);
-        tv_status = (TextView)findViewById(R.id.tv_status);
+        tvSubtotal = findViewById(R.id.tvSubtotal);
+        tvJmlPajak = findViewById(R.id.tvJmlPajak);
+        tvDisc = findViewById(R.id.tvDisc);
+        tvJmlDisc = findViewById(R.id.tvJmlDisc);
+        tvTotal = findViewById(R.id.tvTotal);
+        tv_status = findViewById(R.id.tv_status);
 
-        btnCetak = (Button)findViewById(R.id.btnCetak);
-        btnKembali = (Button)findViewById(R.id.btnKembali);
-        btnPilih = (Button)findViewById(R.id.btnPilihBT);
+        btnCetak = findViewById(R.id.btnCetak);
+        btnKembali = findViewById(R.id.btnKembali);
+        btnPilih = findViewById(R.id.btnPilihBT);
 
         itemProduk = new ArrayList<>();
         adapter = new AdapterProduk(itemProduk, MainCetakLokal.this);
@@ -197,19 +198,23 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         SQLiteDatabase db = databaseHandler.getReadableDatabase();
 
         //data transaksi
-        Cursor cTrx = db.rawQuery("select id, omzet, disc_rp from transaksi where id='" + String.valueOf(idTrx) + "'", null);
+        Cursor cTrx = db.rawQuery("select id, omzet, disc_rp, pajak_rp from transaksi where id='" + idTrx + "'", null);
         cTrx.moveToFirst();
         int id_trx = cTrx.getInt(0);
         int omzet = Integer.parseInt(cTrx.getString(1));
         int disc_rp = Integer.parseInt(cTrx.getString(2));
+        int pajak_rp = Integer.parseInt(cTrx.getString(3));
         int sub_total = omzet+disc_rp;
         tvSubtotal.setText(currencyFormatter(String.valueOf(sub_total)));
+        tvJmlPajak.setText(currencyFormatter(String.valueOf(pajak_rp)));
         tvJmlDisc.setText(currencyFormatter(String.valueOf(disc_rp)));
         tvTotal.setText(currencyFormatter(String.valueOf(omzet)));
         cTrx.close();
 
         //detail transaksi
-        Cursor cDetailTrx = db.rawQuery("select nama_produk, qty, harga from detail_transaksi where id_trx='" + String.valueOf(idTrx) + "'", null);
+        Cursor cDetailTrx = db.rawQuery("select dt.nama_produk, dt.qty, dt.harga,p.ispajak " +
+                "from detail_transaksi dt LEFT JOIN produk p ON dt.id_produk = p.id " +
+                "where id_trx ='" + idTrx + "'", null);
         if (cDetailTrx.moveToFirst()){
             int no = 1;
             do {
@@ -220,6 +225,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
                 id.setNama_produk(cDetailTrx.getString(0));
                 id.setQty(cDetailTrx.getString(1));
                 id.setHarga(currencyFormatter(cDetailTrx.getString(2)));
+                id.setIsPajak(cDetailTrx.getString(3));
                 id.setTotal_harga(currencyFormatter(String.valueOf(total_harga)));
 
                 itemProduk.add(id);
@@ -358,7 +364,6 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
 //                requestBluetooth();
             if (!mService.isBTopen())
                 requestBluetooth();
-
         }
     }
 

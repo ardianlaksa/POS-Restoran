@@ -254,8 +254,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
-
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -328,6 +326,7 @@ public class LoginActivity extends AppCompatActivity {
                         String alamat = json.getString("ALAMAT");
                         String email = json.getString("EMAIL");
                         String telp = json.getString("TELP");
+                        String tipeStruk = json.getString("TIPE_STRUK");
 
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -345,6 +344,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Url.setLabel,label);
                         editor.putString(Url.setTema,tema);
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
+                        editor.putString(Url.SESSION_TIPE_STRUK,tipeStruk);
 
                         //menyimpan data ke editor
                         editor.apply();

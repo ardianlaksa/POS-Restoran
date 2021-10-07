@@ -11,6 +11,8 @@ public class ItemProduk {
     private String url_image;
     private String harga;
     private String keterangan;
+    private String isPajak;
+    private String jenisProduk;
     private boolean status;
 
 
@@ -60,6 +62,22 @@ public class ItemProduk {
 
     public void setKeterangan(String keterangan) {
         this.keterangan = keterangan;
+    }
+
+    public String getIsPajak() {
+        return isPajak;
+    }
+
+    public void setIsPajak(String value) {
+        this.isPajak = value;
+    }
+
+    public String getJenisProduk() {
+        return jenisProduk;
+    }
+
+    public void setJenisProduk(String value) {
+        this.jenisProduk = value;
     }
 
     public void setStatus(boolean status) {

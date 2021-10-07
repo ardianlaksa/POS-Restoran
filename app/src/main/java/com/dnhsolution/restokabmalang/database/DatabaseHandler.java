@@ -33,7 +33,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final String col_keterangan = "keterangan";
     public final String col_foto = "foto";
     public final String col_ispajak = "ispajak";
-    public final String col_jns_pajak = "jns_pajak";
+    public final String col_jns_produk = "jns_produk";
 
     //kolom transaksi
     public final String col_tanggal_trx="tanggal_trx";
@@ -41,10 +41,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final String col_omzet="omzet";
     public final String col_id_pengguna="id_pengguna";
     public final String col_disc_rp="disc_rp";
+    public final String col_pajak_rp="pajak_rp";
+
 
     //kolom detail_transaksi
     public final String col_id_trx= "id_trx";
-    public final String col_id_produk = "id_id_produk";
+    public final String col_id_produk = "id_produk";
     public final String col_qty = "qty";
 
     public DatabaseHandler(Context context) {
@@ -59,11 +61,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_id_tempat_usaha + " TEXT,"
                 + col_nama_produk + " TEXT,"+
                 col_harga + " TEXT,"+ col_keterangan + " TEXT,"+ col_foto + " TEXT,"
-                + col_status + " TEXT,"+ col_ispajak + " TEXT,"+ col_jns_pajak + " TEXT"+")";
+                + col_status + " TEXT,"+ col_ispajak + " TEXT,"+ col_jns_produk + " TEXT"+")";
 
         String CREATE_TABEL_TRANSAKSI = "CREATE TABLE " + TABLE_TRANSAKSI + "("
                 + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_tanggal_trx + " TEXT," + col_disc + " TEXT,"+
-                col_omzet + " TEXT,"+ col_id_pengguna + " TEXT,"+ col_id_tempat_usaha + " TEXT,"+ col_disc_rp + " TEXT,"+ col_status + " TEXT"+")";
+                col_omzet + " TEXT,"+ col_id_pengguna + " TEXT,"+ col_id_tempat_usaha + " TEXT,"
+                + col_disc_rp + " TEXT,"+ col_pajak_rp + " TEXT,"+ col_status + " TEXT"+")";
 
         String CREATE_TABEL_DETAIL_TRANSAKSI = "CREATE TABLE " + TABLE_DETAIL_TRANSAKSI + "("
                 + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_id_trx + " TEXT," + col_id_produk + " TEXT,"+
@@ -98,7 +101,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(col_keterangan, ip.getKeterangan());
         values.put(col_foto, ip.getFoto());
         values.put(col_status, ip.getStatus());
+        values.put(col_ispajak, ip.getIsPajak());
+        values.put(col_jns_produk, ip.getJenisProduk());
 
+        System.out.println("c :"+ip.getIsPajak()+" "+ip.getJenisProduk());
         // memasukkan data
         db.insert(TABLE_PRODUK, null, values);
         db.close(); // Menutup koneksi database
@@ -115,6 +121,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(col_id_tempat_usaha, it.getId_tempat_usaha());
         values.put(col_disc_rp, it.getDisc_rp());
         values.put(col_status, it.getStatus());
+        values.put(col_pajak_rp, it.getPajakRp());
 
         // memasukkan data
         db.insert(TABLE_TRANSAKSI, null, values);
@@ -312,7 +319,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         String selectQuery = "SELECT "+col_id+","+col_id_tempat_usaha+","+col_nama_produk+
-                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+" FROM " + TABLE_PRODUK;
+                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -326,6 +333,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 it.setHarga(cursor.getString(3));
                 it.setKeterangan(cursor.getString(4));
                 it.setUrl_image(cursor.getString(5));
+                it.setIsPajak(cursor.getString(7));
+                it.setJenisProduk(cursor.getString(8));
 
                 // Menambahkan data ke dalam list
                 list.add(it);
@@ -341,7 +350,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         String selectQuery = "SELECT "+col_id+","+col_id_tempat_usaha+","+col_nama_produk+
-                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+" FROM " + TABLE_PRODUK;
+                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -355,6 +364,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 it.setHarga(cursor.getString(3));
                 it.setKeterangan(cursor.getString(4));
                 it.setUrl_image(cursor.getString(5));
+                it.setIsPajak(cursor.getString(7));
+                it.setJenisProduk(cursor.getString(8));
 
                 // Menambahkan data ke dalam list
                 list.add(it);
@@ -402,6 +413,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(col_keterangan, ip.getKeterangan());
         values.put(col_status, ip.getStatus());
         values.put(col_foto, ip.getFoto());
+        values.put(col_ispajak, ip.getIsPajak());
+        values.put(col_jns_produk, ip.getJenisProduk());
 
         return db.update(TABLE_PRODUK, values, col_id + " = ?",
                 new String[] { String.valueOf(ip.getId()) });

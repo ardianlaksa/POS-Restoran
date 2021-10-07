@@ -8,8 +8,11 @@ public class ItemProduk {
     String keterangan;
     String foto;
     String status;
+    private String isPajak;
+    private String jenisProduk;
 
-    public ItemProduk(int id, String id_tempat_usaha, String nama_produk, String harga, String keterangan, String foto, String status) {
+    public ItemProduk(int id, String id_tempat_usaha, String nama_produk, String harga
+            , String keterangan, String foto, String status, String isPajak, String jenisProduk) {
         this.id = id;
         this.id_tempat_usaha = id_tempat_usaha;
         this.nama_produk = nama_produk;
@@ -17,6 +20,8 @@ public class ItemProduk {
         this.keterangan = keterangan;
         this.foto = foto;
         this.status = status;
+        this.isPajak = isPajak;
+        this.jenisProduk = jenisProduk;
     }
 
     public int getId() {
@@ -73,5 +78,21 @@ public class ItemProduk {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getIsPajak() {
+        return isPajak;
+    }
+
+    public void setIsPajak(String value) {
+        this.isPajak = value;
+    }
+
+    public String getJenisProduk() {
+        return jenisProduk;
+    }
+
+    public void setJenisProduk(String value) {
+        this.jenisProduk = value;
     }
 }
