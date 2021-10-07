@@ -193,7 +193,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan,"server",isPajak.toInt(),jnsProduk.toInt())
+                            idBarang,nmBarang, harga, foto, keterangan,"server",isPajak,jnsProduk)
                     )
                 }
 
@@ -232,7 +232,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
             produks.add(
                 ProdukListElement(
-                    idBarang,nmBarang, harga, foto, keterangan, "lokal",-1,-1)
+                    idBarang,nmBarang, harga, foto, keterangan, "lokal",e.isPajak,e.jenisProduk)
             )
         }
 

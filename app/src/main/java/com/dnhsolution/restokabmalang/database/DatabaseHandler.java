@@ -350,7 +350,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         String selectQuery = "SELECT "+col_id+","+col_id_tempat_usaha+","+col_nama_produk+
-                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+" FROM " + TABLE_PRODUK;
+                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -364,6 +364,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 it.setHarga(cursor.getString(3));
                 it.setKeterangan(cursor.getString(4));
                 it.setUrl_image(cursor.getString(5));
+                it.setIsPajak(cursor.getString(7));
+                it.setJenisProduk(cursor.getString(8));
 
                 // Menambahkan data ke dalam list
                 list.add(it);

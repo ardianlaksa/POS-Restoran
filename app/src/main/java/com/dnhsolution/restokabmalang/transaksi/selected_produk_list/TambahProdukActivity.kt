@@ -112,10 +112,12 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
                     val foto = rArray.getJSONObject(i).getString("FOTO")
                     val nmBarang = rArray.getJSONObject(i).getString("NM_BARANG")
                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
+                    val isPajak = rArray.getJSONObject(i).getString("ISPAJAK")
+                    val jenisPajak = rArray.getJSONObject(i).getString("JENIS_PRODUK")
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan,"server",-1,-1)
+                            idBarang,nmBarang, harga, foto, keterangan,"server",isPajak,jenisPajak)
                     )
                 }
 
@@ -166,7 +168,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
 
             produks.add(
                 ProdukListElement(
-                    idBarang,nmBarang, harga, foto, keterangan, "lokal", -1 , -1)
+                    idBarang,nmBarang, harga, foto, keterangan, "lokal", e.isPajak , e.jenisProduk)
             )
         }
 
