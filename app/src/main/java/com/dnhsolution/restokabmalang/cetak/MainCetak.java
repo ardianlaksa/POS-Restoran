@@ -86,7 +86,6 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             MainCetak.this.setTheme(R.style.Theme_Sixth);
         }
 
-
         setContentView(R.layout.activity_main_cetak);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -398,11 +397,11 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Subtotal : "+gantiKetitik(subTotal));
 
+            writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
+
             if(tipeStruk.equalsIgnoreCase("1")) {
                 writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : " + tvJmlPajak.getText().toString());
             }
-
-            writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");

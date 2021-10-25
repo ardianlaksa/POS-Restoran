@@ -74,7 +74,7 @@ public class MainMaster extends AppCompatActivity {
                 editor.apply();
                 startActivity(new Intent(getApplicationContext(), SplashActivity.class));
 
-                finish();
+                finishAffinity();
             }
         });
 

@@ -1,63 +1,59 @@
 package com.dnhsolution.restokabmalang.sistem.produk
 
 import android.Manifest
-import com.dnhsolution.restokabmalang.MainActivity.Companion.adMasterProduk
-import androidx.appcompat.app.AppCompatActivity
-import android.content.SharedPreferences
-import androidx.recyclerview.widget.RecyclerView
-import android.app.ProgressDialog
-import com.dnhsolution.restokabmalang.database.DatabaseHandler
-import android.os.Bundle
-import com.dnhsolution.restokabmalang.utilities.Url
-import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
-import androidx.core.content.ContextCompat
-import com.dnhsolution.restokabmalang.utilities.CheckNetwork
-import android.os.Environment
-import android.os.Build
-import android.content.pm.PackageManager
-import android.content.Intent
-import android.provider.MediaStore
-import androidx.core.content.FileProvider
-import android.text.TextWatcher
-import android.text.Editable
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import android.content.ActivityNotFoundException
 import android.app.AlertDialog
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestListener
+import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import com.bumptech.glide.load.engine.GlideException
 import android.os.AsyncTask
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
-import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakListElement
-import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakSpinAdapter
-import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukListElement
-import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukSpinAdapter
+import com.dnhsolution.restokabmalang.MainActivity.Companion.adMasterProduk
+import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.sistem.produk.server.*
+import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.Url
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
+import com.google.android.material.tabs.TabLayout
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import java.io.*
-import java.lang.NumberFormatException
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
-import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
-
 
 class MasterProduk : AppCompatActivity() {
 
@@ -65,15 +61,9 @@ class MasterProduk : AppCompatActivity() {
     private lateinit var slctdIspajak: String
 
     lateinit var sharedPreferences: SharedPreferences
-    var rvProduk: RecyclerView? = null
-    private val adapterProduk: AdapterProduk? = null
-    private val itemProduks: List<ItemProduk> = ArrayList()
-    var RecyclerViewClickedItemPos = 0
     var ChildView: View? = null
     var tempNameFile = "POSRestoran.jpg"
     private var filePath: Uri? = null
-    private val destFile: File? = null
-    private val dateFormatter: SimpleDateFormat? = null
     var wallpaperDirectory: File? = null
     var e_nama_file = ""
     var t_nama_file = ""
@@ -81,23 +71,11 @@ class MasterProduk : AppCompatActivity() {
     var ivGambarBaru: ImageView? = null
     var ivGambar: ImageView? = null
     var progressdialog: ProgressDialog? = null
-    var e_nama: String? = null
-    var e_harga: String? = null
-    var e_ket: String? = null
-    var e_id: String? = null
-    var e_gambar_lama: String? = null
     var t_nama: String? = null
     var t_harga: String? = null
     var t_ket: String? = null
-    var t_id: String? = null
-    var tvKet: TextView? = null
     var databaseHandler: DatabaseHandler? = null
-//    var fab: FloatingActionButton? = null
-//    var tv_count: TextView? = null
-    var jml_data = 0
     private var toolbar: Toolbar? = null
-    private var menuTemp: Menu? = null
-    private var statusJaringan = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
@@ -120,7 +98,7 @@ class MasterProduk : AppCompatActivity() {
         setContentView(R.layout.activity_master_produk)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.setTitle(label)
+        supportActionBar?.title = label
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         val viewPager = findViewById<ViewPager>(R.id.view_pager)
         viewPager.adapter = sectionsPagerAdapter
@@ -162,62 +140,78 @@ class MasterProduk : AppCompatActivity() {
         }
     }
 
-    fun gantiIconWifi(value: Boolean) {
-        if (value) {
-            menuTemp!!.getItem(2).icon =
-                ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green)
-            statusJaringan = 1
-        } else {
-            menuTemp!!.getItem(2).icon =
-                ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_gray)
-            statusJaringan = 0
-        }
-    }
+//    fun gantiIconWifi(value: Boolean) {
+//        if (value) {
+//            menuTemp!!.getItem(2).icon =
+//                ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green)
+//            statusJaringan = 1
+//        } else {
+//            menuTemp!!.getItem(2).icon =
+//                ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_gray)
+//            statusJaringan = 0
+//        }
+//    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu_master, menu)
-        menuTemp = menu
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_menu_lanjut) {
-            if (CheckNetwork().checkingNetwork(this) && statusJaringan == 1) dialogTambah() else Toast.makeText(
-                this,
-                R.string.tidak_terkoneksi_internet,
-                Toast.LENGTH_SHORT
-            ).show()
-            return true
-        } else if (item.itemId == R.id.action_menu_bantuan) {
-            tampilAlertDialogTutorial()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun tampilAlertDialogTutorial() {
-//        val alertDialog = AlertDialog.Builder(this).create()
-//        alertDialog.setMessage(
-//            """1. Saat ada icon refresh warna
-//    kuning dimasing-masing daftar
-//    produk, menandakan jika produk
-//    diload dari peralatan lokal.
-//2. Saat ada icon panah kanan kiri
-//    warna hijau dimasing-masing
-//    daftar produk, menandakan jika
-//    produk tersinkron dengan server.
-//3. Tombol icon (+) samping icon [?]
-//    di kanan atas untuk mulai
-//    transaksi dengan produk yang
-//    dipilih."""
-//        )
-//        alertDialog.setButton(
-//            AlertDialog.BUTTON_NEGATIVE, "OK"
-//        ) { dialog, which -> dialog.dismiss() }
-//        alertDialog.show()
-        openDialog()
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        val inflater = menuInflater
+//        inflater.inflate(R.menu.menu_master, menu)
+//        menuTemp = menu
+//        val searchItem = menu.findItem(R.id.action_menu_cari)
+//        searchView = searchItem.actionView as SearchView
+//        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
+//        searchView.onActionViewExpanded()
+//        val stringTextSearch:CharSequence = getString(R.string.cari)
+//        val ss1 = SpannableString(stringTextSearch)
+//        ss1.setSpan(RelativeSizeSpan(0.7f), 0, ss1.length, 0) // set size
+//        val searchEditText = searchView.findViewById<View>(androidx.appcompat.R.id.search_src_text) as EditText
+//        searchEditText.hint = ss1
+//
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String): Boolean {
+//                return false
+//            }
+//
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                val fm: FragmentManager = supportFragmentManager
+//                val fragment: ServerFragment =
+//                    fm.findFragmentById(R.id.view_pager) as ServerFragment
+//                fragment.produkAdapter!!.filter.filter(newText)
+//                return false
+//            }
+//        })
+//
+//        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+//            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
+//                isSearch = true
+//                return true
+//            }
+//
+//            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
+//                isSearch = false
+//                val fm: FragmentManager = supportFragmentManager
+//                val fragment: ServerFragment =
+//                    fm.findFragmentById(R.id.view_pager) as ServerFragment
+//                fragment.produkAdapter!!.filter.filter("")
+//                return true
+//            }
+//        })
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if (item.itemId == R.id.action_menu_lanjut) {
+//            if (CheckNetwork().checkingNetwork(this) && statusJaringan == 1) dialogTambah() else Toast.makeText(
+//                this,
+//                R.string.tidak_terkoneksi_internet,
+//                Toast.LENGTH_SHORT
+//            ).show()
+//            return true
+//        } else if (item.itemId == R.id.action_menu_bantuan) {
+//            tampilAlertDialogTutorial()
+//            return true
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     private fun openDialog() {
         val alertDialog = AlertDialog.Builder(this@MasterProduk).create()

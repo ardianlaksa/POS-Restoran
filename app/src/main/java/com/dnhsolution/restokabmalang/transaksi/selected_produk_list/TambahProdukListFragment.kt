@@ -1,6 +1,7 @@
-package com.dnhsolution.restokabmalang.transaksi.produk_list
+package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
@@ -22,7 +23,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.RetryPolicy
@@ -34,8 +34,9 @@ import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.sistem.produk.ItemProduk
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
-import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
-import com.dnhsolution.restokabmalang.transaksi.selected_produk_list.SelectedProdukListActivity
+import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListAdapter
+import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
+import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -49,9 +50,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
 
-class ProdukListFragment:Fragment(), ProdukOnTask {
+class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
-    private var transaksiFragment: TransaksiFragment? = null
+    private var argumenValue2: ArrayList<*>? = null
+    private var transaksiFragment: TambahProdukTransaksiActivity? = null
     private lateinit var argumenValue: String
     private lateinit var searchView: SearchView
     private var valueArgsFromKeranjang: Int? = null
@@ -78,33 +80,21 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     lateinit var alertDialog: AlertDialog.Builder
     lateinit var dialog: AlertDialog
     val keyParams = "params"
+    val keyParams2 = "params2"
 
     companion object {
         @JvmStatic
-        fun newInstance(params: String) = ProdukListFragment().apply {
+        fun newInstance(params: String, params2: ArrayList<ProdukSerializable>?) = TambahProdukListFragment().apply {
             arguments = Bundle().apply {
                 putString(keyParams,params)
+                putParcelableArrayList(keyParams2,params2)
             }
-        }
-    }
-
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-    { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
-//            val data: Intent? = result.data
-            for(v in produks){
-                if(v.isFavorite)
-                    v.toggleFavorite()
-            }
-            produkAdapter?.notifyDataSetChanged()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        val fm: FragmentManager = (context as MainActivity).supportFragmentManager
-        transaksiFragment = fm.findFragmentById(R.id.frameLayout) as TransaksiFragment
+        transaksiFragment = (activity as TambahProdukTransaksiActivity)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -117,6 +107,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "-1").toString()
         argumenValue = arguments?.get(keyParams).toString()
+        argumenValue2 = arguments?.get(keyParams2) as ArrayList<*>?
         databaseHandler = DatabaseHandler(requireContext())
 
         val alamat = sharedPreferences?.getString(Url.SESSION_ALAMAT, "0")
@@ -213,6 +204,17 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                 if (gvMainActivity == null) return
                 gvMainActivity.adapter = produkAdapter
 
+                if (argumenValue2 != null) {
+                    for (favoriteId in argumenValue2!! as ArrayList<ProdukSerializable>) {
+                        for (Produk in produks) {
+                            if (Produk.idItem == favoriteId.idItem) {
+                                Produk.isFavorite = true
+                                break
+                            }
+                        }
+                    }
+                }
+
             } else {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -251,58 +253,6 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
         if (gvMainActivity == null) return
         gvMainActivity.adapter = produkAdapter
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-//        val fpnProdukSerializable = ArrayList<ProdukSerializable>()
-//        val favoritedProdukNames = ArrayList<Int>()
-//        for (produk in produks) {
-//            if (produk.isFavorite) {
-////                favoritedProdukNames.add(produk.idItem)
-//                fpnProdukSerializable.add(
-//                    ProdukSerializable(
-//                        produk.idItem, produk.name, produk.price
-//                        , produk.imageUrl,produk.price.toInt(), 1, produk.status
-//                    )
-//                )
-//            }
-//        }
-//
-//        transaksiFragment?.tambahDataApsList(argumenValue,fpnProdukSerializable)
-
-//        var pilihanKey = makananFavoritProdukKey
-//        when (argumenValue) {
-//            "2" -> {
-//                pilihanKey = minumanFavoritProdukKey
-//            }
-//            "3" -> {
-//                pilihanKey = dllFavoritProdukKey
-//            }
-//        }
-//        outState.putIntegerArrayList(pilihanKey, favoritedProdukNames)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-//        var pilihanKey = makananFavoritProdukKey
-//        if(argumenValue == "2") pilihanKey = minumanFavoritProdukKey
-//        if(argumenValue == "3") pilihanKey = dllFavoritProdukKey
-//        val favoritedBookNames = savedInstanceState?.getIntegerArrayList(pilihanKey)
-
-//        val list = transaksiFragment?.tampilDataApsList(argumenValue)
-//        if (list != null) {
-//            for (values in list) {
-//                for (produk in produks) {
-//                    if (produk.idItem == values.idItem) {
-//                        produk.isFavorite = true
-//                        break
-//                    }
-//                }
-//            }
-//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -350,8 +300,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_menu_lanjut -> {
-                (activity as MainActivity).toolbar.collapseActionView()
-//                startActivity(Intent(context, DummyActivity::class.java))
+                (activity as TambahProdukTransaksiActivity).toolbar.collapseActionView()
 //                println("tambah : ${transaksiFragment?.apsMakanan?.size} " +
 //                        "${transaksiFragment?.apsMinuman?.size} ${transaksiFragment?.apsDll?.size}")
                 menuLanjutHandler()
@@ -399,13 +348,27 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                 }
             }
 
+            val  valueArgsFromKeranjangActivity = (activity as TambahProdukTransaksiActivity).valueArgsFromKeranjang
+
+            for(value in valueArgsFromKeranjangActivity!!) {
+                var found = false
+                for(value2 in arrayProdukSerialization){
+                    if(value.idItem == value2.idItem) {
+                        found = true
+                        break
+                    }
+                }
+                if (!found) arrayProdukSerialization.add(value)
+            }
+
             if (arrayProdukSerialization.size > 0) {
-                val intent = Intent(context, SelectedProdukListActivity::class.java)
+                val intent = Intent()
                 val args = Bundle()
                 args.putSerializable("ARRAYLIST", arrayProdukSerialization)
                 intent.putExtra("BUNDLE", args)
-//                    startActivity(intent)
-                resultLauncher.launch(intent)
+                println("$_tag ${arrayProdukSerialization.size}")
+                (context as TambahProdukTransaksiActivity).setResult(RESULT_OK, intent)
+                (context as TambahProdukTransaksiActivity).finish()
             } else
                 Toast.makeText(requireContext(), R.string.silakan_cek_input_data, Toast.LENGTH_SHORT).show()
         }, 1000)

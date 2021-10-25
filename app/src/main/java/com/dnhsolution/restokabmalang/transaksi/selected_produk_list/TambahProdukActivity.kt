@@ -157,7 +157,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
             Toast.makeText(this,R.string.empty_data,Toast.LENGTH_SHORT).show()
         }
 
-        val listProduk: List<ItemProduk> = databaseHandler!!.dataProduk2
+        val listProduk: List<ItemProduk> = databaseHandler!!.getDataProduk2("0")
 
         for(e in listProduk){
             val idBarang = e.id_barang.toInt()

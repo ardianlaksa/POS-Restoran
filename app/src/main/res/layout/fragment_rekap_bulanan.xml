@@ -73,42 +73,79 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll"
-        android:layout_width="wrap_content"
+        android:id="@+id/llKumpulanTotal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/_8"
+        android:paddingEnd="@dimen/_8"
         app:layout_constraintTop_toBottomOf="@id/ll1"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginEnd="@dimen/_4"
-        android:layout_marginRight="@dimen/_4"
-        android:orientation="horizontal">
+        app:layout_constraintRight_toRightOf="parent" >
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/_4"
-            android:layout_marginEnd="@dimen/_4"
-            android:text="@string/title_total"
-            android:fontFamily="@font/nunitosansregular"/>
+            android:layout_weight="0.5"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvTotal"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_4"
+                android:layout_marginEnd="@dimen/_4"
+                android:text="@string/title_total"
+                android:fontFamily="@font/nunitosansregular"/>
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_16"
+                android:text="@string/rp_0"
+                android:fontFamily="@font/nunitosansregular"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTotalPajak"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:textSize="@dimen/f_24"
-            android:text="@string/rp_0"
-            android:fontFamily="@font/nunitosansregular"/>
+            android:layout_weight="0.5"
+            app:layout_constraintTop_toBottomOf="@id/ll1"
+            app:layout_constraintRight_toRightOf="parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_4"
+                android:layout_marginEnd="@dimen/_4"
+                android:text="@string/pajak"
+                android:fontFamily="@font/nunitosansregular"/>
+
+            <TextView
+                android:id="@+id/tvTotalPajak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_16"
+                android:text="@string/rp_0"
+                android:fontFamily="@font/nunitosansregular"/>
+
+        </LinearLayout>
 
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/ll2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/ll"
+        app:layout_constraintTop_toBottomOf="@id/llKumpulanTotal"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="@dimen/_4"
         android:layout_marginRight="@dimen/_4"
@@ -152,8 +189,6 @@
                 android:text="Omzet"
                 android:textSize="@dimen/f_16"
                 android:fontFamily="@font/nunitosansregular"/>
-
-
 
         </LinearLayout>
 

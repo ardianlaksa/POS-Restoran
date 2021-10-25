@@ -41,6 +41,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.fragment.app.FragmentManager
+import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -147,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_transaksi -> {
                     if(status_batas == "nonaktif"){
                         supportFragmentManager.beginTransaction()
-                            .replace(R.id.frameLayout, ProdukListFragment()).commit()
+                            .replace(R.id.frameLayout, TransaksiFragment()).commit()
                     }else{
                         val builder = AlertDialog.Builder(this)
                         builder.setTitle("Pemberitahuan !")
@@ -162,6 +163,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_data -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.frameLayout, DataFragment()).commit()
+                    toolbar.title = resources.getString(R.string.title_data)
                     return@setOnItemSelectedListener true
                 }
 

@@ -33,15 +33,24 @@ import android.content.*
 import android.database.sqlite.SQLiteException
 import android.net.Uri
 import android.os.*
+import android.text.SpannableString
+import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.*
+import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.*
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
 import com.dnhsolution.restokabmalang.sistem.produk.*
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
+import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
 import java.lang.Exception
 import java.lang.NumberFormatException
@@ -51,27 +60,24 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ServerFragment() : Fragment() {
-    // The onCreateView method is called when Fragment should create its View object hierarchy,
-    // either dynamically or via XML layout inflation.
+class MakananFragment() : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         parent: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Defines the xml file for the fragment
         return inflater.inflate(R.layout.fragment_server, parent, false)
     }
 
+    private var isSearch: Boolean = false
+    private lateinit var searchView: SearchView
     private var slctdTipeProduk: String? = null
     private var slctdIspajak: String? = null
     private var isRunnerRunning: Boolean = false
-
-    // This event is triggered soon after onCreateView().
-    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
     var rvProduk: RecyclerView? = null
-    private var adapterProduk: AdapterProduk? = null
+    internal var produkAdapter: AdapterProduk? = null
     private val itemProduks: MutableList<ItemProduk> = ArrayList()
+    private var itemProduksNotFiltered: MutableList<ItemProduk> = ArrayList()
     var RecyclerViewClickedItemPos = 0
     var ChildView: View? = null
     var tvKet: TextView? = null
@@ -79,7 +85,6 @@ class ServerFragment() : Fragment() {
     private val _tag = javaClass.simpleName
     var tempNameFile = "POSRestoran.jpg"
     private var filePath: Uri? = null
-    private val destFile: File? = null
     var wallpaperDirectory: File? = null
     var e_nama_file = ""
     var t_nama_file = ""
@@ -93,20 +98,21 @@ class ServerFragment() : Fragment() {
     var e_id: String? = null
     var e_gambar_lama: String? = null
     var databaseHandler: DatabaseHandler? = null
+    private var statusJaringan = 1
+    private var menuTemp: Menu? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Setup any handles to view objects here
-        // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
+        setHasOptionsMenu(true)
         val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
         databaseHandler = DatabaseHandler(context)
         rvProduk = view.findViewById<View>(R.id.rvProduk) as RecyclerView
         tvKet = view.findViewById<View>(R.id.tvKet) as TextView
-        adapterProduk = AdapterProduk(itemProduks, context)
         val mLayoutManagerss: RecyclerView.LayoutManager = LinearLayoutManager(context)
         rvProduk!!.layoutManager = GridLayoutManager(context, 3)
         rvProduk!!.itemAnimator = DefaultItemAnimator()
-        rvProduk!!.adapter = adapterProduk
+        produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext())
+        rvProduk!!.adapter = produkAdapter
         rvProduk!!.addOnItemTouchListener(object : OnItemTouchListener {
             var gestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
                 override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {
@@ -135,39 +141,35 @@ class ServerFragment() : Fragment() {
             override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
         })
         if (CheckNetwork().checkingNetwork((context)!!)) {
-            data
+            ambilData
             tvKet!!.visibility = View.GONE
             isRunnerRunning = true
         } else {
             dataLokal
         }
 
-        val mainHandler = Handler(Looper.getMainLooper())
-        mainHandler.post(object : Runnable {
-            override fun run() {
-                if(!isRunnerRunning) {
-                    if(context == null) return
-                    cekData
-                    isRunnerRunning = true
-                }
-                mainHandler.postDelayed(this, 5000)
-            }
-        })
+//        val mainHandler = Handler(Looper.getMainLooper())
+//        mainHandler.post(object : Runnable {
+//            override fun run() {
+//                if(!isRunnerRunning) {
+//                    if(context == null) return
+//                    cekData
+//                    isRunnerRunning = true
+//                }
+//                mainHandler.postDelayed(this, 5000)
+//            }
+//        })
     }
 
-    private val data: Unit
+    private val ambilData: Unit
         get() {
             itemProduks.clear()
-            adapterProduk!!.notifyDataSetChanged()
             val progressDialog = ProgressDialog(context)
             progressDialog.setMessage("Mencari data...")
             progressDialog.show()
             val queue = Volley.newRequestQueue(context)
-            val sharedPreferences =
-                requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-            val id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0")
-            Log.d("ID_TEMPAT_USAHA", (id_tempat_usaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + id_tempat_usaha
+            Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
+            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=2"
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =
@@ -204,20 +206,24 @@ class ServerFragment() : Fragment() {
                                 }
                                 i++
                             }
-                            (activity as MasterProduk).gantiIconWifi(true)
+                            gantiIconWifi(true)
                             isRunnerRunning = false
                         } else {
                             Toast.makeText(
-                                getContext(),
+                                context,
                                 "Jaringan masih sibuk !",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     } catch (e: JSONException) {
                         e.printStackTrace()
+                        isRunnerRunning = false
                     }
                     //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();
-                    adapterProduk!!.notifyDataSetChanged()
+//                    produkAdapter!!.notifyDataSetChanged()
+                    itemProduksNotFiltered = itemProduks
+                    produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext())
+                    rvProduk!!.adapter = produkAdapter
                     progressDialog.dismiss()
                     isRunnerRunning = false
 
@@ -249,6 +255,7 @@ class ServerFragment() : Fragment() {
 
     private val cekData: Unit
         get() {
+            if(context == null) return
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
             val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha
@@ -259,20 +266,19 @@ class ServerFragment() : Fragment() {
                     try {
                         val jsonObject = JSONObject(response)
                         val status: Int = jsonObject.getInt("success")
-                        val jsonArray: JSONArray = jsonObject.getJSONArray("result")
                         if (status == 1) {
                             if(activity == null) return@Listener
-                            (activity as MasterProduk).gantiIconWifi(true)
+                            gantiIconWifi(true)
                             isRunnerRunning = false
                             return@Listener
                         }
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
-                    (activity as MasterProduk).gantiIconWifi(false)
+                    gantiIconWifi(false)
                     isRunnerRunning = false
                 }, Response.ErrorListener { error: VolleyError ->
-                    (activity as MasterProduk).gantiIconWifi(false)
+                    gantiIconWifi(false)
                     isRunnerRunning = false
                 }) {
                     @Throws(AuthFailureError::class)
@@ -341,19 +347,13 @@ class ServerFragment() : Fragment() {
         val dialogBuilder = AlertDialog.Builder(context).create()
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_edit_produk, null)
-        val etNama: EditText
-        val etKeterangan: EditText
-        val etHarga: EditText
-        val btnSimpan: Button
-        val ivGambarLama: ImageView
-        val ivTambahGambar: ImageView
-        etNama = dialogView.findViewById<View>(R.id.etNama) as EditText
-        etKeterangan = dialogView.findViewById<View>(R.id.etKeterangan) as EditText
-        etHarga = dialogView.findViewById<View>(R.id.etHarga) as EditText
-        btnSimpan = dialogView.findViewById<View>(R.id.btnSimpan) as Button
-        ivGambarLama = dialogView.findViewById<View>(R.id.ivGambarLama) as ImageView
+        val etNama: EditText = dialogView.findViewById<View>(R.id.etNama) as EditText
+        val etKeterangan: EditText = dialogView.findViewById<View>(R.id.etKeterangan) as EditText
+        val etHarga: EditText = dialogView.findViewById<View>(R.id.etHarga) as EditText
+        val btnSimpan: Button = dialogView.findViewById<View>(R.id.btnSimpan) as Button
+        val ivGambarLama: ImageView = dialogView.findViewById<View>(R.id.ivGambarLama) as ImageView
         ivGambarBaru = dialogView.findViewById<View>(R.id.ivGambarBaru) as ImageView
-        ivTambahGambar = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView
+        val ivTambahGambar: ImageView = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView
         val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
         val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
 
@@ -404,26 +404,31 @@ class ServerFragment() : Fragment() {
 
         spiTipeProduk.adapter = spinTipeProdukAdapter
 
-        btnSimpan.setOnClickListener(View.OnClickListener {
+        btnSimpan.setOnClickListener {
             e_nama = etNama.text.toString()
             e_harga = etHarga.text.toString().replace(".", "")
             e_ket = etKeterangan.text.toString()
             e_id = id_barang
             e_gambar_lama = url_image
-            if (e_nama!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                etNama.requestFocus()
-                etNama.error = "Silahkan isi form ini !"
-            } else if (e_harga!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                etHarga.requestFocus()
-                etHarga.error = "Silahkan isi form ini !"
-            } else if (e_ket!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                etKeterangan.requestFocus()
-                etKeterangan.error = "Silahkan isi form ini !"
-            } else {
-                updateData()
-                dialogBuilder.dismiss()
+            when {
+                e_nama!!.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    etNama.requestFocus()
+                    etNama.error = "Silahkan isi form ini !"
+                }
+                e_harga!!.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    etHarga.requestFocus()
+                    etHarga.error = "Silahkan isi form ini !"
+                }
+                e_ket!!.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    etKeterangan.requestFocus()
+                    etKeterangan.error = "Silahkan isi form ini !"
+                }
+                else -> {
+                    updateData()
+                    dialogBuilder.dismiss()
+                }
             }
-        })
+        }
         var originalString = harga
         val longval: Long
         if (originalString.contains(".")) {
@@ -897,7 +902,7 @@ class ServerFragment() : Fragment() {
                     val deleted = fl.delete()
                     e_nama_file = ""
                     updateDataLokal()
-                    data
+                    ambilData
                 } else if (s.equals("gagal", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
                     Toast.makeText(context, "Data gagal diupdate !", Toast.LENGTH_SHORT).show()
@@ -923,7 +928,7 @@ class ServerFragment() : Fragment() {
     private val dataLokal: Unit
         get() {
             itemProduks.clear()
-            adapterProduk!!.notifyDataSetChanged()
+            produkAdapter!!.notifyDataSetChanged()
             val jml_data = databaseHandler!!.CountDataProduk()
             if (jml_data == 0) {
                 tvKet!!.visibility = View.VISIBLE
@@ -947,7 +952,7 @@ class ServerFragment() : Fragment() {
             } catch (e: SQLiteException) {
                 e.printStackTrace()
             }
-            adapterProduk!!.notifyDataSetChanged()
+            produkAdapter!!.notifyDataSetChanged()
         }
 
     private fun updateDataLokal() {
@@ -961,6 +966,379 @@ class ServerFragment() : Fragment() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menuTemp = menu
+        inflater.inflate(R.menu.menu_master, menu)
+        val searchItem = menu.findItem(R.id.action_menu_cari)
+        searchView = searchItem.actionView as SearchView
+        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchView.onActionViewExpanded()
+        val stringTextSearch:CharSequence = getString(R.string.cari)
+        val ss1 = SpannableString(stringTextSearch)
+        ss1.setSpan(RelativeSizeSpan(0.7f), 0, ss1.length, 0) // set size
+        val searchEditText = searchView.findViewById<View>(androidx.appcompat.R.id.search_src_text) as EditText
+        searchEditText.hint = ss1
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                produkAdapter!!.filter.filter(newText)
+                return false
+            }
+        })
+
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
+                isSearch = true
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
+                isSearch = false
+                produkAdapter!!.filter.filter("")
+                return true
+            }
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_menu_lanjut) {
+            if (CheckNetwork().checkingNetwork(requireContext()) && statusJaringan == 1) dialogTambah()
+            else Toast.makeText(
+                requireContext(),
+                R.string.tidak_terkoneksi_internet,
+                Toast.LENGTH_SHORT
+            ).show()
+            return true
+        } else if (item.itemId == R.id.action_menu_bantuan) {
+            tampilAlertDialogTutorial()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun gantiIconWifi(value: Boolean) {
+        println("gantiIconWifi2 : $menuTemp")
+//        if (value) {
+//            menuTemp?.getItem(3)?.icon =
+//                ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_wifi_24_green)
+//            statusJaringan = 1
+//        } else {
+//            menuTemp?.getItem(3)?.icon =
+//                ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_wifi_24_gray)
+//            statusJaringan = 0
+//        }
+    }
+
+    private fun tampilAlertDialogTutorial() {
+        val alertDialog = AlertDialog.Builder(requireContext()).create()
+        val rowList = layoutInflater.inflate(R.layout.dialog_tutorial, null)
+        val listView: ListView = rowList.findViewById(R.id.listView)
+        val tutorialArrayAdapter: AdapterWizard
+        val arrayList = java.util.ArrayList<ItemView>()
+        arrayList.add(
+            ItemView(
+                "1",
+                "Saat ada icon refresh warna kuning dimasing-masing daftar produk, menandakan jika produk diload dari peralatan lokal."
+            )
+        )
+        arrayList.add(
+            ItemView(
+                "2",
+                "Saat ada icon panah kanan kiri warna hijau dimasing-masing daftar produk, menandakan jika produk tersinkron dengan server."
+            )
+        )
+        arrayList.add(
+            ItemView(
+                "3",
+                "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."
+            )
+        )
+        tutorialArrayAdapter = AdapterWizard(requireContext(), arrayList)
+        listView.adapter = tutorialArrayAdapter
+        alertDialog.setView(rowList)
+        alertDialog.show()
+    }
+
+    private fun dialogTambah() {
+        val dialogBuilder = AlertDialog.Builder(requireContext()).create()
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_tambah_produk, null)
+        val etNama: EditText
+        val etKeterangan: EditText
+        val etHarga: EditText
+        val btnSimpan: Button
+        val ivTambahFoto: ImageView
+        etNama = dialogView.findViewById<View>(R.id.etNama) as EditText
+        etKeterangan = dialogView.findViewById<View>(R.id.etKeterangan) as EditText
+        etHarga = dialogView.findViewById<View>(R.id.etHarga) as EditText
+        btnSimpan = dialogView.findViewById<View>(R.id.btnSimpan) as Button
+        ivGambar = dialogView.findViewById<View>(R.id.ivGambar) as ImageView
+        ivTambahFoto = dialogView.findViewById<View>(R.id.ivTambahFoto) as ImageView
+        val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
+        val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+
+        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdIspajak = isPajakList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                slctdTipeProduk = tipeProdukList[position].idItem
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        val spinIsPajakAdapter = IsPajakSpinAdapter(
+            requireContext(),
+            R.layout.item_spi_ispajak,
+            isPajakList
+        )
+
+        spiIsPajak.adapter = spinIsPajakAdapter
+
+        val spinTipeProdukAdapter = TipeProdukSpinAdapter(
+            requireContext(),
+            R.layout.item_spi_tipe_produk,
+            tipeProdukList
+        )
+
+        spiTipeProduk.adapter = spinTipeProdukAdapter
+
+        btnSimpan.setOnClickListener {
+
+            e_nama = etNama.text.toString()
+            e_harga = etHarga.text.toString().replace(".", "")
+            e_ket = etKeterangan.text.toString()
+            when {
+                e_nama!!.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    etNama.requestFocus()
+                    etNama.error = "Silahkan isi form ini !"
+                }
+                e_harga!!.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    etHarga.requestFocus()
+                    etHarga.error = "Silahkan isi form ini !"
+                }
+                e_ket!!.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    etKeterangan.requestFocus()
+                    etKeterangan.error = "Silahkan isi form ini !"
+                }
+                t_nama_file.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+                    Toast.makeText(requireContext(), "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else -> {
+                    if (CheckNetwork().checkingNetwork(requireContext())) {
+                        tambahData()
+                    }
+                    dialogBuilder.dismiss()
+                }
+            }
+        }
+        ivTambahFoto.setOnClickListener {
+            wallpaperDirectory =
+                File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
+            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                wallpaperDirectory!!.mkdirs()
+            }
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage("Pilihan Tambah Foto")
+                .setPositiveButton("Galeri") { dialog, id ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA)
+                            != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            requestPermissions(
+                                arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ),
+                                MY_CAMERA_PERMISSION_CODE
+                            )
+                            //showFileChooser();
+                        } else {
+                            wallpaperDirectory = File(
+                                Environment.getExternalStorageDirectory()
+                                    .toString() + IMAGE_DIRECTORY
+                            )
+                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                wallpaperDirectory!!.mkdirs()
+                            }
+                            showFileChooser()
+                            status = "t"
+                        }
+                    } else {
+                        wallpaperDirectory = File(
+                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
+                        )
+                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                            wallpaperDirectory!!.mkdirs()
+                        }
+                        showFileChooser()
+                        status = "t"
+                    }
+                }
+                .setNegativeButton("Kamera") { dialog, id ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA)
+                            != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            requestPermissions(
+                                arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ),
+                                MY_CAMERA_PERMISSION_CODE
+                            )
+                            //showFileChooser();
+                        } else {
+                            wallpaperDirectory = File(
+                                Environment.getExternalStorageDirectory()
+                                    .toString() + IMAGE_DIRECTORY
+                            )
+                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                wallpaperDirectory!!.mkdirs()
+                            }
+                            val cal = Calendar.getInstance()
+                            val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                            tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+                            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            val f = File(wallpaperDirectory, tempNameFile)
+                            val photoURI = FileProvider.getUriForFile(
+                                requireContext(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                f
+                            )
+                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                            startActivityForResult(cameraIntent, CAMERA_REQUEST)
+                            status = "t"
+                        }
+                    } else {
+                        wallpaperDirectory = File(
+                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
+                        )
+                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                            wallpaperDirectory!!.mkdirs()
+                        }
+                        val cal = Calendar.getInstance()
+                        val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                        tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        val f = File(wallpaperDirectory, tempNameFile)
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
+                        startActivityForResult(intent, CAMERA_REQUEST)
+                        status = "t"
+                    }
+                }
+            val alert = builder.create()
+            alert.show()
+        }
+        etHarga.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+                // TODO Auto-generated method stub
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+                // TODO Auto-generated method stub
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                etHarga.removeTextChangedListener(this)
+                try {
+                    var originalString = s.toString()
+                    if (originalString.contains(".")) {
+                        originalString = originalString.replace(".", "")
+                    }
+                    val longval = originalString.toLong()
+                    val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
+                    formatter.applyPattern("#,###,###,###")
+                    val formattedString = formatter.format(longval)
+
+                    //setting text after format to EditText
+                    etHarga.setText(formattedString.replace(",", "."))
+                    etHarga.setSelection(etHarga.text.length)
+                } catch (nfe: NumberFormatException) {
+                    nfe.printStackTrace()
+                }
+                etHarga.addTextChangedListener(this)
+            }
+        })
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.show()
+    }
+
+    private fun tambahData() {
+        class TambahData : AsyncTask<Void?, Int?, String?>() {
+            //ProgressDialog uploading;
+            override fun onPreExecute() {
+                super.onPreExecute()
+                progressdialog = ProgressDialog(requireContext())
+                progressdialog!!.setCancelable(false)
+                progressdialog!!.setMessage("Upload data ke server ...")
+                progressdialog!!.show()
+                //uploading = ProgressDialog.show(SinkronActivity.this, "Mengirim data ke Server", "Mohon Tunggu...", false, false);
+            }
+
+            override fun onPostExecute(s: String?) {
+                super.onPostExecute(s)
+                // uploading.dismiss();
+                Log.d("HASIL", s!!)
+                //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
+                // tvStatus.setText(s);
+                //
+                if (s.equals("sukses", ignoreCase = true)) {
+                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                    Toast.makeText(
+                        requireContext(),
+                        "Data berhasil ditambah !",
+                        Toast.LENGTH_SHORT
+                    ).show()
+//                    startActivity(Intent(requireContext(), MasterProduk::class.java))
+//                    finish()
+                } else if (s.equals("gagal", ignoreCase = true)) {
+                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                    Toast.makeText(requireContext(), "Data gagal ditambah !", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                    Toast.makeText(requireContext(), s, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun doInBackground(vararg p0: Void?): String? {
+                databaseHandler!!.insert_produk(
+                    com.dnhsolution.restokabmalang.database.ItemProduk(
+                        0, idTmpUsaha, e_nama, e_harga, e_ket, t_nama_file, "1",slctdIspajak,slctdTipeProduk
+                    )
+                )
+
+                if (databaseHandler == null) {
+                    Log.d("DATABASE_INSERT", "gagal")
+                } else {
+                    Log.d("DATABASE_INSERT", "berhasil")
+                }
+                val u = UploadData()
+                var msg: String? = null
+                //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
+                msg = u.uploadDataBaru(e_nama, e_ket, e_harga, t_nama_file, idTmpUsaha,slctdIspajak,slctdTipeProduk)
+                return msg
+            }
+        }
+
+        val uv = TambahData()
+        uv.execute()
     }
 
     companion object {

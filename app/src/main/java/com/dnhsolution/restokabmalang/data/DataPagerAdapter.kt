@@ -1,9 +1,9 @@
 package com.dnhsolution.restokabmalang.data
 
-import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.dnhsolution.restokabmalang.data.rekap_billing.RekapBillingFragment
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.RekapBulananFragment
 import com.dnhsolution.restokabmalang.data.rekap_harian.RekapHarianFragment
 
@@ -14,21 +14,25 @@ class DataPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
             0 -> {
                 RekapHarianFragment.newInstance("0")
             }
+            1 -> {
+                RekapBulananFragment.newInstance("1")
+            }
             else -> {
-                return RekapBulananFragment.newInstance("1")
+                return RekapBillingFragment.newInstance("2")
             }
         }
     }
 
     override fun getCount(): Int {
-        return 2
+        return 3
     }
 
     override fun getPageTitle(position: Int): CharSequence {
         return when (position) {
-            0 -> "Rekap Harian"
+            0 -> "Harian"
+            1 -> "Bulanan"
             else -> {
-                return "Rekap Bulanan"
+                return "Billing"
             }
         }
     }

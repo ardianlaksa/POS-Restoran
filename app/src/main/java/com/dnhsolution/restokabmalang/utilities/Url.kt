@@ -37,6 +37,7 @@ object Url {
     const val getRekapHarian = "${serverPos}getRekapHarian"
     const val getDRekapHarian = "${serverPos}getRekapHarianDetail"
 //    const val getRekapBulanan = "${serverEtax}gTransaksiBulanan"
+    const val getRekapBilling = "${serverPos}getRekapBilling"
     const val getRekapBulanan = "${serverPos}getRekapBulanan"
     const val getBatasWaktu = "${serverPos}Config"
 }

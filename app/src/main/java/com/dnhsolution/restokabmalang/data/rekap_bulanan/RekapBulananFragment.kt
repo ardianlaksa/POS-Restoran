@@ -17,6 +17,7 @@ import com.dnhsolution.restokabmalang.utilities.RekapBulananOnTask
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
+import kotlinx.android.synthetic.main.fragment_rekap_bulanan.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -36,6 +37,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
     }
 
     private lateinit var tvTotal: TextView
+    private lateinit var tvTotalPajak: TextView
     private lateinit var recyclerView: RecyclerView
     private val listBulan: HashMap<String,String>
         get(){
@@ -90,18 +92,20 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
 
         tvTotal = view.findViewById(R.id.tvTotal) as TextView
+        tvTotalPajak = view.findViewById(R.id.tvTotalPajak) as TextView
         btnCari = view.findViewById(R.id.btnCari) as Button
         btnReset = view.findViewById(R.id.btnReset) as Button
 
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
+        val tipeStruk = sharedPreferences?.getString(Url.SESSION_TIPE_STRUK, "").toString()
 
         spiBln.setSelection(0)
         spiThn.setSelection(0)
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&TAHUN=$tahun&idTmpUsaha=$idTmpUsaha"
+            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&TAHUN=$tahun&idTmpUsaha=$idTmpUsaha&tipeStruk=$tipeStruk"
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
@@ -109,47 +113,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         }
 
         btnCari.setOnClickListener{
-//            var ket = "Silahkan pilih"
-//
-//            if(selectedBln.equals("0")){
-//                ket += " Bulan"
-//            }
-//
-//            if(selectedThn.equals("Tahun")){
-//                if(selectedBln.equals("0")){
-//                    ket += " dan Tahun"
-//                }else{
-//                    ket += " Tahun"
-//                }
-//            }
-//
-//            if(selectedThn.equals("Tahun") || selectedBln.equals("0")){
-//                Toast.makeText(context, ket, Toast.LENGTH_SHORT).show()
-//            }else{
-//                var totalValue = 0.0
-//                tempItemsBulanan = ArrayList()
-//                itemsBulanan!!.forEach { event ->
-//                    val tgl = (event.tgl).split("-")
-//                    println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[1]+", OMZET"+event.omzet)
-//                    if (selectedThn == tgl[2] && selectedBln == tgl[1]) {
-//                        tempItemsBulanan.add(event)
-//                        totalValue += event.omzet
-//                        println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[1]+", OMZET"+event.omzet)
-//                    }
-//                }
-//
-//                tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-//
-//                adapterList = context?.let {
-//                    RekapBulananListAdapter(
-//                        tempItemsBulanan,
-//                        it
-//                    )
-//                }
-//                recyclerView.adapter = adapterList
-//
-//                btnReset.setVisibility(View.VISIBLE)
-//            }
 
             var totalValue = 0.0
             tempItemsBulanan = ArrayList()
@@ -164,6 +127,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             }
 
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
 
             adapterList = context?.let {
                 RekapBulananListAdapter(
@@ -197,6 +161,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 }
             }
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
             adapterList = context?.let {
                 RekapBulananListAdapter(
                     tempItemsBulanan,
@@ -300,6 +265,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     val disc = rArray.getJSONObject(i).getInt("DISC")
                     val omzet = rArray.getJSONObject(i).getInt("OMZET")
                     val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
+                    val totalPajak = rArray.getJSONObject(i).getString("TOTAL_PAJAK")
 
                     itemsBulanan?.add(
                         RekapBulananListElement(
@@ -372,6 +338,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     }
 
                     tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+                    tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
 
                     val adapterList = context?.let {
                         RekapBulananListAdapter(

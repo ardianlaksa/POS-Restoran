@@ -2,7 +2,6 @@ package com.dnhsolution.restokabmalang.sistem.produk.ui.main;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
@@ -10,13 +9,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.data.DataFragment;
-import com.dnhsolution.restokabmalang.sistem.produk.lokal.LokalFragment;
-import com.dnhsolution.restokabmalang.sistem.produk.server.ServerFragment;
-import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment;
+import com.dnhsolution.restokabmalang.sistem.produk.server.LainLainFragment;
+import com.dnhsolution.restokabmalang.sistem.produk.server.MakananFragment;
+import com.dnhsolution.restokabmalang.sistem.produk.server.MinumanFragment;
 
 import org.jetbrains.annotations.NotNull;
-
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -26,7 +23,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
 //    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1};
+    private static final int[] TAB_TITLES = new int[]{R.string.minuman,R.string.makanan,R.string.lain_lain};
     private final Context mContext;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
@@ -38,7 +35,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public @NotNull Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
-            return new ServerFragment();
+        if(position == 0)
+            return new MinumanFragment();
+        if(position == 1)
+            return new MakananFragment();
+        else return new LainLainFragment();
     }
 
     @Nullable
@@ -50,6 +51,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 2 total pages.
-        return 1;
+        return 3;
     }
 }

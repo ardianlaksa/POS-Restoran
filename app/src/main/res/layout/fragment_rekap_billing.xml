@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/bRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"
+        android:text="@string/title_refresh"/>
+
+    <ProgressBar
+        android:layout_width="@dimen/_48"
+        android:layout_height="@dimen/_48"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"/>
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Spinner
+            android:id="@+id/spinThn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+
+        <Button
+            android:clickable="true"
+            android:layout_margin="5dp"
+            android:background="@color/colorPrimary"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.19"
+            android:id="@+id/btnCari"
+            android:textColor="#fff"
+            android:fontFamily="@font/nunitosansregular"
+            android:text="@string/cari"/>
+
+        <Button
+            android:clickable="true"
+            android:background="#D5D5D5"
+            android:layout_margin="5dp"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.28"
+            android:id="@+id/btnReset"
+            android:textColor="#000"
+            android:visibility="gone"
+            android:text="Reset"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llKumpulanTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/_8"
+        android:paddingEnd="@dimen/_8"
+        app:layout_constraintTop_toBottomOf="@id/ll1"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/ll1"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

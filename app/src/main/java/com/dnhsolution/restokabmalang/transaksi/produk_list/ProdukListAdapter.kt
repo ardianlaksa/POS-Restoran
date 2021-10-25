@@ -34,10 +34,15 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.target.Target
+import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 import java.util.*
+import androidx.fragment.app.FragmentActivity
+import com.dnhsolution.restokabmalang.MainActivity
+
 
 class ProdukListAdapter(
     private val mContext: Context,

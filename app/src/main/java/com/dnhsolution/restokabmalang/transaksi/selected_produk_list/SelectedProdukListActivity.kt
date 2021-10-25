@@ -2,7 +2,6 @@ package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.database.SQLException
 import android.os.Build
@@ -84,6 +83,95 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
     }
 
+
+    private var resultLauncherTambah = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val i = result.data
+            val args = i?.getBundleExtra("BUNDLE")
+            //            if (obyek == null) {
+//                Log.i(_tag, "resultLauncherTambah")
+//                obyek = obyekProduk
+//            }
+
+            //apel, anggur, mangga, nanas
+            val obyekBundle = args?.getParcelableArrayList<ProdukSerializable?>("ARRAYLIST")
+//            println("obyekBundle ${obyekBundle!!.size}")
+            //apel, anggur, mangga
+            if(obyek != null && obyekBundle != null) {
+                obyekBundle.sortWith(compareByDescending { it.name })
+                if (obyek!!.size < obyekBundle.size) {
+                    obyekBundle.forEachIndexed { index, item2 ->
+
+                        var found = false
+                        for (item1 in obyek!!) {
+                            if (item2.idItem == item1.idItem) {
+                                found = true
+                            }
+                        }
+                        if (!found) {
+                            obyek!!.add(item2)
+                            produkAdapter?.notifyItemInserted(obyek!!.size)
+                        }
+                    }
+                } else if (obyek!!.size > obyekBundle.size) {
+                    val arrayInt = ArrayList<Int>()
+                    obyek!!.forEachIndexed { index, item2 ->
+                        var found = false
+                        for (item1 in obyekBundle) {
+                            if (item2.idItem == item1.idItem) {
+                                found = true
+                            }
+                        }
+                        if (!found) {
+                            arrayInt.add(index)
+                        }
+                    }
+
+                    arrayInt.forEachIndexed { index3, ii ->
+                        obyek!!.removeAt(ii)
+                        produkAdapter?.notifyItemRemoved(ii)
+                        produkAdapter?.notifyItemChanged(ii) }
+                }
+
+//            obyekBundle?.forEachIndexed { index, item2 ->
+//                    // Loop arrayList1 items
+//                    var found = false
+//                    //apel, anggur, mangga
+//                    obyek?.forEachIndexed { index1, item1 ->
+//                            if (item2.idItem == item1.idItem) {
+//                                found = true
+//                            }
+//                            if(index == (obyekBundle.size-1))
+//                                if(!obyekBundle.contains(item1)) {
+//                                    obyek?.remove(item1)
+//                                    produkAdapter?.notifyItemChanged(index1)
+//                                }
+//                        }
+//                    if (!found) {
+//                        obyek!!.add(item2)
+//                        produkAdapter?.notifyItemInserted(index)
+//                    }
+//                }
+            }
+
+            if (produkAdapter == null) {
+                produkAdapter = SelectedProdukListAdapter(
+                    obyek!!,
+                    this,
+                    this
+                )
+                setUpRecyclerView(produkAdapter!!)
+            }
+//            else {
+//                produkAdapter!!.notifyDataSetChanged()
+//            }
+
+            setTotal()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_keranjang)
@@ -101,14 +189,16 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
 
         bTambah.setOnClickListener{
-            val favoritedProdukNames = ArrayList<Int>()
+            val favoritedProdukNames = ArrayList<ProdukSerializable>()
             for (Produk in obyek!!) {
-                favoritedProdukNames.add(Produk.idItem)
+                favoritedProdukNames.add(Produk)
             }
 
-            val i = Intent(this, TambahProdukActivity::class.java)
+            val i = Intent(this, TambahProdukTransaksiActivity::class.java)
             i.putExtra("ARRAYLIST", favoritedProdukNames)
-            startActivity(i)
+//            startActivity(i)
+            resultLauncherTambah.launch(i)
+
         }
 
         etDiskon.addTextChangedListener(object : TextWatcher {
@@ -183,6 +273,43 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             }
         })
 
+        val i = intent
+        val args = i.getBundleExtra("BUNDLE")
+        val obyekProduk:ArrayList<ProdukSerializable>? = args?.getParcelableArrayList("ARRAYLIST")
+        obyekProduk?.sortWith(compareByDescending { it.name })
+        if (obyek == null) {
+            obyek = obyekProduk
+        }
+
+        // Loop arrayList2 items
+        if (obyekProduk != null) {
+            for (item2 in obyekProduk) {
+                // Loop arrayList1 items
+                var found = false
+                for (item1 in obyek!!) {
+                    if (item2.idItem == item1.idItem) {
+                        found = true
+                    }
+                }
+                if (!found) {
+                    obyek!!.add(item2)
+                }
+            }
+        }
+
+        if (produkAdapter == null) {
+            produkAdapter = SelectedProdukListAdapter(
+                obyek!!,
+                this,
+                this
+            )
+            setUpRecyclerView(produkAdapter!!)
+        } else {
+            produkAdapter!!.notifyDataSetChanged()
+        }
+
+        setTotal()
+
 //        etRupiahDiskon.addTextChangedListener(object : TextWatcher {
 //            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 //            }
@@ -254,42 +381,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
     override fun onResume() {
         super.onResume()
-        val i = intent
-        val args = i.getBundleExtra("BUNDLE")
-        val obyekProduk:ArrayList<ProdukSerializable>? = args?.getParcelableArrayList("ARRAYLIST")
-        if (obyek == null) {
-            Log.i(_tag, "onResume")
-            obyek = obyekProduk
-        }
-
-        // Loop arrayList2 items
-        if (obyekProduk != null) {
-            for (item2 in obyekProduk) {
-                // Loop arrayList1 items
-                var found = false
-                for (item1 in obyek!!) {
-                    if (item2.idItem == item1.idItem) {
-                        found = true
-                    }
-                }
-                if (!found) {
-                    obyek!!.add(item2)
-                }
-            }
-        }
-
-        if (produkAdapter == null) {
-            produkAdapter = SelectedProdukListAdapter(
-                obyek!!,
-                this,
-                this
-            )
-            setUpRecyclerView(produkAdapter!!)
-        } else {
-            produkAdapter!!.notifyDataSetChanged()
-        }
-
-        setTotal()
     }
 
     private fun setUpRecyclerView(mAdapter: SelectedProdukListAdapter) {
@@ -318,20 +409,20 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
-        println("d :$tipeStruk")
-        if(tipeStruk == "1")
-            pajakRp = totalPrice.toFloat()*10/100
-
-        tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
-//        tvPajak.text = "asdf"
-
-        totalPrice +=pajakRp.toInt()
-
         var diskon = 0
 //        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
         if (!etDiskon.text.toString().isEmpty()) {
             diskon = valueDiskon
             this.valueTotalPrice = totalPrice-(totalPrice*diskon/100)
+
+            println("d :$tipeStruk")
+            if(tipeStruk == "1")
+                pajakRp = valueTotalPrice.toFloat()*10/100
+
+            tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+
+            valueTotalPrice +=pajakRp.toInt()
+
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
             tvDiskonTotal.text = rupiahValue
 
@@ -346,6 +437,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         }else{
             this.valueTotalPrice = totalPrice
+
+            if(tipeStruk == "1")
+                pajakRp = valueTotalPrice.toFloat()*10/100
+
+            tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+
+            valueTotalPrice +=pajakRp.toInt()
+
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
             tvDiskonTotal.text = rupiahValue
 
@@ -361,11 +460,8 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         for (valueTotal in obyek!!) {
             totalPrice += valueTotal.totalPrice
         }
-        omzetRp = totalPrice
 
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
-
-        totalPrice +=pajakRp.toInt()
 
         var diskonRupiah = 0
 //        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
@@ -373,6 +469,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             if(valueDiskonRupiah <= totalPrice){
                 diskonRupiah = valueDiskonRupiah
                 this.valueTotalPrice = totalPrice-diskonRupiah
+
+                if(tipeStruk == "1")
+                    pajakRp = valueTotalPrice.toFloat()*10/100
+
+                tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+
+                valueTotalPrice +=pajakRp.toInt()
+
                 valueDR = ((diskonRupiah*100)/totalPrice).toDouble()
                 val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
                 tvDiskonTotal.text = rupiahValue
@@ -383,6 +487,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         }else{
             this.valueTotalPrice = totalPrice
+
+            if(tipeStruk == "1")
+                pajakRp = valueTotalPrice.toFloat()*10/100
+
+            tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+
+            valueTotalPrice +=pajakRp.toInt()
+
             valueDR = 0.0
 
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
@@ -420,9 +532,9 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     favoritedProdukNames.add(Produk.idItem)
                 }
 
-                val i = Intent(this, TambahProdukActivity::class.java)
+                val i = Intent(this, TambahProdukTransaksiActivity::class.java)
                 i.putExtra("ARRAYLIST", favoritedProdukNames)
-                startActivity(i)
+                resultLauncherTambah.launch(i)
                 true
             } else -> super.onOptionsItemSelected(item)
         }
@@ -542,7 +654,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }else{
             rootObject.put("disc",valueDiskon)
         }
-        rootObject.put("omzet",omzetRp)
+        rootObject.put("omzet",valueTotalPrice)
 
         val jsonArr = JSONArray()
 

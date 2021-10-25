@@ -2,7 +2,7 @@
     <string name="app_name">Resto Kab Malang</string>
     <string name="title_bantuan">Bantuan</string>
     <string name="title_home">Home</string>
-    <string name="title_data">Rekap</string>
+    <string name="title_data">Data</string>
     <string name="title_tersimpan">Tersimpan</string>
     <string name="title_wifi">Wifi</string>
     <!--<string name="title_rekap_bulanan">R. Bulanan</string>-->
@@ -28,6 +28,10 @@
     <string name="title_tambah">Tambah</string>
     <string name="title_transaksi">Transaksi</string>
     <string name="title_master">Master</string>
+    <string name="title_tambah_data">Input Data</string>
+    <string name="title_theme">Edit Label dan Tema</string>
+    <string name="title_produk">Edit Produk</string>
+    <string name="title_activity_data_tersimpan">DataTersimpanActivity</string>
 
     <string name="snack_bar_undo">Undo</string>
 
@@ -78,13 +82,20 @@
 
     <string name="tanggal_kosong">-- / -- / ----</string>
     <string name="batas_waktu_sinkron">Batas Waktu Sinkron</string>
+    <string name="billing">Billing</string>
+    <string name="bulanan">Bulanan</string>
+    <string name="minuman">Minuman</string>
     <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>
+    <string name="harian">Harian</string>
+    <string name="kode_billing_cln">Kode Billing : </string>
+    <string name="makanan">Makanan</string>
+    <string name="masa_cln">Masa : </string>
+    <string name="nilai_pajak_cln">Nilai Pajak : </string>
+    <string name="lain_lain">Lain-lain</string>
     <string name="login">Login</string>
     <string name="selamat_datang">Selamat Datang</string>
-    <string name="title_tambah_data">Input Data</string>
-    <string name="title_theme">Edit Label dan Tema</string>
-    <string name="title_produk">Edit Produk</string>
-    <string name="title_activity_data_tersimpan">DataTersimpanActivity</string>
+    <string name="tanggal_bayar">Tanggal Bayar</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="transaksi_tersimpan">Transaksi Tersimpan</string>

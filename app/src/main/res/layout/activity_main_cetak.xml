@@ -165,9 +165,9 @@
                 >
 
                 <TextView
-                    android:id="@+id/tvPajak"
+                    android:id="@+id/tvDisc"
                     android:layout_marginLeft="150dp"
-                    android:text="@string/pajak"
+                    android:text="Disc"
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:layout_width="match_parent"
@@ -175,7 +175,7 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:id="@+id/tvJmlPajak"
+                    android:id="@+id/tvJmlDisc"
                     android:gravity="right"
                     android:layout_width="150dp"
                     android:textColor="#000"
@@ -195,9 +195,9 @@
                 >
 
                 <TextView
-                    android:id="@+id/tvDisc"
+                    android:id="@+id/tvPajak"
                     android:layout_marginLeft="150dp"
-                    android:text="Disc"
+                    android:text="@string/pajak"
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:layout_width="match_parent"
@@ -205,7 +205,7 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:id="@+id/tvJmlDisc"
+                    android:id="@+id/tvJmlPajak"
                     android:gravity="right"
                     android:layout_width="150dp"
                     android:textColor="#000"

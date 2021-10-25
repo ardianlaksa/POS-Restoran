@@ -21,14 +21,21 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_master.xml" value="0.1933876811594203" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml" value="0.10157041540020263" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_produk.xml" value="0.1234375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_tambahh_produk_transaksi.xml" value="0.14175724637681159" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/content_data_tersimpan.xml" value="0.1933876811594203" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dialog_edit_produk.xml" value="0.33" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dialog_tambah_produk.xml" value="0.17916666666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/dropdown_bulan.xml" value="0.1" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_dashboard.xml" value="0.21" />
-        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_bulanan.xml" value="0.13541666666666666" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_data.xml" value="0.2028985507246377" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_data_lama.xml" value="0.18931159420289856" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_produk_list.xml" value="0.15307971014492755" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_billing.xml" value="0.1875" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_bulanan.xml" value="0.25" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_produk.xml" value="0.10416666666666667" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_billing.xml" value="0.33" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_bulanan.xml" value="0.17552083333333332" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_sptpd.xml" value="0.5" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml" value="0.25" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_bulan.xml" value="0.1046875" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_ispajak.xml" value="0.14479166666666668" />

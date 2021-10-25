@@ -345,12 +345,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //get from bhs.kotlin transaksi
-    public List<com.dnhsolution.restokabmalang.sistem.produk.ItemProduk> getDataProduk2() {
+    public List<com.dnhsolution.restokabmalang.sistem.produk.ItemProduk> getDataProduk2(String argument) {
         List<com.dnhsolution.restokabmalang.sistem.produk.ItemProduk> list = new ArrayList<>();
 
-
         String selectQuery = "SELECT "+col_id+","+col_id_tempat_usaha+","+col_nama_produk+
-                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK;
+                ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+
+                ","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK +
+                " WHERE " + col_jns_produk + " = " + argument;
+
+        if(argument.equalsIgnoreCase("0"))
+            selectQuery = "SELECT "+col_id+","+col_id_tempat_usaha+","+col_nama_produk+
+                    ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+
+                    ","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

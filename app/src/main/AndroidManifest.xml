@@ -72,7 +72,7 @@
         <activity android:name=".cetak.DeviceActivity" />
         <activity android:name=".cetak.MainCetak" />
         <activity android:name=".cetak.MainCetakLokal" />
-        <activity android:name=".transaksi.selected_produk_list.TambahProdukActivity" />
+        <activity android:name=".transaksi.selected_produk_list.TambahProdukTransaksiActivity" />
 
         <activity android:name=".sistem.MainMaster" /> <!-- <provider -->
         <!-- android:name="androidx.core.content.FileProvider" -->

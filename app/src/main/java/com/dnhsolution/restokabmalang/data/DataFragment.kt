@@ -19,7 +19,7 @@ class DataFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_data, container, false)
+        val view =  inflater.inflate(R.layout.fragment_data_lama, container, false)
         viewpager = view.findViewById(R.id.viewpager_main) as ViewPager
         tabMain = view.findViewById(R.id.tabs_main) as TabLayout
 
@@ -29,11 +29,5 @@ class DataFragment : Fragment() {
         tabMain.setupWithViewPager(viewpager)
 
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-
     }
 }
