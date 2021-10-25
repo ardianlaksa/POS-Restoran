@@ -134,9 +134,9 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
         gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
-            transaksiFragment?.tambahDataApsList(argumenValue,produk)
             produk.toggleFavorite()
             produkAdapter?.notifyDataSetChanged()
+            transaksiFragment?.tambahDataApsList(argumenValue,produk)
         }
 
         if(MainActivity.adTransaksi == 1) return
@@ -371,10 +371,10 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 (context as TambahProdukTransaksiActivity).finish()
             } else
                 Toast.makeText(requireContext(), R.string.silakan_cek_input_data, Toast.LENGTH_SHORT).show()
-        }, 1000)
+        }, 500)
     }
 
-    fun DialogKelengkapan() {
+    fun dialogKelengkapan() {
         val dialogBuilder = AlertDialog.Builder(context).create()
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_detail_op, null)

@@ -1,7 +1,11 @@
 package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -18,6 +22,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class TambahProdukTransaksiActivity : AppCompatActivity() {
 
+    private var loadingLayout: RelativeLayout? = null
+    private lateinit var handler: Handler
     private lateinit var tabMain: TabLayout
     private lateinit var viewpager: ViewPager2
     var apsMakanan = ArrayList<ProdukListElement>()
@@ -40,6 +46,7 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         viewpager = findViewById<ViewPager2>(R.id.viewpager_main)
         tabMain = findViewById<TabLayout>(R.id.tabs_main)
+        loadingLayout = findViewById<RelativeLayout>(R.id.loadingLayout)
 
         val fragmentAdapter = ScreenSlidePagerAdapter(this)
         viewpager.adapter = fragmentAdapter
@@ -70,39 +77,46 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
                 Log.e("onPageScrollState", state.toString())
             }
         })
+
+        handler = Handler(Looper.getMainLooper())
     }
 
     fun tambahDataApsList(arg: String,produk: ProdukListElement){
-        if(produk.isFavorite) {
-            var valueIndex = -1
-            valueArgsFromKeranjang!!.forEachIndexed { index, produkSerializable ->
-                println("tambahDataApsList forEachIndexed ${produk.idItem} ${produkSerializable.idItem}")
-                if (produk.idItem == produkSerializable.idItem) {
-                    valueIndex = index
+        loadingLayout?.visibility = View.VISIBLE
+        val milis = valueArgsFromKeranjang!!.size*10
+        handler.postDelayed({
+            if(!produk.isFavorite) {
+                var valueIndex = -1
+                valueArgsFromKeranjang!!.forEachIndexed { index, produkSerializable ->
+                    println("tambahDataApsList forEachIndexed ${produk.idItem} ${produkSerializable.idItem}")
+                    if (produk.idItem == produkSerializable.idItem) {
+                        valueIndex = index
+                    }
+                }
+                valueArgsFromKeranjang!!.removeAt(valueIndex)
+            }
+            when(arg){
+                "2" -> {
+                    if(apsMinuman.contains(produk)) {
+                        apsMinuman.remove(produk)
+                    }else apsMinuman.add(produk)
+                    println("tambahDataApsList $arg ${apsMinuman.size}")
+                }
+                "3" -> {
+                    if(apsDll.contains(produk)) {
+                        apsDll.remove(produk)
+                    } else apsDll.add(produk)
+                    println("tambahDataApsList $arg ${apsDll.size}")
+                }
+                else -> {
+                    if(apsMakanan.contains(produk)) {
+                        apsMakanan.remove(produk)
+                    } else apsMakanan.add(produk)
+                    println("tambahDataApsList $arg ${apsMakanan.size}")
                 }
             }
-            valueArgsFromKeranjang!!.removeAt(valueIndex)
-        }
-        when(arg){
-            "2" -> {
-                if(apsMinuman.contains(produk)) {
-                    apsMinuman.remove(produk)
-                }else apsMinuman.add(produk)
-                println("tambahDataApsList $arg ${apsMinuman.size}")
-            }
-            "3" -> {
-                if(apsDll.contains(produk)) {
-                    apsDll.remove(produk)
-                } else apsDll.add(produk)
-                println("tambahDataApsList $arg ${apsDll.size}")
-            }
-            else -> {
-                if(apsMakanan.contains(produk)) {
-                    apsMakanan.remove(produk)
-                } else apsMakanan.add(produk)
-                println("tambahDataApsList $arg ${apsMakanan.size}")
-            }
-        }
+            loadingLayout?.visibility = View.INVISIBLE
+        }, milis.toLong())
     }
 
     fun tampilDataApsList(arg: String) : ArrayList<ProdukListElement>{

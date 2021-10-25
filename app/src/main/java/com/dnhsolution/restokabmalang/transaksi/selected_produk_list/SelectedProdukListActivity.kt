@@ -99,41 +99,78 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             val obyekBundle = args?.getParcelableArrayList<ProdukSerializable?>("ARRAYLIST")
 //            println("obyekBundle ${obyekBundle!!.size}")
             //apel, anggur, mangga
+
             if(obyek != null && obyekBundle != null) {
                 obyekBundle.sortWith(compareByDescending { it.name })
-                if (obyek!!.size < obyekBundle.size) {
-                    obyekBundle.forEachIndexed { index, item2 ->
-
-                        var found = false
-                        for (item1 in obyek!!) {
-                            if (item2.idItem == item1.idItem) {
-                                found = true
-                            }
-                        }
-                        if (!found) {
-                            obyek!!.add(item2)
-                            produkAdapter?.notifyItemInserted(obyek!!.size)
+                val numberIterator = obyek!!.iterator()
+                var indexIterator = 0
+                while (numberIterator.hasNext()) {
+                    val integer = numberIterator.next()
+                    var found = false
+                    for (item1 in obyekBundle) {
+                        if (integer.idItem == item1.idItem) {
+                            found = true
                         }
                     }
-                } else if (obyek!!.size > obyekBundle.size) {
-                    val arrayInt = ArrayList<Int>()
-                    obyek!!.forEachIndexed { index, item2 ->
-                        var found = false
-                        for (item1 in obyekBundle) {
-                            if (item2.idItem == item1.idItem) {
-                                found = true
-                            }
-                        }
-                        if (!found) {
-                            arrayInt.add(index)
-                        }
+                    if (!found) {
+                        numberIterator.remove()
+                        produkAdapter?.notifyItemRemoved(indexIterator)
+                        produkAdapter?.notifyItemChanged(indexIterator)
                     }
-
-                    arrayInt.forEachIndexed { index3, ii ->
-                        obyek!!.removeAt(ii)
-                        produkAdapter?.notifyItemRemoved(ii)
-                        produkAdapter?.notifyItemChanged(ii) }
+                    indexIterator++
                 }
+//                produkAdapter?.notifyDataSetChanged()
+                obyekBundle.forEachIndexed { index, item2 ->
+
+                    var found = false
+                    for (item1 in obyek!!) {
+                        if (item2.idItem == item1.idItem) {
+                            found = true
+                        }
+                    }
+                    if (!found) {
+                        obyek!!.add(item2)
+                        produkAdapter?.notifyItemInserted(obyek!!.size)
+                    }
+                }
+
+//                if (obyek!!.size < obyekBundle.size) {
+//                    obyekBundle.forEachIndexed { index, item2 ->
+//
+//                        var found = false
+//                        for (item1 in obyek!!) {
+//                            if (item2.idItem == item1.idItem) {
+//                                found = true
+//                            }
+//                        }
+//                        if (!found) {
+//                            obyek!!.add(item2)
+//                            produkAdapter?.notifyItemInserted(obyek!!.size)
+//                        }
+//                    }
+//                } else if (obyek!!.size > obyekBundle.size) {
+//                    val arrayInt = ArrayList<Int>()
+//                    obyek!!.forEachIndexed { index, item2 ->
+//                        var found = false
+//                        for (item1 in obyekBundle) {
+//                            if (item2.idItem == item1.idItem) {
+//                                found = true
+//                            }
+//                        }
+//                        if (!found) {
+//                            arrayInt.add(index)
+//
+//                        }
+//                    }
+//
+//                    arrayInt.forEachIndexed { index3, ii ->
+//                        obyek!!.removeAt(ii)//salahe ko kene bar kurang tambah 1
+//                    }
+//                    arrayInt.forEachIndexed { index3, ii ->
+//                        produkAdapter?.notifyItemRemoved(ii)
+//                        produkAdapter?.notifyItemChanged(ii)
+//                    }
+//                }
 
 //            obyekBundle?.forEachIndexed { index, item2 ->
 //                    // Loop arrayList1 items
