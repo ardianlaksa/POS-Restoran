@@ -15,10 +15,7 @@ import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -48,9 +45,11 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
+import kotlin.math.min
 
 class ProdukListFragment:Fragment(), ProdukOnTask {
 
+    private lateinit var tvBadgeMenuLanjut: TextView
     private var transaksiFragment: TransaksiFragment? = null
     private lateinit var argumenValue: String
     private lateinit var searchView: SearchView
@@ -144,25 +143,36 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
             transaksiFragment?.tambahDataApsList(argumenValue,produk)
-            produk.toggleFavorite()
+            val isFavorit = produk.toggleFavorite()
+            if(isFavorit) MainActivity.jumlahProdukTerpilih++
+            else MainActivity.jumlahProdukTerpilih--
+            setupBadge()
             produkAdapter?.notifyDataSetChanged()
         }
 
         if(MainActivity.adTransaksi == 1) return
 
         MainActivity.adTransaksi = 1
+    }
 
-//        for(value in argTab){
-//            if(value != argumenValue) {
-//                println("$value")
-//            }
-//        }
+    private fun setupBadge() {
+        val jumlahProdukTerpilih = MainActivity.jumlahProdukTerpilih
+        if (jumlahProdukTerpilih == 0) {
+            if (tvBadgeMenuLanjut.visibility != View.GONE) {
+                tvBadgeMenuLanjut.visibility = View.GONE
+            }
+        } else {
+            tvBadgeMenuLanjut.setText(java.lang.String.valueOf(min(jumlahProdukTerpilih, 99)))
+            if (tvBadgeMenuLanjut.visibility != View.VISIBLE) {
+                tvBadgeMenuLanjut.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun tampilAlertDialogTutorial() {
         alertDialog = AlertDialog.Builder(requireContext())
         val rowList: View = layoutInflater.inflate(R.layout.dialog_tutorial, null)
-        var listView = rowList.findViewById<ListView>(R.id.listView)
+        val listView = rowList.findViewById<ListView>(R.id.listView)
         val arrayList: ArrayList<ItemView> = ArrayList<ItemView>()
         arrayList.add(ItemView("1", "Pilih produk yang akan digunakan untuk transaksi, centang hijau saat produk terpilih."))
         arrayList.add(ItemView("2", "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."))
@@ -309,6 +319,16 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_transaksi, menu)
+
+        val menuItem = menu.findItem(R.id.action_menu_lanjut)
+        val actionView = menuItem.actionView
+        val flCustomTambahBadge = actionView.findViewById(R.id.flCustomTambahBadge) as FrameLayout
+        tvBadgeMenuLanjut = actionView.findViewById(R.id.cart_badge) as TextView
+        flCustomTambahBadge.setOnClickListener {
+            (activity as MainActivity).toolbar.collapseActionView()
+            menuLanjutHandler()
+        }
+
         val searchItem = menu.findItem(R.id.action_menu_cari)
         searchView = searchItem.actionView as SearchView
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE
@@ -342,6 +362,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                 return true
             }
         })
+        setupBadge()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -350,11 +371,11 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_menu_lanjut -> {
-                (activity as MainActivity).toolbar.collapseActionView()
+//                (activity as MainActivity).toolbar.collapseActionView()
 //                startActivity(Intent(context, DummyActivity::class.java))
 //                println("tambah : ${transaksiFragment?.apsMakanan?.size} " +
 //                        "${transaksiFragment?.apsMinuman?.size} ${transaksiFragment?.apsDll?.size}")
-                menuLanjutHandler()
+//                menuLanjutHandler()
                 true
             } R.id.action_menu_cari -> {
                 true

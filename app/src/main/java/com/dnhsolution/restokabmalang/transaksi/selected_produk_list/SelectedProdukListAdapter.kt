@@ -25,9 +25,9 @@ class SelectedProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private
         return activity.applicationContext
     }
     init {
+        setHasStableIds(true)
         mItemList = itemList
         Log.d("sptpdb","${mItemList?.size}")
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -43,6 +43,10 @@ class SelectedProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private
 
     override fun getItemCount(): Int {
         return if (mItemList == null) 0 else mItemList!!.size
+    }
+
+    override fun getItemId(position: Int): Long {
+        return mItemList?.get(position)?.idItem?.toLong()!!
     }
 
     fun deleteItem(position: Int) {

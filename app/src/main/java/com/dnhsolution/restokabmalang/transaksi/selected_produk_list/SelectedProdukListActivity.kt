@@ -48,9 +48,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.bProses -> {
-//                val valueDiskon = valueDiskon
-////                if ( valueDiskon == "") return
-////                else showDialog("Konfirmasi","Apakan anda ingin memproses?")
                 showDialog("Konfirmasi","Apakan anda ingin memproses?")
             }
         }
@@ -76,8 +73,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
-//            val data: Intent? = result.data
             setResult(RESULT_OK)
             finish()
         }
@@ -90,16 +85,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             // There are no request codes
             val i = result.data
             val args = i?.getBundleExtra("BUNDLE")
-            //            if (obyek == null) {
-//                Log.i(_tag, "resultLauncherTambah")
-//                obyek = obyekProduk
-//            }
-
-            //apel, anggur, mangga, nanas
             val obyekBundle = args?.getParcelableArrayList<ProdukSerializable?>("ARRAYLIST")
-//            println("obyekBundle ${obyekBundle!!.size}")
-            //apel, anggur, mangga
-
             if(obyek != null && obyekBundle != null) {
                 obyekBundle.sortWith(compareByDescending { it.name })
                 val numberIterator = obyek!!.iterator()
@@ -119,7 +105,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     }
                     indexIterator++
                 }
-//                produkAdapter?.notifyDataSetChanged()
+
                 obyekBundle.forEachIndexed { index, item2 ->
 
                     var found = false
@@ -133,64 +119,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                         produkAdapter?.notifyItemInserted(obyek!!.size)
                     }
                 }
-
-//                if (obyek!!.size < obyekBundle.size) {
-//                    obyekBundle.forEachIndexed { index, item2 ->
-//
-//                        var found = false
-//                        for (item1 in obyek!!) {
-//                            if (item2.idItem == item1.idItem) {
-//                                found = true
-//                            }
-//                        }
-//                        if (!found) {
-//                            obyek!!.add(item2)
-//                            produkAdapter?.notifyItemInserted(obyek!!.size)
-//                        }
-//                    }
-//                } else if (obyek!!.size > obyekBundle.size) {
-//                    val arrayInt = ArrayList<Int>()
-//                    obyek!!.forEachIndexed { index, item2 ->
-//                        var found = false
-//                        for (item1 in obyekBundle) {
-//                            if (item2.idItem == item1.idItem) {
-//                                found = true
-//                            }
-//                        }
-//                        if (!found) {
-//                            arrayInt.add(index)
-//
-//                        }
-//                    }
-//
-//                    arrayInt.forEachIndexed { index3, ii ->
-//                        obyek!!.removeAt(ii)//salahe ko kene bar kurang tambah 1
-//                    }
-//                    arrayInt.forEachIndexed { index3, ii ->
-//                        produkAdapter?.notifyItemRemoved(ii)
-//                        produkAdapter?.notifyItemChanged(ii)
-//                    }
-//                }
-
-//            obyekBundle?.forEachIndexed { index, item2 ->
-//                    // Loop arrayList1 items
-//                    var found = false
-//                    //apel, anggur, mangga
-//                    obyek?.forEachIndexed { index1, item1 ->
-//                            if (item2.idItem == item1.idItem) {
-//                                found = true
-//                            }
-//                            if(index == (obyekBundle.size-1))
-//                                if(!obyekBundle.contains(item1)) {
-//                                    obyek?.remove(item1)
-//                                    produkAdapter?.notifyItemChanged(index1)
-//                                }
-//                        }
-//                    if (!found) {
-//                        obyek!!.add(item2)
-//                        produkAdapter?.notifyItemInserted(index)
-//                    }
-//                }
             }
 
             if (produkAdapter == null) {
@@ -201,9 +129,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 )
                 setUpRecyclerView(produkAdapter!!)
             }
-//            else {
-//                produkAdapter!!.notifyDataSetChanged()
-//            }
 
             setTotal()
         }
@@ -375,28 +300,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
     }
 
-    private fun tampilAlertDialogTutorial() {
-//        val alertDialog = android.app.AlertDialog.Builder(this).create()
-//        alertDialog.setMessage(
-//            """
-//            1. Icon (+) dan (-) digunakan untuk
-//                menambah dan mengurangi
-//                jumlah pesanan.
-//            2. Disc digunakan untuk
-//                menambahkan diskon.
-//            3. Tombol proses untuk mengirim
-//                data transaksi ke server dan
-//                melanjutkan proses cetak.
-//            """.trimIndent()
-//        )
-//        alertDialog.setButton(
-//            android.app.AlertDialog.BUTTON_NEGATIVE, "OK"
-//        ) { dialog, _ -> dialog.dismiss() }
-//        alertDialog.show()
-        openDialog()
-    }
-
-    fun openDialog() {
+    fun tampilAlertDialogTutorial() {
         alertDialog = android.app.AlertDialog.Builder(this)
         val rowList: View = layoutInflater.inflate(R.layout.dialog_tutorial, null)
         var listView = rowList.findViewById<ListView>(R.id.listView)
@@ -414,10 +318,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     private fun setUpRecyclerView(mAdapter: SelectedProdukListAdapter) {
@@ -544,12 +444,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
 
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        super.onCreateOptionsMenu(menu)
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        inflater?.inflate(R.menu.menu_lanjut, menu)
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
@@ -759,52 +653,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         return id_trx.toString()
     }
-
-//    private fun saveLokal() {
-//
-//        var tglTrx :String = ""
-//        var disc : String = ""
-//        var omzet : String = ""
-//
-//        if(!etRupiahDiskon.text.toString().isEmpty()){
-//            disc = valueDR.toString()
-//        }else{
-//            disc = valueDiskon.toString()
-//        }
-//        omzet = valueTotalPrice.toString()
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val current = LocalDateTime.now()
-//            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-//            tglTrx = current.format(formatter)
-//        } else {
-//            var date = Date()
-//            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//            tglTrx = formatter.format(date)
-//        }
-//
-//        try {
-//            databaseHandler!!.insert_transaksi(
-//                ItemTransaksi(
-//                    0, tglTrx, disc, omzet, idPengguna, idTmpUsaha, valueDiskonRupiah.toString(), "0"
-//                )
-//            )
-//
-//            var id_trx: Int = databaseHandler!!.CountMaxIdTrx()
-//
-//            for (pn in obyek!!) {
-//                Log.d("detail_transaksi", pn.idItem.toString()+"/"+pn.name+"/"+pn.qty.toString()+"/"+pn.price)
-//                databaseHandler!!.insert_detail_transaksi(
-//                    ItemDetailTransaksi(
-//                        0, id_trx.toString(), pn.idItem.toString(), pn.name, pn.qty.toString(),  pn.price
-//                    )
-//                )
-//            }
-//        } catch (e: SQLException) {
-//            e.printStackTrace()
-//        }
-//
-//    }
 
     override fun keranjangTransaksiOnTask(result: String?) {
         if (result == null) {

@@ -43,6 +43,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     RecyclerView rvData;
     List<ItemProduk> itemProduk;
     LinearLayout linearLayout;
+    private final String _tag = getClass().getSimpleName();
 
     private LinearLayoutManager linearLayoutManager;
     private DividerItemDecoration dividerItemDecoration;
@@ -62,6 +63,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
     private String tipeStruk;
 
     SharedPreferences sharedPreferences;
+    private String idTrx = "0";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,9 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
         String tema = sharedPreferences.getString(Url.setTema, "0");
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "");
+        Intent intent = getIntent();
+        idTrx = intent.getStringExtra("getIdItem");
+        Log.i(_tag,idTrx);
 
         if(tema.equalsIgnoreCase("0")){
             MainCetak.this.setTheme(R.style.Theme_First);
@@ -264,6 +269,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
                 params.put("kd_pengguna",kd_pengguna);
                 params.put("id_tempat_usaha",id_tempat_usaha);
+                params.put("idTrx",idTrx);
 
                 return params;
             }

@@ -69,6 +69,8 @@ internal class RekapBillingListHolder private constructor(
     }
 
     init {
-        parent.setOnClickListener { v: View? -> }
+        parent.setOnClickListener { v: View? ->
+            println("setclick")
+        }
     }
 }

@@ -45,12 +45,12 @@
         <EditText
             android:layout_gravity="bottom"
             android:enabled="false"
-            android:editable="false"
+            android:inputType="date"
             android:id="@+id/etDate"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:textColor="#363636"
-            android:text="10-20-2019"
+            android:text="@string/tanggal_kosong"
             android:fontFamily="@font/nunitosansregular"
             android:layout_height="wrap_content" />
         <Spinner

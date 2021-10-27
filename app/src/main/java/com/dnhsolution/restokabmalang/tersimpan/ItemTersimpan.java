@@ -10,6 +10,7 @@ public class ItemTersimpan {
     String id_tempat_usaha;
     String disc_rp;
     String status;
+    String pajakRp;
 
     public ItemTersimpan(int id, String status) {
         this.id = id;
@@ -89,5 +90,13 @@ public class ItemTersimpan {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPajakRp() {
+        return pajakRp;
+    }
+
+    public void setPajakRp(String value) {
+        this.pajakRp = value;
     }
 }

@@ -65,8 +65,6 @@ public class TersimpanAdater extends RecyclerView.Adapter<TersimpanAdater.MyView
             holder.tvStatus.setText("Sudah Sinkron");
             holder.tvStatus.setTextColor(Color.parseColor("#148E19"));
         }
-
-
     }
 
     @Override

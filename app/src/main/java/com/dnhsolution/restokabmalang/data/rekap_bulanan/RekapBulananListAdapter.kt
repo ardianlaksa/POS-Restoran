@@ -11,7 +11,7 @@ class RekapBulananListAdapter(itemList: ArrayList<RekapBulananListElement>, priv
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var mItemList: ArrayList<RekapBulananListElement>? = null
 
-    val _tag = javaClass.simpleName
+    private val _tag = javaClass.simpleName
 
     init {
         mItemList = itemList

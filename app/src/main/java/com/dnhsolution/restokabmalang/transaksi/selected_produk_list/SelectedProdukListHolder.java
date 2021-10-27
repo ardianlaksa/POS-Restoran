@@ -32,6 +32,7 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
     private final View view;
     private final Activity activity;
     private final ImageButton minus,plus;
+    private final String _tag = "SelectedProdukList";
 
     static SelectedProdukListHolder newInstance(View parent, Activity activity) {
         ImageView ivItem = parent.findViewById(R.id.ivItem);
@@ -66,6 +67,8 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
     }
 
     void setValues(final KeranjangProdukItemOnTask onTask, final ProdukSerializable obyek, final int position) {
+        int jumlah = obyek.getQty();
+        Log.i(_tag, "setValue : "+jumlah+", posisi "+position);
         judul.setText(obyek.getName());
         final String priceValue = obyek.getPrice();
         if (priceValue == null) return;
@@ -73,6 +76,7 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
         String rupiahPrice = new AddingIDRCurrency().formatIdrCurrencyNonKoma(Double.parseDouble(priceValue));
         price.setText(rupiahPrice);
         totalPrice.setText(rupiahPrice);
+        jumlahProduk.setText(String.valueOf(jumlah));
 
         String url = Url.serverFoto+obyek.getImgUrl();
         Glide.with(ivItem.getContext()).load(url)
@@ -102,14 +106,14 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
 //            int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
                 int jumlah = obyek.getQty();
-            if (jumlah > 1) {
-                jumlah--;
-                jumlahProduk.setText(String.valueOf(jumlah));
-                int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
-                onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
-                String sPriceValueTotal = new AddingIDRCurrency().formatIdrCurrencyNonKoma(priceValueTotal);
-                totalPrice.setText(sPriceValueTotal);
-            }
+                if (jumlah > 1) {
+                    jumlah--;
+                    jumlahProduk.setText(String.valueOf(jumlah));
+                    int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                    onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
+                    String sPriceValueTotal = new AddingIDRCurrency().formatIdrCurrencyNonKoma(priceValueTotal);
+                    totalPrice.setText(sPriceValueTotal);
+                }
             }
         });
 
@@ -117,13 +121,13 @@ class SelectedProdukListHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
 //              int jumlah = Integer.parseInt(jumlahProduk.getText().toString());
-            int jumlah = obyek.getQty();
-            jumlah++;
-            jumlahProduk.setText(String.valueOf(jumlah));
-            int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
-            onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
-            String sPriceValueTotal = new AddingIDRCurrency().formatIdrCurrencyNonKoma(priceValueTotal);
-            totalPrice.setText(sPriceValueTotal);
+                int jumlah = obyek.getQty();
+                jumlah++;
+                jumlahProduk.setText(String.valueOf(jumlah));
+                int priceValueTotal = Integer.parseInt(priceValue)*jumlah;
+                onTask.keranjangProdukItemOnTask(position,priceValueTotal,jumlah);
+                String sPriceValueTotal = new AddingIDRCurrency().formatIdrCurrencyNonKoma(priceValueTotal);
+                totalPrice.setText(sPriceValueTotal);
             }
         });
     }

@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
+class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, RekapHarianDetailOnTask {
 
     companion object {
         @JvmStatic
@@ -39,7 +39,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
     private lateinit var etDate: EditText
     private lateinit var ivDate: ImageView
 
-    internal val myCalendar = Calendar.getInstance()
+    private val myCalendar = Calendar.getInstance()
 
     private var itemsHarian:ArrayList<RekapHarianListElement>? = null
     private var itemsDHarian:ArrayList<DRekapHarianListElement>? = null
@@ -51,13 +51,8 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
     private var idTmpUsaha = "-1"
     private var tempItemsHarian = ArrayList<RekapHarianListElement>()
     private var tempItemsDHarian = ArrayList<DRekapHarianListElement>()
-    private var spinTglArray = ArrayList<String>()
     private var adapterList:RekapHarianListAdapter? = null
     private var adapterListD:DRekapHarianListAdapter? = null
-
-    private var isOpened = false
-    internal var ChildView: View? = null
-    internal var RecyclerViewClickedItemPos: Int = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -65,8 +60,6 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
         spiTgl = view.findViewById(R.id.spinTgl) as Spinner
         tvTotal = view.findViewById(R.id.tvTotal) as TextView
@@ -75,7 +68,6 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
-
 
         recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
 
@@ -86,80 +78,6 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
         } else {
             Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
-
-        recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
-
-            internal var gestureDetector =
-                GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-
-                    override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {
-                        return true
-                    }
-
-                })
-
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                ChildView = recyclerView.findChildViewUnder(e.x, e.y)
-
-                if (ChildView != null && gestureDetector.onTouchEvent(e)) {
-                    RecyclerViewClickedItemPos = recyclerView.getChildAdapterPosition(ChildView!!)
-                    val idTrx = itemsHarian!!.get(RecyclerViewClickedItemPos).idItem
-                    DialogDetail(idTrx)
-                }
-                return false
-            }
-
-            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-
-            }
-
-            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-
-            }
-        })
-
-
-//        spiTgl.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onNothingSelected(parent: AdapterView<*>?) { }
-//
-//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                if (!isOpened) {
-//                    isOpened = true
-//                    return
-//                }
-//
-//                tempItemsHarian = ArrayList()
-//
-//                var totalValue = 0.0
-//
-//                if(spinTglArray[position].equals("Semua")){
-//                    for (item in itemsHarian!!) {
-//                        tempItemsHarian.add(item)
-//                        totalValue += item.total
-//                    }
-//                }else{
-//                    for (item in itemsHarian!!) {
-//                        val tgl = spinTglArray[position]
-//                        if (item.tgl == tgl) {
-//                            tempItemsHarian.add(item)
-//                            totalValue += item.total
-//                            Log.d("CETAK", totalValue.toString())
-//                        }
-//                    }
-//                }
-//
-//
-//                tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-////                adapterList?.notifyDataSetChanged()
-//                adapterList = context?.let {
-//                    RekapHarianListAdapter(
-//                        tempItemsHarian,
-//                        it
-//                    )
-//                }
-//                recyclerView.adapter = adapterList
-//            }
-//        }
 
         val date = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             // TODO Auto-generated method stub
@@ -243,25 +161,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
 
                 }
                 if (itemsHarian != null && itemsHarian!!.size > 0) {
-//                    spinTglArray.clear()
-//                    spinTglArray.add("Semua")
-//                    for (item in itemsHarian!!) {
-//                        val tgl = item.tgl
-//                        if (!spinTglArray.contains(tgl)) spinTglArray.add(tgl)
-//                    }
-//
-//                    val spinTglAdapter = context?.let {
-//                        RekapHarianSpinAdapter(
-//                            it,
-//                            android.R.layout.simple_spinner_dropdown_item,
-//                            spinTglArray
-//                        )
-//                    }
-//
-//                    spiTgl.adapter = spinTglAdapter
-
                     var totalValue = 0.0
-
                     tempItemsHarian = itemsHarian!!
                     for(ttl in tempItemsHarian) {
                         totalValue += ttl.total
@@ -270,6 +170,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
 
                     adapterList = context?.let {
                         RekapHarianListAdapter(
+                            this,
                             tempItemsHarian,
                             it
                         )
@@ -283,24 +184,18 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
             }
         } catch (e: JSONException) {
             e.printStackTrace()
-            //Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun DialogDetail(idTrx: Int) {
+    fun dialogDetail(idTrx: String) {
         val mBuilder = AlertDialog.Builder(context)
         val layoutInflater:LayoutInflater = LayoutInflater.from(context)
         val mView = layoutInflater.inflate(R.layout.dialog_detail_rekap_harian, null)
 
-        var tvNoTrx: TextView
-         val _tag = javaClass.simpleName
-
-
-        tvNoTrx = mView.findViewById(R.id.tvNoTrx) as TextView
+        val tvNoTrx: TextView = mView.findViewById(R.id.tvNoTrx) as TextView
         recyclerViewD = mView.findViewById(R.id.recyclerView) as RecyclerView
 
-        tvNoTrx.setText(idTrx.toString())
-
+        tvNoTrx.text = idTrx
         mBuilder.setView(mView)
         val dialog = mBuilder.create()
         dialog.show()
@@ -312,8 +207,6 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
         } else {
             Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
         }
-
-
     }
 
     override fun DrekapHarianOnTask(result: String?) {
@@ -383,18 +276,7 @@ class RekapHarianFragment : Fragment(), RekapHarianOnTask, DRekapHarianOnTask {
         }
     }
 
-//    private val itemsHarian = arrayListOf(
-//        RekapHarianListElement(
-//            1, "Ayam Bakar Madu", 16000, 1, 0, 16000
-//        , "2019/01/01"),
-//        RekapHarianListElement(
-//            1, "Ayam Goreng Crispy", 15000, 1, 0, 15000
-//            , "2019/01/02"),
-//        RekapHarianListElement(
-//            1, "Es Campur", 8000, 1, 0, 8000
-//            , "2019/01/02"),
-//        RekapHarianListElement(
-//            1, "Jus Tomat", 8000, 1, 0, 8000
-//            , "2019/01/03")
-//    )
+    override fun rekapHarianDetailOnTask(result: String?) {
+        result?.let { dialogDetail(it) }
+    }
 }

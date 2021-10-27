@@ -1,18 +1,26 @@
 package com.dnhsolution.restokabmalang.data.rekap_harian;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.dnhsolution.restokabmalang.MainActivity;
+import com.dnhsolution.restokabmalang.cetak.MainCetak;
+import com.dnhsolution.restokabmalang.data.DataFragment;
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.RekapHarianDetailOnTask;
 
 class RekapHarianListHolder extends RecyclerView.ViewHolder {
-    private final TextView numItem,nama,Harga,qty,disc,total;
+    private final TextView numItem,mId,nama,Harga,qty,disc,total;
 //    private final View view;
 //    private final Context context;
 
-    static RekapHarianListHolder newInstance(View parent, Context context) {
+    static RekapHarianListHolder newInstance(View parent, Context context, RekapHarianDetailOnTask onTask) {
         TextView tvMid = parent.findViewById(R.id.mId);
         TextView tvNumItem = parent.findViewById(R.id.tvNumItem);
         TextView tvNama = parent.findViewById(R.id.tvNama);
@@ -21,15 +29,15 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         TextView tvDisc = parent.findViewById(R.id.tvDisc);
         TextView tvTotal = parent.findViewById(R.id.tvTotal);
         return new RekapHarianListHolder(parent, context, tvMid, tvNumItem, tvNama, tvPrice, tvQty
-                , tvDisc, tvTotal);
+                , tvDisc, tvTotal,onTask);
     }
 
     private RekapHarianListHolder(final View parent, final Context context, TextView id
             , final TextView tvNumItem, final TextView tvNama, final TextView tvPrice, final TextView tvQty
-            , final TextView tvDisc, final TextView tvTotal) {
+            , final TextView tvDisc, final TextView tvTotal, final RekapHarianDetailOnTask onTask) {
         super(parent);
 //        this.context = context;
-//        mId = id;
+        mId = id;
         numItem = tvNumItem;
         nama = tvNama;
         Harga = tvPrice;
@@ -38,29 +46,26 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         total = tvTotal;
 //        view = parent;
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                String dId = mId.getText().toString();
-//                activity.startActivity(new Intent(activity, PandWisataDetail.class).putExtra("getId",dId));
-            }
+        parent.setOnClickListener(v -> {
+            String dId = mId.getText().toString();
+            onTask.rekapHarianDetailOnTask(dId);
+        });
+
+        parent.setOnLongClickListener(v -> {
+            String dId = mId.getText().toString();
+            context.startActivity(new Intent(context, MainCetak.class).putExtra("getIdItem", dId));
+            return false;
         });
     }
 
     void setValues(String number,RekapHarianListElement itemText) {
         numItem.setText(number);
-        nama.setText(String.valueOf(itemText.getIdItem()));
+        mId.setText(String.valueOf(itemText.getIdItem()));
+        nama.setText(itemText.getName());
         Harga.setText(itemText.getTgl());
         String disc_rp = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getDisc());
         qty.setText(disc_rp);
         String omzet = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
         total.setText(omzet);
-
-//        String priceValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getHarga());
-//        Harga.setText(priceValue);
-//        qty.setText(String.valueOf(itemText.getQty()));
-//        disc.setText(String.valueOf(itemText.getDisc()));
-//        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
-//        total.setText(totalValue);
     }
 }

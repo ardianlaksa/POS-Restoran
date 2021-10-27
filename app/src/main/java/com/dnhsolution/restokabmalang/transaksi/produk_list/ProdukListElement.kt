@@ -4,7 +4,8 @@ class ProdukListElement(val idItem: Int, val name: String, val price: String, va
                         , val description: String, val status: String,isPajak: String, jnsProduk: String) {
     var isFavorite = false
 
-    fun toggleFavorite() {
+    fun toggleFavorite() : Boolean{
         isFavorite = !isFavorite
+        return isFavorite
     }
 }

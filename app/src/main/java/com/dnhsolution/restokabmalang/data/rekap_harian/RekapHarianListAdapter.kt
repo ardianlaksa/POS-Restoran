@@ -6,21 +6,25 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.utilities.RekapHarianDetailOnTask
 
-class RekapHarianListAdapter(itemList: ArrayList<RekapHarianListElement>, private val context: Context) :
+class RekapHarianListAdapter(onTask: RekapHarianDetailOnTask, itemList: ArrayList<RekapHarianListElement>,
+                             private val context: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var mItemList: ArrayList<RekapHarianListElement>? = null
+    private var onTask: RekapHarianDetailOnTask? = null
 
     val _tag = javaClass.simpleName
 
     init {
         mItemList = itemList
         Log.d(_tag,"${mItemList?.size}")
+        this.onTask = onTask
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_list_rekap_harian, parent, false)
-        return RekapHarianListHolder.newInstance(view, context)
+        return RekapHarianListHolder.newInstance(view, context, onTask)
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {

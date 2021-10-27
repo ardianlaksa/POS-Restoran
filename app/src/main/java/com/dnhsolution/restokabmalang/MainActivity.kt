@@ -47,12 +47,11 @@ import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 class MainActivity : AppCompatActivity() {
 
     companion object{
-
         var valueArgsFromKeranjang:Int? = null
         var adDashboard = 0
         var adMasterProduk = 0
         var adTransaksi = 0
-
+        var jumlahProdukTerpilih = 0
     }
 
     private val _tag = javaClass.simpleName

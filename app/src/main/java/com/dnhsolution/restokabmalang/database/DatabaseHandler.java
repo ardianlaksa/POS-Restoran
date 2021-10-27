@@ -231,7 +231,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         String selectQuery = "SELECT "+col_id+","+col_tanggal_trx+","+col_disc+
-                ","+col_omzet+","+col_disc_rp+","+col_status+" FROM " + TABLE_TRANSAKSI +
+                ","+col_omzet+","+col_disc_rp+","+col_status+","+col_pajak_rp+" FROM " + TABLE_TRANSAKSI +
                 " ORDER BY "+col_tanggal_trx+" DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -247,6 +247,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 it.setOmzet(cursor.getString(3));
                 it.setDisc_rp(cursor.getString(4));
                 it.setStatus(cursor.getString(5));
+                it.setPajakRp(cursor.getString(6));
 
                 // Menambahkan data ke dalam list
                 list.add(it);
@@ -261,7 +262,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         String selectQuery = "SELECT "+col_id+","+col_tanggal_trx+","+col_disc+
-                ","+col_omzet+","+col_disc_rp+","+col_status+" FROM " + TABLE_TRANSAKSI +" WHERE "+col_status+"=='0'"+
+                ","+col_omzet+","+col_disc_rp+","+col_status+","+col_pajak_rp+" FROM " + TABLE_TRANSAKSI +" WHERE "+col_status+"=='0'"+
                 " ORDER BY "+col_tanggal_trx+" DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -277,6 +278,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 it.setOmzet(cursor.getString(3));
                 it.setDisc_rp(cursor.getString(4));
                 it.setStatus(cursor.getString(5));
+                it.setPajakRp(cursor.getString(6));
 
                 // Menambahkan data ke dalam list
                 list.add(it);
@@ -358,6 +360,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     ","+col_harga+","+col_keterangan+","+col_foto+","+col_status+
                     ","+col_ispajak+","+col_jns_produk+" FROM " + TABLE_PRODUK;
 
+        System.out.println(selectQuery);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -376,6 +379,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 // Menambahkan data ke dalam list
                 list.add(it);
             } while (cursor.moveToNext());
+            cursor.close();
         }
         // return list
         return list;

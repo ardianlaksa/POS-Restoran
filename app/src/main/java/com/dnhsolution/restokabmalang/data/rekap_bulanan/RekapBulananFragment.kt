@@ -265,11 +265,11 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     val disc = rArray.getJSONObject(i).getInt("DISC")
                     val omzet = rArray.getJSONObject(i).getInt("OMZET")
                     val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
-                    val totalPajak = rArray.getJSONObject(i).getString("TOTAL_PAJAK")
+                    val totalPajak = rArray.getJSONObject(i).getInt("TOTAL_PAJAK")
 
                     itemsBulanan?.add(
                         RekapBulananListElement(
-                            idTrx,tglTrx, omzet, disc)
+                            idTrx,tglTrx, omzet, disc, totalPajak)
                     )
                 }
 
@@ -323,6 +323,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     spiBln.adapter = spinBlnAdapter
 
                     var totalValue = 0.0
+                    var totalPajakValue = 0.0
                     val today = getCurrentDate().split("-")
                     selectedThn = today[2]
                     selectedBln = today[0]
@@ -333,12 +334,13 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                         if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
                             tempItemsBulanan.add(event)
                             totalValue += event.omzet
+                            totalPajakValue += event.pajak
                             println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
                         }
                     }
 
                     tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-                    tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
+                    tvTotalPajak.text = AddingIDRCurrency().formatIdrCurrency(totalPajakValue)
 
                     val adapterList = context?.let {
                         RekapBulananListAdapter(

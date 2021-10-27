@@ -8,12 +8,16 @@ interface RekapBulananOnTask {
     fun rekapBulananOnTask(result:String?)
 }
 
+interface DRekapHarianOnTask {
+    fun DrekapHarianOnTask(result:String?)
+}
+
 interface RekapHarianOnTask {
     fun rekapHarianOnTask(result:String?)
 }
 
-interface DRekapHarianOnTask {
-    fun DrekapHarianOnTask(result:String?)
+interface RekapHarianDetailOnTask {
+    fun rekapHarianDetailOnTask(result:String?)
 }
 
 interface KeranjangTransaksiOnTask {
