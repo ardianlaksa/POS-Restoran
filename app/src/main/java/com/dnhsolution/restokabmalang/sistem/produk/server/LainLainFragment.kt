@@ -100,6 +100,7 @@ class LainLainFragment() : Fragment() {
     var databaseHandler: DatabaseHandler? = null
     private var statusJaringan = 1
     private var menuTemp: Menu? = null
+    private var valueJenisProduk = 3
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -169,7 +170,7 @@ class LainLainFragment() : Fragment() {
             progressDialog.show()
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=3"
+            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=$valueJenisProduk"
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =
@@ -326,15 +327,15 @@ class LainLainFragment() : Fragment() {
         get(){
             val isPajak = ArrayList<IsPajakListElement>()
             isPajak.add(IsPajakListElement("1","Pajak"))
-            isPajak.add(IsPajakListElement("2","Tanpa Pajak"))
+            isPajak.add(IsPajakListElement("0","Tanpa Pajak"))
             return isPajak
         }
 
     private val tipeProdukList: ArrayList<TipeProdukListElement>
         get(){
             val tipeProduk = ArrayList<TipeProdukListElement>()
-            tipeProduk.add(TipeProdukListElement("1","Beverage"))
-            tipeProduk.add(TipeProdukListElement("2","Food"))
+            tipeProduk.add(TipeProdukListElement("1","Makanan"))
+            tipeProduk.add(TipeProdukListElement("2","Minuman"))
             tipeProduk.add(TipeProdukListElement("3","Dll"))
             return tipeProduk
         }
@@ -1305,8 +1306,8 @@ class LainLainFragment() : Fragment() {
                         "Data berhasil ditambah !",
                         Toast.LENGTH_SHORT
                     ).show()
-//                    startActivity(Intent(requireContext(), MasterProduk::class.java))
-//                    finish()
+                    startActivity(Intent(requireContext(), MasterProduk::class.java))
+                    activity?.finish()
                 } else if (s.equals("gagal", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
                     Toast.makeText(requireContext(), "Data gagal ditambah !", Toast.LENGTH_SHORT)

@@ -163,37 +163,35 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         }
 
-        etDiskon.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                etDiskon.requestFocus()
-
-            }
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
-            }
-
-            override fun afterTextChanged(editable: Editable) {
-
-                if (etDiskon.getText().toString().length == 0) {
-                    valueDiskon = 0
-                } else {
-                    valueDiskon = editable.toString().toInt()
-                }
-
-                setTotal()
-
-            }
-        })
+//        etDiskon.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+//                etDiskon.requestFocus()
+//
+//            }
+//
+//            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+//
+//            }
+//
+//            override fun afterTextChanged(editable: Editable) {
+//
+//                valueDiskon = if (etDiskon.text.toString().isEmpty()) {
+//                    0
+//                } else {
+//                    editable.toString().toInt()
+//                }
+//
+//                setTotal()
+//
+//            }
+//        })
 
         etRupiahDiskon.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 etRupiahDiskon.requestFocus()
-
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
             }
 
             override fun afterTextChanged(editable: Editable) {
@@ -205,7 +203,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
                     val longval: Long?
                     if (originalString.contains(".")) {
-
                         originalString = originalString.replace(".", "")
                     }
                     longval = java.lang.Long.parseLong(originalString)
@@ -216,21 +213,19 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
                     //setting text after format to EditText
                     etRupiahDiskon.setText(formattedString.replace(",", "."))
-                    etRupiahDiskon.setSelection(etRupiahDiskon.getText().toString().length)
+                    etRupiahDiskon.setSelection(etRupiahDiskon.text.toString().length)
                 } catch (nfe: NumberFormatException) {
                     nfe.printStackTrace()
                 }
 
-
                 etRupiahDiskon.addTextChangedListener(this)
-                if (etRupiahDiskon.text.toString().isEmpty()) {
-                    valueDiskonRupiah = 0
+                valueDiskonRupiah = if (etRupiahDiskon.text.toString().isEmpty()) {
+                    0
                 } else {
-
-                    valueDiskonRupiah = editable.toString().replace(".", "").toInt()
+                    editable.toString().replace(".", "").toInt()
                 }
 
-                setTotalRupiah()
+                setDiskonDanTotalRupiah()
 
             }
         })
@@ -341,92 +336,74 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
     private fun setTotal () {
         var totalPrice = 0
+        var totalPajak = 0
         for (valueTotal in obyek!!) {
-            totalPrice += valueTotal.totalPrice
+            val nilai = valueTotal.totalPrice
+            if(valueTotal.status == "1") totalPajak += nilai
+            totalPrice += nilai
         }
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
+        this.valueTotalPrice = totalPrice
 
-        var diskon = 0
-//        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
-        if (!etDiskon.text.toString().isEmpty()) {
-            diskon = valueDiskon
-            this.valueTotalPrice = totalPrice-(totalPrice*diskon/100)
+        if(tipeStruk == "1")
+            pajakRp = totalPajak.toFloat()*10/100
 
-            println("d :$tipeStruk")
-            if(tipeStruk == "1")
-                pajakRp = valueTotalPrice.toFloat()*10/100
+        tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
-            tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+        valueTotalPrice +=pajakRp.toInt()
 
-            valueTotalPrice +=pajakRp.toInt()
-
-            val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-            tvDiskonTotal.text = rupiahValue
-
-            if(!etRupiahDiskon.text.toString().isEmpty()){
-                this.valueTotalPrice = totalPrice
-                val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-                tvDiskonTotal.text = rupiahValue
-
-                valueDiskonRupiah = etRupiahDiskon.text.toString().toInt()
-                setTotalRupiah()
-            }
-
-        }else{
-            this.valueTotalPrice = totalPrice
-
-            if(tipeStruk == "1")
-                pajakRp = valueTotalPrice.toFloat()*10/100
-
-            tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
-
-            valueTotalPrice +=pajakRp.toInt()
-
-            val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-            tvDiskonTotal.text = rupiahValue
-
-            if(!etRupiahDiskon.text.toString().isEmpty()){
-                valueDiskonRupiah = etRupiahDiskon.text.toString().toInt()
-                setTotalRupiah()
-            }
-        }
+        val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
+        tvDiskonTotal.text = rupiahValue
     }
 
-    private fun setTotalRupiah () {
+    private fun setDiskonDanTotalRupiah () {
         var totalPrice = 0
+        var totalPajak = 0
         for (valueTotal in obyek!!) {
-            totalPrice += valueTotal.totalPrice
+            val nilai = valueTotal.totalPrice
+            if(valueTotal.status == "1") totalPajak += nilai
+            totalPrice += nilai
         }
-
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
-        var diskonRupiah = 0
-//        if (!etDiskon.text.toString().isEmpty()) diskon = etDiskon.text.toString().toInt()
+        val diskonRupiah: Int
         if (etRupiahDiskon.text.toString().isNotEmpty()) {
-            if(valueDiskonRupiah <= totalPrice){
-                diskonRupiah = valueDiskonRupiah
-                this.valueTotalPrice = totalPrice-diskonRupiah
+            when {
+                valueDiskonRupiah <= totalPajak -> {
+                    diskonRupiah = valueDiskonRupiah
+                    this.valueTotalPrice = totalPrice-diskonRupiah
+                    totalPajak -= diskonRupiah
 
-                if(tipeStruk == "1")
-                    pajakRp = valueTotalPrice.toFloat()*10/100
+                    if(tipeStruk == "1")
+                        pajakRp = totalPajak.toFloat()*10/100
 
-                tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+                    tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
-                valueTotalPrice +=pajakRp.toInt()
+                    valueTotalPrice +=pajakRp.toInt()
 
-                valueDR = ((diskonRupiah*100)/totalPrice).toDouble()
-                val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-                tvDiskonTotal.text = rupiahValue
-            }else{
-                val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
-                tvDiskonTotal.text = rupiahValue
+                    valueDR = ((diskonRupiah*100)/totalPrice).toDouble()
+                    val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
+                    tvDiskonTotal.text = rupiahValue
+                }
+                else -> {
+                    diskonRupiah = valueDiskonRupiah
+                    this.valueTotalPrice = totalPrice-diskonRupiah
+                    val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
+                    tvDiskonTotal.text = rupiahValue
+                    pajakRp = 0F
+                    tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
+                }
+//                else -> {
+//                    val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
+//                    tvDiskonTotal.text = rupiahValue
+//                    tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
+//                }
             }
-
         }else{
             this.valueTotalPrice = totalPrice
 
             if(tipeStruk == "1")
-                pajakRp = valueTotalPrice.toFloat()*10/100
+                pajakRp = totalPajak.toFloat()*10/100
 
             tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
@@ -436,11 +413,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
             tvDiskonTotal.text = rupiahValue
-
-            if(!etDiskon.text.toString().isEmpty()){
-                valueDiskon = etDiskon.text.toString().toInt()
-                setTotal()
-            }
         }
 
     }
@@ -580,9 +552,9 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         rootObject.put("user",idPengguna)
         rootObject.put("disc_rp",valueDiskonRupiah)
         rootObject.put("pajakRp",pajakRp.toInt())
-        if(!etRupiahDiskon.text.toString().isEmpty()){
-            rootObject.put("disc",valueDR)
-        }else{
+        if(etRupiahDiskon.text.toString().isNotEmpty()){
+        rootObject.put("disc",valueDR)
+        } else{
             rootObject.put("disc",valueDiskon)
         }
         rootObject.put("omzet",valueTotalPrice)
@@ -607,16 +579,17 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     }
 
     private fun saveLokal() : String{
-        var tglTrx :String = ""
-        var disc : String = ""
-        var omzet : String = ""
-        var id_trx : Int = 0
+        var tglTrx = ""
+        var disc = ""
+        var omzet = ""
+        var id_trx = 0
 
-        if(!etRupiahDiskon.text.toString().isEmpty()){
+        if(etRupiahDiskon.text.toString().isNotEmpty()){
             disc = valueDR.toString()
-        }else{
-            disc = valueDiskon.toString()
         }
+//        else{
+//            disc = valueDiskon.toString()
+//        }
         omzet = valueTotalPrice.toString()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

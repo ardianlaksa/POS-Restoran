@@ -100,6 +100,7 @@ class MakananFragment() : Fragment() {
     var databaseHandler: DatabaseHandler? = null
     private var statusJaringan = 1
     private var menuTemp: Menu? = null
+    private var valueJenisProduk = 1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -169,7 +170,7 @@ class MakananFragment() : Fragment() {
             progressDialog.show()
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=2"
+            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=$valueJenisProduk"
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =
@@ -326,15 +327,15 @@ class MakananFragment() : Fragment() {
         get(){
             val isPajak = ArrayList<IsPajakListElement>()
             isPajak.add(IsPajakListElement("1","Pajak"))
-            isPajak.add(IsPajakListElement("2","Tanpa Pajak"))
+            isPajak.add(IsPajakListElement("0","Tanpa Pajak"))
             return isPajak
         }
 
     private val tipeProdukList: ArrayList<TipeProdukListElement>
         get(){
             val tipeProduk = ArrayList<TipeProdukListElement>()
-            tipeProduk.add(TipeProdukListElement("1","Beverage"))
-            tipeProduk.add(TipeProdukListElement("2","Food"))
+            tipeProduk.add(TipeProdukListElement("1","Makanan"))
+            tipeProduk.add(TipeProdukListElement("2","Minuman"))
             tipeProduk.add(TipeProdukListElement("3","Dll"))
             return tipeProduk
         }
@@ -537,40 +538,28 @@ class MakananFragment() : Fragment() {
                 .into(ivGambarLama)
         }
         ivGambarLama.visibility = View.VISIBLE
-        ivTambahGambar.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View) {
-                wallpaperDirectory =
-                    File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
-                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                    wallpaperDirectory!!.mkdirs()
-                }
-                val builder = AlertDialog.Builder(context)
-                builder.setMessage("Pilihan Tambah Foto")
-                    .setPositiveButton("Galeri", object : DialogInterface.OnClickListener {
-                        override fun onClick(dialog: DialogInterface, id: Int) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)
-                                            != PackageManager.PERMISSION_GRANTED)
-                                ) {
-                                    requestPermissions(
-                                        arrayOf(
-                                            Manifest.permission.CAMERA,
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                        ),
-                                        MY_CAMERA_PERMISSION_CODE
-                                    )
-                                    //showFileChooser();
-                                } else {
-                                    wallpaperDirectory = File(
-                                        Environment.getExternalStorageDirectory()
-                                            .toString() + IMAGE_DIRECTORY
-                                    )
-                                    if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                                        wallpaperDirectory!!.mkdirs()
-                                    }
-                                    showFileChooser()
-                                    status = "e"
-                                }
+        ivTambahGambar.setOnClickListener {
+            wallpaperDirectory =
+                File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
+            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                wallpaperDirectory!!.mkdirs()
+            }
+            val builder = AlertDialog.Builder(context)
+            builder.setMessage("Pilihan Tambah Foto")
+                .setPositiveButton("Galeri", object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface, id: Int) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)
+                                        != PackageManager.PERMISSION_GRANTED)
+                            ) {
+                                requestPermissions(
+                                    arrayOf(
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    ),
+                                    MY_CAMERA_PERMISSION_CODE
+                                )
+                                //showFileChooser();
                             } else {
                                 wallpaperDirectory = File(
                                     Environment.getExternalStorageDirectory()
@@ -582,45 +571,33 @@ class MakananFragment() : Fragment() {
                                 showFileChooser()
                                 status = "e"
                             }
+                        } else {
+                            wallpaperDirectory = File(
+                                Environment.getExternalStorageDirectory()
+                                    .toString() + IMAGE_DIRECTORY
+                            )
+                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                wallpaperDirectory!!.mkdirs()
+                            }
+                            showFileChooser()
+                            status = "e"
                         }
-                    })
-                    .setNegativeButton("Kamera", object : DialogInterface.OnClickListener {
-                        override fun onClick(dialog: DialogInterface, id: Int) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)
-                                            != PackageManager.PERMISSION_GRANTED)
-                                ) {
-                                    requestPermissions(
-                                        arrayOf(
-                                            Manifest.permission.CAMERA,
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                        ),
-                                        MY_CAMERA_PERMISSION_CODE
-                                    )
-                                    //showFileChooser();
-                                } else {
-                                    wallpaperDirectory = File(
-                                        Environment.getExternalStorageDirectory()
-                                            .toString() + IMAGE_DIRECTORY
-                                    )
-                                    if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                                        wallpaperDirectory!!.mkdirs()
-                                    }
-                                    val cal = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-                                    tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                    val f = File(wallpaperDirectory, tempNameFile)
-                                    val photoURI = FileProvider.getUriForFile(
-                                        (context)!!,
-                                        BuildConfig.APPLICATION_ID + ".provider",
-                                        f
-                                    )
-                                    //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                                    startActivityForResult(cameraIntent, CAMERA_REQUEST)
-                                    status = "e"
-                                }
+                    }
+                })
+                .setNegativeButton("Kamera", object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface, id: Int) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)
+                                        != PackageManager.PERMISSION_GRANTED)
+                            ) {
+                                requestPermissions(
+                                    arrayOf(
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    ),
+                                    MY_CAMERA_PERMISSION_CODE
+                                )
+                                //showFileChooser();
                             } else {
                                 wallpaperDirectory = File(
                                     Environment.getExternalStorageDirectory()
@@ -632,18 +609,40 @@ class MakananFragment() : Fragment() {
                                 val cal = Calendar.getInstance()
                                 val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
                                 tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                                 val f = File(wallpaperDirectory, tempNameFile)
-                                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
-                                startActivityForResult(intent, CAMERA_REQUEST)
+                                val photoURI = FileProvider.getUriForFile(
+                                    (context)!!,
+                                    BuildConfig.APPLICATION_ID + ".provider",
+                                    f
+                                )
+                                //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                                startActivityForResult(cameraIntent, CAMERA_REQUEST)
                                 status = "e"
                             }
+                        } else {
+                            wallpaperDirectory = File(
+                                Environment.getExternalStorageDirectory()
+                                    .toString() + IMAGE_DIRECTORY
+                            )
+                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+                                wallpaperDirectory!!.mkdirs()
+                            }
+                            val cal = Calendar.getInstance()
+                            val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                            tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            val f = File(wallpaperDirectory, tempNameFile)
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
+                            startActivityForResult(intent, CAMERA_REQUEST)
+                            status = "e"
                         }
-                    })
-                val alert = builder.create()
-                alert.show()
-            }
-        })
+                    }
+                })
+            val alert = builder.create()
+            alert.show()
+        }
         dialogBuilder.setView(dialogView)
         dialogBuilder.show()
     }
@@ -1305,8 +1304,8 @@ class MakananFragment() : Fragment() {
                         "Data berhasil ditambah !",
                         Toast.LENGTH_SHORT
                     ).show()
-//                    startActivity(Intent(requireContext(), MasterProduk::class.java))
-//                    finish()
+                    startActivity(Intent(requireContext(), MasterProduk::class.java))
+                    activity?.finish()
                 } else if (s.equals("gagal", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
                     Toast.makeText(requireContext(), "Data gagal ditambah !", Toast.LENGTH_SHORT)

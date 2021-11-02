@@ -327,7 +327,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                             arrayProdukSerialization.add(
                                 ProdukSerializable(
                                     value.idItem, value.name, value.price
-                                    , value.imageUrl,value.price.toInt(), 1, value.status
+                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
                                 )
                             )
                         }
@@ -342,7 +342,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
-                            , value.imageUrl,value.price.toInt(), 1, value.status
+                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
                         )
                     )
                 }

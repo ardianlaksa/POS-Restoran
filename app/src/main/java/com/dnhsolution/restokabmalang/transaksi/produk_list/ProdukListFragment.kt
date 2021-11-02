@@ -90,13 +90,10 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
-//            val data: Intent? = result.data
-            for(v in produks){
-                if(v.isFavorite)
-                    v.toggleFavorite()
-            }
-            produkAdapter?.notifyDataSetChanged()
+            MainActivity.jumlahProdukTerpilih = 0
+            (context as MainActivity).
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, TransaksiFragment()).commit()
         }
     }
 
@@ -399,7 +396,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                             arrayProdukSerialization.add(
                                 ProdukSerializable(
                                     value.idItem, value.name, value.price
-                                    , value.imageUrl,value.price.toInt(), 1, value.status
+                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
                                 )
                             )
                         }
@@ -414,7 +411,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
-                            , value.imageUrl,value.price.toInt(), 1, value.status
+                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
                         )
                     )
                 }
