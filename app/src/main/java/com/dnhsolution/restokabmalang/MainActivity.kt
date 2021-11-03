@@ -139,12 +139,14 @@ class MainActivity : AppCompatActivity() {
         navView?.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
+                    jumlahProdukTerpilih = 0
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.frameLayout, DashFragment()).commit()
                     return@setOnItemSelectedListener true
                 }
 
                 R.id.navigation_transaksi -> {
+                    jumlahProdukTerpilih = 0
                     if(status_batas == "nonaktif"){
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.frameLayout, TransaksiFragment()).commit()
@@ -160,6 +162,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.navigation_data -> {
+                    jumlahProdukTerpilih = 0
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.frameLayout, DataFragment()).commit()
                     toolbar.title = resources.getString(R.string.title_data)

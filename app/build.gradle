@@ -66,6 +66,10 @@ dependencies {
     implementation 'com.karumi:dexter:4.2.0'
     implementation 'com.android.support:multidex:1.0.3'
 
+    def retrovit_version = "2.4.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrovit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrovit_version"
+
     // Room components
     def room_version = "2.3.0"
     implementation "androidx.room:room-runtime:$room_version"

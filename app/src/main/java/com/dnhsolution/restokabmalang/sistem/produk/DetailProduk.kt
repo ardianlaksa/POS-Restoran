@@ -14,7 +14,6 @@ import com.bumptech.glide.request.RequestListener
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.load.engine.GlideException
 import android.os.Environment
-import com.dnhsolution.restokabmalang.sistem.produk.DetailProduk
 import android.content.DialogInterface
 import android.os.Build
 import android.content.pm.PackageManager
@@ -29,7 +28,6 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.DexterError
 import android.content.ActivityNotFoundException
-import android.app.Activity
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.AsyncTask
@@ -41,7 +39,6 @@ import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
-import com.dnhsolution.restokabmalang.sistem.produk.MasterProduk
 import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakListElement
 import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukListElement
 import com.karumi.dexter.listener.PermissionRequest
@@ -605,7 +602,7 @@ class DetailProduk() : AppCompatActivity() {
                         "Data berhasil diupdate !",
                         Toast.LENGTH_SHORT
                     ).show()
-                    startActivity(Intent(this@DetailProduk, MasterProduk::class.java))
+                    startActivity(Intent(this@DetailProduk, ProdukMasterActivity::class.java))
                     finish()
                 } else if (s.equals("gagal", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()

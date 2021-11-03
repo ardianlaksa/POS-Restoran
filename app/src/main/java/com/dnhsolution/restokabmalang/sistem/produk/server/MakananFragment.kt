@@ -6,11 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import android.app.ProgressDialog
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.utilities.Url
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
-import android.view.GestureDetector.SimpleOnGestureListener
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.android.volley.toolbox.Volley
 import com.android.volley.toolbox.StringRequest
@@ -41,7 +38,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.*
 import com.bumptech.glide.load.DataSource
@@ -59,8 +55,20 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import retrofit2.Call
+import android.widget.Toast
+import com.dnhsolution.restokabmalang.utilities.HapusProdukMasterOnTask
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.*
+import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_master_produk.*
 
-class MakananFragment() : Fragment() {
+import kotlinx.android.synthetic.main.activity_produk.*
+
+
+class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
     override fun onCreateView(
         inflater: LayoutInflater,
         parent: ViewGroup?,
@@ -101,6 +109,42 @@ class MakananFragment() : Fragment() {
     private var statusJaringan = 1
     private var menuTemp: Menu? = null
     private var valueJenisProduk = 1
+    val keyParams = "params"
+
+    companion object {
+
+        private val CAMERA_REQUEST = 1888
+        private val MY_CAMERA_PERMISSION_CODE = 100
+        private val FILE_SELECT_CODE = 5
+        private val IMAGE_DIRECTORY = "/POSRestoran"
+
+        @JvmStatic
+        fun newInstance(params: String) = MakananFragment().apply {
+            arguments = Bundle().apply {
+                putString(keyParams,params)
+            }
+        }
+    }
+
+    interface DeleteServices {
+        @FormUrlEncoded
+        @POST("pdrd/Android/AndroidJsonPOS/setHapusProduk")
+        fun getPosts(@Field("id") id: String): Call<DeletePojo>
+    }
+
+    object DeleteResultFeedback {
+
+        fun create(): DeleteServices {
+            val gson = GsonBuilder()
+                .setLenient()
+                .create()
+            val retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .baseUrl(Url.serverBase)
+                .build()
+            return retrofit.create(DeleteServices::class.java)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -109,38 +153,41 @@ class MakananFragment() : Fragment() {
         databaseHandler = DatabaseHandler(context)
         rvProduk = view.findViewById<View>(R.id.rvProduk) as RecyclerView
         tvKet = view.findViewById<View>(R.id.tvKet) as TextView
-        val mLayoutManagerss: RecyclerView.LayoutManager = LinearLayoutManager(context)
+//        val mLayoutManagerss: RecyclerView.LayoutManager = LinearLayoutManager(context)
         rvProduk!!.layoutManager = GridLayoutManager(context, 3)
         rvProduk!!.itemAnimator = DefaultItemAnimator()
-        produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext())
+        produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext(),this)
         rvProduk!!.adapter = produkAdapter
-        rvProduk!!.addOnItemTouchListener(object : OnItemTouchListener {
-            var gestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-                override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {
-                    return true
-                }
-            })
+//        rvProduk!!.addOnItemTouchListener(object : OnItemTouchListener {
+//            var gestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
+//                override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {
+//                    return true
+//                }
+//            })
+//
+//            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+//                ChildView = rvProduk!!.findChildViewUnder(e.x, e.y)
+//                if (ChildView != null && gestureDetector.onTouchEvent(e)) {
+//                    RecyclerViewClickedItemPos = rvProduk!!.getChildAdapterPosition(ChildView!!)
+//                    val url_image = itemProduks[RecyclerViewClickedItemPos].url_image
+//                    val nama_barang = itemProduks[RecyclerViewClickedItemPos].nama_barang
+//                    val id_barang = itemProduks[RecyclerViewClickedItemPos].id_barang
+//                    val harga = itemProduks[RecyclerViewClickedItemPos].harga
+//                    val ket = itemProduks[RecyclerViewClickedItemPos].keterangan
+//                    val isPajak = itemProduks[RecyclerViewClickedItemPos].isPajak
+//                    val jenisProduk = itemProduks[RecyclerViewClickedItemPos].jenisProduk
+//
+//                    dialogEdit(url_image, nama_barang, id_barang, harga, ket, isPajak, jenisProduk)
+//
+//                    Log.d("TAG", RecyclerViewClickedItemPos.toString())
+//                }
+//                return false
+//            }
+//
+//            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+//            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+//        })
 
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                ChildView = rvProduk!!.findChildViewUnder(e.x, e.y)
-                if (ChildView != null && gestureDetector.onTouchEvent(e)) {
-                    RecyclerViewClickedItemPos = rvProduk!!.getChildAdapterPosition(ChildView!!)
-                    val url_image = itemProduks[RecyclerViewClickedItemPos].url_image
-                    val nama_barang = itemProduks[RecyclerViewClickedItemPos].nama_barang
-                    val id_barang = itemProduks[RecyclerViewClickedItemPos].id_barang
-                    val harga = itemProduks[RecyclerViewClickedItemPos].harga
-                    val ket = itemProduks[RecyclerViewClickedItemPos].keterangan
-                    val isPajak = itemProduks[RecyclerViewClickedItemPos].isPajak
-                    val jenisProduk = itemProduks[RecyclerViewClickedItemPos].jenisProduk
-                    dialogEdit(url_image, nama_barang, id_barang, harga, ket, isPajak, jenisProduk)
-                    Log.d("TAG", RecyclerViewClickedItemPos.toString())
-                }
-                return false
-            }
-
-            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-        })
         if (CheckNetwork().checkingNetwork((context)!!)) {
             ambilData
             tvKet!!.visibility = View.GONE
@@ -162,6 +209,38 @@ class MakananFragment() : Fragment() {
 //        })
     }
 
+    private fun hapusFungsi(idBarang : String){
+        val postServices = DeleteResultFeedback.create()
+        postServices.getPosts(idBarang).enqueue(object : Callback<DeletePojo> {
+
+            override fun onFailure(call: Call<DeletePojo>, error: Throwable) {
+                Log.e(_tag, "errornya ${error.message}")
+            }
+
+            override fun onResponse(
+                call: Call<DeletePojo>,
+                response: retrofit2.Response<DeletePojo>
+            ) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    data?.let {
+                        val feedback = it
+                        println("${feedback.id}, ${feedback.username}")
+                        if(feedback.id == 1) {
+                            startActivity(
+                                Intent(
+                                    requireContext(),
+                                    ProdukMasterActivity::class.java
+                                )
+                            )
+                            activity?.finish()
+                        }
+                    }
+                }
+            }
+        })
+    }
+
     private val ambilData: Unit
         get() {
             itemProduks.clear()
@@ -170,19 +249,18 @@ class MakananFragment() : Fragment() {
             progressDialog.show()
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=$valueJenisProduk"
+            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=${arguments?.get(keyParams).toString()}"
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =
                 object : StringRequest(Method.GET, url, Response.Listener { response: String? ->
                     try {
-                        val jsonObject: JSONObject = JSONObject(response)
+                        val jsonObject = JSONObject(response)
                         val status: Int = jsonObject.getInt("success")
-                        val jsonArray: JSONArray = jsonObject.getJSONArray("result")
-                        val json: JSONObject = jsonArray.getJSONObject(0)
+                        val message = jsonObject.getString("message")
                         if (status == 1) {
-                            var i: Int
-                            i = 0
+                            val jsonArray: JSONArray = jsonObject.getJSONArray("result")
+                            var i = 0
                             while (i < jsonArray.length()) {
                                 try {
                                     val jO: JSONObject = jsonArray.getJSONObject(i)
@@ -210,11 +288,7 @@ class MakananFragment() : Fragment() {
                             gantiIconWifi(true)
                             isRunnerRunning = false
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Jaringan masih sibuk !",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
                     } catch (e: JSONException) {
                         e.printStackTrace()
@@ -223,7 +297,7 @@ class MakananFragment() : Fragment() {
                     //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();
 //                    produkAdapter!!.notifyDataSetChanged()
                     itemProduksNotFiltered = itemProduks
-                    produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext())
+                    produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext(), this)
                     rvProduk!!.adapter = produkAdapter
                     progressDialog.dismiss()
                     isRunnerRunning = false
@@ -340,7 +414,7 @@ class MakananFragment() : Fragment() {
             return tipeProduk
         }
 
-    fun dialogEdit(url_image: String, nama_barang: String?,
+    private fun dialogEdit(url_image: String, nama_barang: String?,
         id_barang: String?, harga: String, ket: String?, isPajak: String?, jenisProduk: String?) {
         slctdIspajak = null
         slctdTipeProduk = null
@@ -935,7 +1009,7 @@ class MakananFragment() : Fragment() {
                 tvKet!!.visibility = View.GONE
             }
             try {
-                val listDataProduk: List<ItemProduk> = databaseHandler!!.dataProduk as List<ItemProduk>
+                val listDataProduk: List<ItemProduk> = databaseHandler!!.getDataProduk2(arguments?.get(keyParams).toString())
                 for (f: ItemProduk in listDataProduk) {
                     val ip = ItemProduk()
                     ip.id_barang = f.id_barang
@@ -1304,7 +1378,7 @@ class MakananFragment() : Fragment() {
                         "Data berhasil ditambah !",
                         Toast.LENGTH_SHORT
                     ).show()
-                    startActivity(Intent(requireContext(), MasterProduk::class.java))
+                    startActivity(Intent(requireContext(), ProdukMasterActivity::class.java))
                     activity?.finish()
                 } else if (s.equals("gagal", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
@@ -1340,10 +1414,22 @@ class MakananFragment() : Fragment() {
         uv.execute()
     }
 
-    companion object {
-        private val CAMERA_REQUEST = 1888
-        private val MY_CAMERA_PERMISSION_CODE = 100
-        private val FILE_SELECT_CODE = 5
-        private val IMAGE_DIRECTORY = "/POSRestoran"
+    override fun hapusProdukMasterOnTask(tipe: String,posisi: Int) {
+        if (!CheckNetwork().checkingNetwork((context)!!)) return
+
+        val idBarang = itemProduks[posisi].id_barang
+            if(tipe == "1") {
+                val url_image = itemProduks[posisi].url_image
+                val nama_barang = itemProduks[posisi].nama_barang
+                val harga = itemProduks[posisi].harga
+                val ket = itemProduks[posisi].keterangan
+                val isPajak = itemProduks[posisi].isPajak
+                val jenisProduk = itemProduks[posisi].jenisProduk
+
+                dialogEdit(url_image, nama_barang, idBarang, harga, ket, isPajak, jenisProduk)
+            }else {
+                databaseHandler?.hapusByIdProduk(idBarang)
+                hapusFungsi(idBarang)
+            }
     }
 }

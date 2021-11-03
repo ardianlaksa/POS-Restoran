@@ -20,6 +20,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
+import com.dnhsolution.restokabmalang.utilities.HapusProdukMasterOnTask
+import com.dnhsolution.restokabmalang.utilities.Utils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -27,13 +29,15 @@ import kotlin.collections.ArrayList
  * Created by sawrusdino on 09/04/2018.
  */
 class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
-    , private val itemProdukListNotFiltered: MutableList<ItemProduk>, private val context: Context) :
+    , private val itemProdukListNotFiltered: MutableList<ItemProduk>, private val context: Context
+    , private val onTask: HapusProdukMasterOnTask) :
     RecyclerView.Adapter<AdapterProduk.MyViewHolder>(), Filterable{
 
     private var mItemListFull: ArrayList<ItemProduk> = ArrayList(itemProdukList)
     private var mItemListAll: ArrayList<ItemProduk> = ArrayList(itemProdukListNotFiltered)
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val holderView = view
         var nama: TextView = view.findViewById<View>(R.id.tvNama) as TextView
         var ivFoto: ImageView = view.findViewById<View>(R.id.ivBerkas) as ImageView
         var ivIcSync: ImageView = view.findViewById<View>(R.id.ivIcSync) as ImageView
@@ -46,7 +50,11 @@ class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val itemProduk = itemProdukList[position]
+        setValue(holder,position)
+    }
+
+    private fun setValue(holder: MyViewHolder,posisi:Int){
+        val itemProduk = itemProdukList[posisi]
         holder.ivIcSync.setImageResource(if (itemProduk.status) R.drawable.ic_baseline_sync_alt_24_green else R.drawable.ic_baseline_sync_24_yellow)
 
 //        holder.nama.setText(itemProduk.getNama_barang()+" "+itemProduk.getIsPajak()+" "+itemProduk.getJenisProduk());
@@ -81,6 +89,17 @@ class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
                 }
             })
             .into(holder.ivFoto)
+
+        holder.holderView.setOnClickListener {
+            if(Utils.isOpenRecently()) return@setOnClickListener
+            onTask.hapusProdukMasterOnTask("1",posisi)
+        }
+
+        holder.holderView.setOnLongClickListener {
+            holder.holderView.isEnabled = false
+            onTask.hapusProdukMasterOnTask("2",posisi)
+            return@setOnLongClickListener true
+        }
     }
 
     override fun getItemCount(): Int {

@@ -21,11 +21,8 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -55,7 +52,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MasterProduk : AppCompatActivity() {
+class ProdukMasterActivity : AppCompatActivity() {
 
     private lateinit var slctdJenisProduk: String
     private lateinit var slctdIspajak: String
@@ -82,17 +79,17 @@ class MasterProduk : AppCompatActivity() {
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         if (tema.equals("0", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_First)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_First)
         } else if (tema.equals("1", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Second)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Second)
         } else if (tema.equals("2", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Third)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Third)
         } else if (tema.equals("3", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Fourth)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Fourth)
         } else if (tema.equals("4", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Fifth)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Fifth)
         } else if (tema.equals("5", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Sixth)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Sixth)
         }
         databaseHandler = DatabaseHandler(this)
         setContentView(R.layout.activity_master_produk)
@@ -126,17 +123,17 @@ class MasterProduk : AppCompatActivity() {
         supportActionBar!!.title = label
         val tema = sharedPreferences.getString(Url.setTema, "0")
         if (tema.equals("0", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_First)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_First)
         } else if (tema.equals("1", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Second)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Second)
         } else if (tema.equals("2", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Third)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Third)
         } else if (tema.equals("3", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Fourth)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Fourth)
         } else if (tema.equals("4", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Fifth)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Fifth)
         } else if (tema.equals("5", ignoreCase = true)) {
-            this@MasterProduk.setTheme(R.style.Theme_Sixth)
+            this@ProdukMasterActivity.setTheme(R.style.Theme_Sixth)
         }
     }
 
@@ -214,7 +211,7 @@ class MasterProduk : AppCompatActivity() {
 //    }
 
     private fun openDialog() {
-        val alertDialog = AlertDialog.Builder(this@MasterProduk).create()
+        val alertDialog = AlertDialog.Builder(this@ProdukMasterActivity).create()
         val rowList = layoutInflater.inflate(R.layout.dialog_tutorial, null)
         val listView: ListView = rowList.findViewById(R.id.listView)
         val tutorialArrayAdapter: AdapterWizard
@@ -237,7 +234,7 @@ class MasterProduk : AppCompatActivity() {
                 "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."
             )
         )
-        tutorialArrayAdapter = AdapterWizard(this@MasterProduk, arrayList)
+        tutorialArrayAdapter = AdapterWizard(this@ProdukMasterActivity, arrayList)
         listView.adapter = tutorialArrayAdapter
         alertDialog.setView(rowList)
         alertDialog.show()
@@ -322,10 +319,10 @@ class MasterProduk : AppCompatActivity() {
                 etKeterangan.requestFocus()
                 etKeterangan.error = "Silahkan isi form ini !"
             } else if (t_nama_file.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                Toast.makeText(this@MasterProduk, "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
+                Toast.makeText(this@ProdukMasterActivity, "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
                     .show()
             } else {
-                if (CheckNetwork().checkingNetwork(this@MasterProduk)) {
+                if (CheckNetwork().checkingNetwork(this@ProdukMasterActivity)) {
                     TambahData()
                 }
                 dialogBuilder.dismiss()
@@ -337,7 +334,7 @@ class MasterProduk : AppCompatActivity() {
             if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
                 wallpaperDirectory!!.mkdirs()
             }
-            val builder = AlertDialog.Builder(this@MasterProduk)
+            val builder = AlertDialog.Builder(this@ProdukMasterActivity)
             builder.setMessage("Pilihan Tambah Foto")
                 .setPositiveButton("Galeri") { dialog, id ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -511,7 +508,7 @@ class MasterProduk : AppCompatActivity() {
     }
 
     private fun showSettingsDialog() {
-        val builder = AlertDialog.Builder(this@MasterProduk)
+        val builder = AlertDialog.Builder(this@ProdukMasterActivity)
         builder.setTitle("Perizian dibutuhkan !")
         builder.setMessage("Aplikasi ini membutuhkan perizinan untuk akses beberapa feature. Anda dapat mengatur di Pengaturan Aplikasi.")
         builder.setPositiveButton("Pengaturan") { dialog, which ->
@@ -756,7 +753,7 @@ class MasterProduk : AppCompatActivity() {
             //ProgressDialog uploading;
             override fun onPreExecute() {
                 super.onPreExecute()
-                progressdialog = ProgressDialog(this@MasterProduk)
+                progressdialog = ProgressDialog(this@ProdukMasterActivity)
                 progressdialog!!.setCancelable(false)
                 progressdialog!!.setMessage("Upload data ke server ...")
                 progressdialog!!.show()
@@ -773,19 +770,19 @@ class MasterProduk : AppCompatActivity() {
                 if (s.equals("sukses", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
                     Toast.makeText(
-                        this@MasterProduk,
+                        this@ProdukMasterActivity,
                         "Data berhasil ditambah !",
                         Toast.LENGTH_SHORT
                     ).show()
-                    startActivity(Intent(applicationContext, MasterProduk::class.java))
+                    startActivity(Intent(applicationContext, ProdukMasterActivity::class.java))
                     finish()
                 } else if (s.equals("gagal", ignoreCase = true)) {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(this@MasterProduk, "Data gagal ditambah !", Toast.LENGTH_SHORT)
+                    Toast.makeText(this@ProdukMasterActivity, "Data gagal ditambah !", Toast.LENGTH_SHORT)
                         .show()
                 } else {
                     if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(this@MasterProduk, s, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProdukMasterActivity, s, Toast.LENGTH_SHORT).show()
                 }
             }
 

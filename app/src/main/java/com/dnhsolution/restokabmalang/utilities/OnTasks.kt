@@ -28,6 +28,10 @@ interface SistemMasterOnTask {
     fun sistemMasterOnTask(result:String?)
 }
 
+interface HapusProdukMasterOnTask {
+    fun hapusProdukMasterOnTask(tipe:String,posisi:Int)
+}
+
 interface KeranjangProdukItemOnTask {
     fun keranjangProdukItemOnTask(position:Int,totalPrice:Int,qty:Int)
 }

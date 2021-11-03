@@ -12,13 +12,17 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.auth.SplashActivity;
-import com.dnhsolution.restokabmalang.sistem.produk.MasterProduk;
+import com.dnhsolution.restokabmalang.database.DatabaseHandler;
+import com.dnhsolution.restokabmalang.sistem.produk.ProdukMasterActivity;
 import com.dnhsolution.restokabmalang.utilities.Url;
+
+import java.util.Objects;
 
 public class MainMaster extends AppCompatActivity {
 
     Button btnInput, btnTheme, btnProduk, btnLogout;
     SharedPreferences sharedPreferences;
+    DatabaseHandler databaseHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,39 +47,32 @@ public class MainMaster extends AppCompatActivity {
         setContentView(R.layout.activity_main_master);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(label);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(label);
+        databaseHandler = new DatabaseHandler(this);
 
         btnInput = (Button)findViewById(R.id.bInput);
         btnTheme = (Button)findViewById(R.id.bTheme);
         btnProduk = (Button)findViewById(R.id.bProduk);
         btnLogout = (Button)findViewById(R.id.bLogout);
 
-        btnProduk.setText("Daftar Produk");
+        btnProduk.setText(R.string.title_daftar_produk);
 
         btnInput.setVisibility(View.GONE);
 
-        btnInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //startActivity(new Intent(MainMaster.this, SistemMasterActivity.class));
-            }
+        btnInput.setOnClickListener(v -> {
+            //startActivity(new Intent(MainMaster.this, SistemMasterActivity.class));
         });
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+        btnLogout.setOnClickListener(v -> {
+            SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
-                //membuat editor untuk menyimpan data ke shared preferences
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Url.SESSION_STS_LOGIN, "0");
-
-                //menyimpan data ke editor
-                editor.apply();
-                startActivity(new Intent(getApplicationContext(), SplashActivity.class));
-
-                finishAffinity();
-            }
+            //membuat editor untuk menyimpan data ke shared preferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+            databaseHandler.deleteAllTable();
+            startActivity(new Intent(getApplicationContext(), SplashActivity.class));
+            finishAffinity();
         });
 
         btnTheme.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +85,7 @@ public class MainMaster extends AppCompatActivity {
         btnProduk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainMaster.this, MasterProduk.class));
+                startActivity(new Intent(MainMaster.this, ProdukMasterActivity.class));
             }
         });
 

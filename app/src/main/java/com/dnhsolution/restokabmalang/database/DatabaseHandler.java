@@ -144,15 +144,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //DELETE DATA
+    public void deleteAllTable(){
+        delete_detail_transaksi();
+        delete_transaksi();
+        delete_produk();
+    }
+
+    public void delete_produk(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_PRODUK);
+        db.execSQL("VACUUM");
+        db.close();
+    }
+
     public void delete_transaksi(){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_TRANSAKSI);
+        db.execSQL("VACUUM");
         db.close();
     }
 
     public void delete_detail_transaksi(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_TRANSAKSI);
+        db.execSQL("DELETE FROM " + TABLE_DETAIL_TRANSAKSI);
+        db.execSQL("VACUUM");
         db.close();
     }
 
@@ -165,6 +180,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void delete_by_id_detail_trx(int id_trx){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_DETAIL_TRANSAKSI + " WHERE " + col_id_trx +"=="+id_trx);
+        db.close();
+    }
+
+    public void hapusByIdProduk(String idProduk){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_PRODUK + " WHERE " + col_id +"=="+idProduk);
         db.close();
     }
 

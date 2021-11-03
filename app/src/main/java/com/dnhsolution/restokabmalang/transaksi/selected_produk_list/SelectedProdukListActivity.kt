@@ -48,11 +48,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.bProses -> {
-                showDialog("Konfirmasi","Apakan anda ingin memproses?")
+                if(isDiskonValid)
+                    showDialog("Konfirmasi","Apakan anda ingin memproses?")
+                else Toast.makeText(this,R.string.diskon_tidak_valid,Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    private var isDiskonValid: Boolean = true
     private var omzetRp: Int = 0
     private var tipeStruk: String? = null
     private var pajakRp: Float = 0F
@@ -198,6 +201,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
                 etRupiahDiskon.removeTextChangedListener(this)
 
+                var totalPrice = 0
+                var totalPajak = 0
+                for (valueTotal in obyek!!) {
+                    val nilai = valueTotal.totalPrice
+                    if(valueTotal.status == "1") totalPajak += nilai
+                    totalPrice += nilai
+                }
+
                 try {
                     var originalString = editable.toString()
 
@@ -225,7 +236,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     editable.toString().replace(".", "").toInt()
                 }
 
-                setDiskonDanTotalRupiah()
+                setDiskonDanTotalRupiah(totalPajak,totalPrice)
 
             }
         })
@@ -295,7 +306,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
     }
 
-    fun tampilAlertDialogTutorial() {
+    private fun tampilAlertDialogTutorial() {
         alertDialog = android.app.AlertDialog.Builder(this)
         val rowList: View = layoutInflater.inflate(R.layout.dialog_tutorial, null)
         var listView = rowList.findViewById<ListView>(R.id.listView)
@@ -331,7 +342,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             obyek!![position].totalPrice = totalPrice
             obyek!![position].qty = qty
         }
-        setTotal()
+        var totalHargaKeseluruhan = 0
+        var totalPajak = 0
+        for (valueTotal in obyek!!) {
+            val nilai = valueTotal.totalPrice
+            if(valueTotal.status == "1") totalPajak += nilai
+            totalHargaKeseluruhan += nilai
+        }
+        setDiskonDanTotalRupiah(totalPajak,totalHargaKeseluruhan)
     }
 
     private fun setTotal () {
@@ -356,14 +374,8 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         tvDiskonTotal.text = rupiahValue
     }
 
-    private fun setDiskonDanTotalRupiah () {
-        var totalPrice = 0
-        var totalPajak = 0
-        for (valueTotal in obyek!!) {
-            val nilai = valueTotal.totalPrice
-            if(valueTotal.status == "1") totalPajak += nilai
-            totalPrice += nilai
-        }
+    private fun setDiskonDanTotalRupiah (ttlPjk: Int, totalPrice: Int) {
+        var totalPajak = ttlPjk
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
         val diskonRupiah: Int
@@ -388,7 +400,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 else -> {
                     diskonRupiah = valueDiskonRupiah
                     this.valueTotalPrice = totalPrice-diskonRupiah
-                    val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
+                    val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble()).replace(",","-")
                     tvDiskonTotal.text = rupiahValue
                     pajakRp = 0F
                     tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
@@ -414,7 +426,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
             tvDiskonTotal.text = rupiahValue
         }
-
+        isDiskonValid = totalPrice >= valueDiskonRupiah
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -495,7 +507,8 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         builder.setPositiveButton("Cetak"){_, _ ->
             //                println(createJson())
 //            startActivity()
-            resultLauncher.launch(Intent(this@SelectedProdukListActivity, MainCetak::class.java))
+            resultLauncher.launch(
+                Intent(this@SelectedProdukListActivity, MainCetak::class.java).putExtra("getIdItem", "0"))
         }
 
         builder.setNegativeButton("Batal"){_, _ ->

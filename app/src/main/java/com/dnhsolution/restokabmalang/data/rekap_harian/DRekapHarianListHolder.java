@@ -36,12 +36,9 @@ class DRekapHarianListHolder extends RecyclerView.ViewHolder {
         total = tvTotal;
 //        view = parent;
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        parent.setOnClickListener(v -> {
 //                String dId = mId.getText().toString();
 //                activity.startActivity(new Intent(activity, PandWisataDetail.class).putExtra("getId",dId));
-            }
         });
     }
 

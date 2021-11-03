@@ -161,7 +161,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 }
             }
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
+//            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
             adapterList = context?.let {
                 RekapBulananListAdapter(
                     tempItemsBulanan,
@@ -212,23 +212,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     return
                 }
                 selectedBln = spinBlnArray[position].idItem
-
-//                tempItemsBulanan = ArrayList()
-//                itemsBulanan!!.forEach { event ->
-//                    val tgl = (event.tgl).split("/")
-//                    if (selectedBln == tgl[1] && selectedThn == tgl[0]) {
-//                        tempItemsBulanan.add(event)
-//                    }
-//                }
-//
-//                adapterList = context?.let {
-//                    RekapBulananListAdapter(
-//                        tempItemsBulanan,
-//                        it
-//                    )
-//                }
-//
-//                recyclerView.adapter = adapterList
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

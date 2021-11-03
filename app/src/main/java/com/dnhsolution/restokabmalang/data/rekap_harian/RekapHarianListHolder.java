@@ -14,6 +14,7 @@ import com.dnhsolution.restokabmalang.data.DataFragment;
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.utilities.RekapHarianDetailOnTask;
+import com.dnhsolution.restokabmalang.utilities.Utils;
 
 class RekapHarianListHolder extends RecyclerView.ViewHolder {
     private final TextView numItem,mId,nama,Harga,qty,disc,total;
@@ -47,6 +48,7 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
 //        view = parent;
 
         parent.setOnClickListener(v -> {
+            if(Utils.isOpenRecently()) return;
             String dId = mId.getText().toString();
             onTask.rekapHarianDetailOnTask(dId);
         });
@@ -54,7 +56,7 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         parent.setOnLongClickListener(v -> {
             String dId = mId.getText().toString();
             context.startActivity(new Intent(context, MainCetak.class).putExtra("getIdItem", dId));
-            return false;
+            return true;
         });
     }
 

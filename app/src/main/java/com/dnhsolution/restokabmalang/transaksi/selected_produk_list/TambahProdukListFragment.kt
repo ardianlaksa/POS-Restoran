@@ -16,10 +16,7 @@ import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -49,9 +46,11 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
+import kotlin.math.min
 
 class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
+    private lateinit var tvBadgeMenuLanjut: TextView
     private var argumenValue2: ArrayList<*>? = null
     private var transaksiFragment: TambahProdukTransaksiActivity? = null
     private lateinit var argumenValue: String
@@ -134,9 +133,12 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
         gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
-            produk.toggleFavorite()
-            produkAdapter?.notifyDataSetChanged()
             transaksiFragment?.tambahDataApsList(argumenValue,produk)
+            val isFavorit = produk.toggleFavorite()
+            if(isFavorit) TambahProdukTransaksiActivity.jumlahProdukTerpilih++
+            else TambahProdukTransaksiActivity.jumlahProdukTerpilih--
+            setupBadge()
+            produkAdapter?.notifyDataSetChanged()
         }
 
         if(MainActivity.adTransaksi == 1) return
@@ -259,6 +261,16 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_transaksi, menu)
+        val menuItem = menu.findItem(R.id.action_menu_lanjut)
+
+        val actionView = menuItem.actionView
+        val flCustomTambahBadge = actionView.findViewById(R.id.flCustomTambahBadge) as FrameLayout
+        tvBadgeMenuLanjut = actionView.findViewById(R.id.cart_badge) as TextView
+        flCustomTambahBadge.setOnClickListener {
+            (activity as TambahProdukTransaksiActivity).toolbar.collapseActionView()
+            menuLanjutHandler()
+        }
+
         val searchItem = menu.findItem(R.id.action_menu_cari)
         searchView = searchItem.actionView as SearchView
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE
@@ -292,6 +304,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 return true
             }
         })
+        setupBadge()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -514,6 +527,20 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
         queue.add(stringRequest)
 
+    }
+
+    private fun setupBadge() {
+        val jumlahProdukTerpilih = TambahProdukTransaksiActivity.jumlahProdukTerpilih
+        if (jumlahProdukTerpilih == 0) {
+            if (tvBadgeMenuLanjut.visibility != View.GONE) {
+                tvBadgeMenuLanjut.visibility = View.GONE
+            }
+        } else {
+            tvBadgeMenuLanjut.text = java.lang.String.valueOf(min(jumlahProdukTerpilih, 99))
+            if (tvBadgeMenuLanjut.visibility != View.VISIBLE) {
+                tvBadgeMenuLanjut.visibility = View.VISIBLE
+            }
+        }
     }
 }
 

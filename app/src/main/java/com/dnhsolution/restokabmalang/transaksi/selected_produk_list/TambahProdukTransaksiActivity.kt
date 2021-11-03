@@ -34,6 +34,10 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
     private val _tag = javaClass.simpleName
     var valueArgsFromKeranjang: ArrayList<ProdukSerializable>? = null
 
+    companion object{
+        var jumlahProdukTerpilih = 0
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tambahh_produk_transaksi)
@@ -42,6 +46,7 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         val i = intent
         valueArgsFromKeranjang = i.getParcelableArrayListExtra("ARRAYLIST")
         Log.i(_tag,"onResume $valueArgsFromKeranjang")
+        jumlahProdukTerpilih = valueArgsFromKeranjang?.size ?: 0
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         viewpager = findViewById<ViewPager2>(R.id.viewpager_main)
