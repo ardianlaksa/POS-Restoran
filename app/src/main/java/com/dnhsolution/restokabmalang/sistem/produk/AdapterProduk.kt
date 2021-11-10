@@ -28,6 +28,7 @@ import kotlin.collections.ArrayList
 /**
  * Created by sawrusdino on 09/04/2018.
  */
+
 class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
     , private val itemProdukListNotFiltered: MutableList<ItemProduk>, private val context: Context
     , private val onTask: HapusProdukMasterOnTask) :
@@ -73,7 +74,6 @@ class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
                     isFirstResource: Boolean
                 ): Boolean {
                     Log.e("xmx1", "Error $e")
-                    //                            holder.ivFoto.setImageDrawable(context.getResources().getDrawable(R.drawable.img_no_image));
                     return false
                 }
 
@@ -91,12 +91,15 @@ class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
             .into(holder.ivFoto)
 
         holder.holderView.setOnClickListener {
-            if(Utils.isOpenRecently()) return@setOnClickListener
+            if(Utils.isOpenRecently()) {
+                holder.holderView.isEnabled = false
+                return@setOnClickListener
+            }
+            holder.holderView.isEnabled = true
             onTask.hapusProdukMasterOnTask("1",posisi)
         }
 
         holder.holderView.setOnLongClickListener {
-            holder.holderView.isEnabled = false
             onTask.hapusProdukMasterOnTask("2",posisi)
             return@setOnLongClickListener true
         }

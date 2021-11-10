@@ -146,6 +146,8 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
 
+        if(tipeStruk == "2") llPajak.visibility = View.GONE
+
         databaseHandler = DatabaseHandler(this)
         bProses.setOnClickListener(this)
 

@@ -115,6 +115,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         btnCari.setOnClickListener{
 
             var totalValue = 0.0
+            var totalPajakValue = 0.0
             tempItemsBulanan = ArrayList()
             itemsBulanan!!.forEach { event ->
                 val tgl = (event.tgl).split("-")
@@ -122,12 +123,13 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
                     tempItemsBulanan.add(event)
                     totalValue += event.omzet
+                    totalPajakValue += event.pajak
                     println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
                 }
             }
 
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
+            tvTotalPajak.text = AddingIDRCurrency().formatIdrCurrency(totalPajakValue)
 
             adapterList = context?.let {
                 RekapBulananListAdapter(
@@ -149,6 +151,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             selectedBln = today[0]
 
             var totalValue = 0.0
+            var totalPajakValue = 0.0
             tempItemsBulanan = ArrayList()
 
             itemsBulanan!!.forEach { event ->
@@ -157,10 +160,12 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
                     tempItemsBulanan.add(event)
                     totalValue += event.omzet
+                    totalPajakValue += event.pajak
                     println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
                 }
             }
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
+            tvTotalPajak.text = AddingIDRCurrency().formatIdrCurrency(totalPajakValue)
 //            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
             adapterList = context?.let {
                 RekapBulananListAdapter(

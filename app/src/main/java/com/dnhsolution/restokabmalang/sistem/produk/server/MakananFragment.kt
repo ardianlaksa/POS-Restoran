@@ -111,6 +111,23 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
     private var valueJenisProduk = 1
     val keyParams = "params"
 
+    private val isPajakList: ArrayList<IsPajakListElement>
+        get(){
+            val isPajak = ArrayList<IsPajakListElement>()
+            isPajak.add(IsPajakListElement("1","Pajak"))
+            isPajak.add(IsPajakListElement("0","Tanpa Pajak"))
+            return isPajak
+        }
+
+    private val tipeProdukList: ArrayList<TipeProdukListElement>
+        get(){
+            val tipeProduk = ArrayList<TipeProdukListElement>()
+            tipeProduk.add(TipeProdukListElement("1","Makanan"))
+            tipeProduk.add(TipeProdukListElement("2","Minuman"))
+            tipeProduk.add(TipeProdukListElement("3","Dll"))
+            return tipeProduk
+        }
+
     companion object {
 
         private val CAMERA_REQUEST = 1888
@@ -397,23 +414,6 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         }
     }
 
-    private val isPajakList: ArrayList<IsPajakListElement>
-        get(){
-            val isPajak = ArrayList<IsPajakListElement>()
-            isPajak.add(IsPajakListElement("1","Pajak"))
-            isPajak.add(IsPajakListElement("0","Tanpa Pajak"))
-            return isPajak
-        }
-
-    private val tipeProdukList: ArrayList<TipeProdukListElement>
-        get(){
-            val tipeProduk = ArrayList<TipeProdukListElement>()
-            tipeProduk.add(TipeProdukListElement("1","Makanan"))
-            tipeProduk.add(TipeProdukListElement("2","Minuman"))
-            tipeProduk.add(TipeProdukListElement("3","Dll"))
-            return tipeProduk
-        }
-
     private fun dialogEdit(url_image: String, nama_barang: String?,
         id_barang: String?, harga: String, ket: String?, isPajak: String?, jenisProduk: String?) {
         slctdIspajak = null
@@ -454,6 +454,14 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
                         if(element.idItem == jenisProduk) parent?.setSelection(index)
                     }
                 slctdTipeProduk = tipeProdukList[position].idItem
+                if(slctdTipeProduk == "3"){
+                    slctdIspajak = "0"
+                    spiIsPajak.setSelection(1)
+                } else {
+                    slctdIspajak = "1"
+                    spiIsPajak.setSelection(0)
+                }
+
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
@@ -468,6 +476,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         }
 
         spiIsPajak.adapter = spinIsPajakAdapter
+        spiIsPajak.isEnabled = false
 
         val spinTipeProdukAdapter = context?.let {
             TipeProdukSpinAdapter(
@@ -1167,6 +1176,13 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 slctdTipeProduk = tipeProdukList[position].idItem
+                if(slctdTipeProduk == "3"){
+                    slctdIspajak = "0"
+                    spiIsPajak.setSelection(1)
+                } else {
+                    slctdIspajak = "1"
+                    spiIsPajak.setSelection(0)
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) { }
         }
