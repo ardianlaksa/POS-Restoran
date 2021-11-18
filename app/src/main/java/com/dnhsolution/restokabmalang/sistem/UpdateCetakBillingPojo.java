@@ -1,9 +1,9 @@
-package com.dnhsolution.restokabmalang.sistem.produk;
+package com.dnhsolution.restokabmalang.sistem;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class DeletePojo {
+public class UpdateCetakBillingPojo {
 
     @SerializedName("success")
     @Expose

@@ -101,6 +101,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
 
         rvData = findViewById(R.id.recyclerView);
         linearLayout = findViewById(R.id.linearLayout);
+        LinearLayout llPajak = (LinearLayout)findViewById(R.id.llPajak);
 
         tvSubtotal = findViewById(R.id.tvSubtotal);
         tvJmlPajak = findViewById(R.id.tvJmlPajak);
@@ -125,6 +126,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         //recyclerView.addItemDecoration(dividerItemDecoration);
         rvData.setAdapter(adapter);
 
+        if(tipeStruk.equalsIgnoreCase("2")) llPajak.setVisibility(View.GONE);
         btnKembali.setOnClickListener(v -> {
             setResult(RESULT_OK);
             finish();

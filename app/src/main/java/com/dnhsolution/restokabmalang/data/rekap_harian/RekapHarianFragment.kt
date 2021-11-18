@@ -32,6 +32,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         }
     }
 
+    private lateinit var idPengguna: String
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewD: RecyclerView
     private lateinit var tvTotal: TextView
@@ -68,11 +69,12 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
+        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
 
         recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapHarian}?tgl="+getCurrentDate()+"&idTmpUsaha="+idTmpUsaha
+            val stringUrl = "${Url.getRekapHarian}?tgl="+getCurrentDate()+"&idTmpUsaha="+idTmpUsaha+"&idPengguna="+idPengguna
             Log.i(_tag,stringUrl)
             jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
         } else {
@@ -109,7 +111,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         tanggal = sdf.format(myCalendar.time)
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapHarian}?tgl="+tanggal+"&idTmpUsaha="+idTmpUsaha
+            val stringUrl = "${Url.getRekapHarian}?tgl="+tanggal+"&idTmpUsaha="+idTmpUsaha+"&idPengguna="+idPengguna
             Log.i(_tag,stringUrl)
             jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
         } else {

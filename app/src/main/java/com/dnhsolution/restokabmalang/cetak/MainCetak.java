@@ -98,6 +98,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
         rvData = (RecyclerView) findViewById(R.id.recyclerView);
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
+        LinearLayout llPajak = (LinearLayout)findViewById(R.id.llPajak);
 
         tvSubtotal = (TextView)findViewById(R.id.tvSubtotal);
         tvDisc = (TextView)findViewById(R.id.tvDisc);
@@ -122,28 +123,23 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
         //recyclerView.addItemDecoration(dividerItemDecoration);
         rvData.setAdapter(adapter);
 
-        btnKembali.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if(tipeStruk.equalsIgnoreCase("2")) llPajak.setVisibility(View.GONE);
+        btnKembali.setOnClickListener(v -> {
 //                startActivity(new Intent(MainCetak.this, MainActivity.class));
 //                finishAffinity();
-                setResult(RESULT_OK);
-                finish();
-            }
+            setResult(RESULT_OK);
+            finish();
         });
 
-        btnPilih.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mService.isAvailable()) {
-                    Log.i(TAG, "printText: perangkat tidak support bluetooth");
-                    return;
-                }
-                if (mService.isBTopen())
-                    startActivityForResult(new Intent(MainCetak.this, DeviceActivity.class), RC_CONNECT_DEVICE);
-                else
-                    requestBluetooth();
+        btnPilih.setOnClickListener(v -> {
+            if (!mService.isAvailable()) {
+                Log.i(TAG, "printText: perangkat tidak support bluetooth");
+                return;
             }
+            if (mService.isBTopen())
+                startActivityForResult(new Intent(MainCetak.this, DeviceActivity.class), RC_CONNECT_DEVICE);
+            else
+                requestBluetooth();
         });
 
         getData();

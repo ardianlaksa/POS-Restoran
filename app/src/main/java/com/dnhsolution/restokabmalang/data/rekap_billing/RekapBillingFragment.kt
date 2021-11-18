@@ -31,6 +31,7 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
         }
     }
 
+    private lateinit var idPengguna: String
     private lateinit var recyclerView: RecyclerView
 
     private lateinit var spiThn: Spinner
@@ -54,11 +55,12 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
+        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
 
         spiThn.setSelection(0)
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapBilling}?idTmpUsaha=$idTmpUsaha&thnMasaPajak=$thnMasaPajak"
+            val stringUrl = "${Url.getRekapBilling}?idTmpUsaha=$idTmpUsaha&thnMasaPajak=$thnMasaPajak&idPengguna=$idPengguna"
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
@@ -82,7 +84,7 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
 
         btnCari.setOnClickListener{
             if(CheckNetwork().checkingNetwork(requireContext())) {
-                val stringUrl = "${Url.getRekapBilling}?idTmpUsaha=$idTmpUsaha&thnMasaPajak=$thnMasaPajak"
+                val stringUrl = "${Url.getRekapBilling}?idTmpUsaha=$idTmpUsaha&thnMasaPajak=$thnMasaPajak&idPengguna=$idPengguna"
                 Log.i(_tag,stringUrl)
                 jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
             } else {

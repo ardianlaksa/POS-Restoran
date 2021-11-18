@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
 
     LinearLayout LAktivasi, LLogin, LKeterangan;
     String kode_aktivasi = "";
+    private String uniqueID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         et2 = findViewById(R.id.et2);
         et3 = findViewById(R.id.et3);
         et4 = findViewById(R.id.et4);
+        uniqueID = UUID.randomUUID().toString();
 
         et1.requestFocus();
         et1.addTextChangedListener(new TextWatcher() {
@@ -162,29 +165,24 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        bPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                visible();
-            }
-        });
+        bPassword.setOnClickListener(v -> visible());
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                    String a = etUsername.getText().toString().trim();
-                    String b = etPassword.getText().toString().trim();
+        btnLogin.setOnClickListener(v -> {
+            btnLogin.setEnabled(false);
+                String a = etUsername.getText().toString().trim();
+                String b = etPassword.getText().toString().trim();
 
-                    if(a.equalsIgnoreCase("")){
-                        etUsername.requestFocus();
-                        etUsername.setError("Username tidak boleh kosong !");
-                    }else if(b.equalsIgnoreCase("")){
-                        etPassword.requestFocus();
-                        etPassword.setError("Password tidak boleh kosong !");
-                    }else{
-                        sendData();
-                    }
-            }
+                if(a.equalsIgnoreCase("")){
+                    etUsername.requestFocus();
+                    etUsername.setError("Username tidak boleh kosong !");
+                    btnLogin.setEnabled(true);
+                }else if(b.equalsIgnoreCase("")){
+                    etPassword.requestFocus();
+                    etPassword.setError("Password tidak boleh kosong !");
+                    btnLogin.setEnabled(true);
+                }else{
+                    sendData();
+                }
         });
 
         etUsername.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -225,6 +223,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
         progressDialog.show();
         RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
         String url = Url.serverPos+"Aktivasi";
@@ -327,6 +326,7 @@ public class LoginActivity extends AppCompatActivity {
                         String email = json.getString("EMAIL");
                         String telp = json.getString("TELP");
                         String tipeStruk = json.getString("TIPE_STRUK");
+                        String isCetakBilling = json.getString("ISCETAK_BILLING");
 
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -345,6 +345,8 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Url.setTema,tema);
                         editor.putString(Url.SESSION_STS_LOGIN, "1");
                         editor.putString(Url.SESSION_TIPE_STRUK,tipeStruk);
+                        editor.putString(Url.SESSION_ISCETAK_BILLING,isCetakBilling);
+                        editor.putString(Url.SESSION_UUID,uniqueID);
 
                         //menyimpan data ke editor
                         editor.apply();
@@ -359,22 +361,21 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
-
-
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-                Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-            }
+        }, error -> {
+            progressDialog.dismiss();
+            btnLogin.setEnabled(true);
+            Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
         }){
             @Override
             protected Map<String, String> getParams() {
+
                 Map<String, String> params = new HashMap<>();
                 params.put("username", etUsername.getText().toString());
                 params.put("password", etPassword.getText().toString());
                 params.put("kode_aktivasi", kode_aktivasi);
+                params.put("UUID", uniqueID);
+                Log.d("getParams", params.toString());
 
                 return params;
             }
@@ -399,70 +400,4 @@ public class LoginActivity extends AppCompatActivity {
         queue.add(stringRequest);
 
     }
-
-//    public void getData(){
-//
-//        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-//        progressDialog.setMessage("Loading...");
-//        progressDialog.show();
-//        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-//        String url = "http://localhost/token/AndroidJson/getIdTrx";
-//        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//
-//                try {
-//                    JSONObject jsonObject = new JSONObject(response);
-//                    Log.i("json",jsonObject.toString());
-//                    JSONArray jsonArray = jsonObject.getJSONArray("result");
-//                    JSONObject json = jsonArray.getJSONObject(0);
-//                    String id_trx = json.getString("id_trx");
-//                    etIDTrx.setText(id_trx);
-//
-//                    Toast.makeText(MainActivity.this, id_trx, Toast.LENGTH_SHORT).show();
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
-//                progressDialog.dismiss();
-//
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                progressDialog.dismiss();
-//                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        }){
-//            @Override
-//            protected Map<String, String> getParams() {
-//                Map<String, String> params = new HashMap<>();
-//                params.put("status", "ok");
-//                return params;
-//            }
-//        };
-//        stringRequest.setRetryPolicy(new RetryPolicy() {
-//            @Override
-//            public int getCurrentTimeout() {
-//                return 50000;
-//            }
-//
-//            @Override
-//            public int getCurrentRetryCount() {
-//                return 50000;
-//            }
-//
-//            @Override
-//            public void retry(VolleyError error) {
-//
-//            }
-//        });
-//
-//        queue.add(stringRequest);
-//
-//
-//    }
 }

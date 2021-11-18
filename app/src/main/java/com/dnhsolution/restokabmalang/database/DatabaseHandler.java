@@ -280,8 +280,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public ArrayList getDataTersimpanUpload() {
         ArrayList list = new ArrayList();
-
-
         String selectQuery = "SELECT "+col_id+","+col_tanggal_trx+","+col_disc+
                 ","+col_omzet+","+col_disc_rp+","+col_status+","+col_pajak_rp+" FROM " + TABLE_TRANSAKSI +" WHERE "+col_status+"=='0'"+
                 " ORDER BY "+col_tanggal_trx+" DESC";
@@ -313,8 +311,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList getDetailTersimpan(String idTrx) {
         ArrayList list = new ArrayList();
 
-        String selectQuery = "SELECT "+col_id+","+col_nama_produk+","+col_qty+","+col_harga+","+col_id_produk+
-                " FROM " + TABLE_DETAIL_TRANSAKSI +" WHERE "+col_id_trx+"=='"+idTrx+"'";
+        String selectQuery = "SELECT P."+col_id+",P."+col_nama_produk+","+col_qty+",P."+col_harga+","+
+                col_id_produk+","+col_ispajak+
+                " FROM " + TABLE_DETAIL_TRANSAKSI +
+                " DT LEFT JOIN "+TABLE_PRODUK+" P ON P."+col_id+" = DT."+col_id_produk+
+                " WHERE "+col_id_trx+"=='"+idTrx+"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -328,6 +329,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 it.setQty(cursor.getString(2));
                 it.setHarga(cursor.getString(3));
                 it.setId_produk(cursor.getString(4));
+                it.setIsPajak(cursor.getString(5));
 
                 // Menambahkan data ke dalam list
                 list.add(it);

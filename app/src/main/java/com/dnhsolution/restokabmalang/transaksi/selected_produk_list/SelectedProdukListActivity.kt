@@ -207,7 +207,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 var totalPajak = 0
                 for (valueTotal in obyek!!) {
                     val nilai = valueTotal.totalPrice
-                    if(valueTotal.status == "1") totalPajak += nilai
+                    if(valueTotal.isPajak == "1") totalPajak += nilai
                     totalPrice += nilai
                 }
 
@@ -348,7 +348,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         var totalPajak = 0
         for (valueTotal in obyek!!) {
             val nilai = valueTotal.totalPrice
-            if(valueTotal.status == "1") totalPajak += nilai
+            if(valueTotal.isPajak == "1") totalPajak += nilai
             totalHargaKeseluruhan += nilai
         }
         setDiskonDanTotalRupiah(totalPajak,totalHargaKeseluruhan)
@@ -359,7 +359,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         var totalPajak = 0
         for (valueTotal in obyek!!) {
             val nilai = valueTotal.totalPrice
-            if(valueTotal.status == "1") totalPajak += nilai
+            if(valueTotal.isPajak == "1") totalPajak += nilai
             totalPrice += nilai
         }
         tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
@@ -583,6 +583,8 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             pnObj.put("nmProduk", pn.name)
             pnObj.put("qty", pn.qty)
             pnObj.put("hrgProduk", pn.price)
+            pnObj.put("isPajak", pn.isPajak)
+            pnObj.put("tipeStruk", tipeStruk)
             jsonArr.put(pnObj)
 
             Log.d("NAMA_BARANG", pn.name.toString())

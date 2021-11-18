@@ -187,12 +187,12 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llPajak"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_gravity="right"
-                android:gravity="right"
-                >
+                android:gravity="right" >
 
                 <TextView
                     android:id="@+id/tvPajak"

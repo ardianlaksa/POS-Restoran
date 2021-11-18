@@ -36,6 +36,8 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         }
     }
 
+    private lateinit var tipeStruk: String
+    private lateinit var idPengguna: String
     private lateinit var tvTotal: TextView
     private lateinit var tvTotalPajak: TextView
     private lateinit var recyclerView: RecyclerView
@@ -99,13 +101,15 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
-        val tipeStruk = sharedPreferences?.getString(Url.SESSION_TIPE_STRUK, "").toString()
+        tipeStruk = sharedPreferences?.getString(Url.SESSION_TIPE_STRUK, "").toString()
+        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
 
         spiBln.setSelection(0)
         spiThn.setSelection(0)
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&TAHUN=$tahun&idTmpUsaha=$idTmpUsaha&tipeStruk=$tipeStruk"
+            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&TAHUN=$tahun" +
+                    "&idTmpUsaha=$idTmpUsaha&tipeStruk=$tipeStruk&idPengguna=$idPengguna"
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
@@ -253,7 +257,11 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     val disc = rArray.getJSONObject(i).getInt("DISC")
                     val omzet = rArray.getJSONObject(i).getInt("OMZET")
                     val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
-                    val totalPajak = rArray.getJSONObject(i).getInt("TOTAL_PAJAK")
+                    val totalPajakIcl = rArray.getJSONObject(i).getInt("TOTAL_PAJAK_ICL")
+                    val totalPajakExc = rArray.getJSONObject(i).getInt("TOTAL_PAJAK_EXC")
+
+                    val totalPajak = if(tipeStruk == "1") totalPajakExc
+                    else totalPajakIcl
 
                     itemsBulanan?.add(
                         RekapBulananListElement(

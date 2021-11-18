@@ -46,7 +46,6 @@ import com.dnhsolution.restokabmalang.BuildConfig
 import com.dnhsolution.restokabmalang.sistem.produk.*
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
 import java.lang.Exception
 import java.lang.NumberFormatException
@@ -63,9 +62,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.activity_master_produk.*
-
-import kotlinx.android.synthetic.main.activity_produk.*
 
 
 class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
@@ -77,6 +73,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         return inflater.inflate(R.layout.fragment_server, parent, false)
     }
 
+    private lateinit var idPengguna: String
     private var isSearch: Boolean = false
     private lateinit var searchView: SearchView
     private var slctdTipeProduk: String? = null
@@ -167,6 +164,8 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         setHasOptionsMenu(true)
         val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
+        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
+
         databaseHandler = DatabaseHandler(context)
         rvProduk = view.findViewById<View>(R.id.rvProduk) as RecyclerView
         tvKet = view.findViewById<View>(R.id.tvKet) as TextView
@@ -242,8 +241,8 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
                     val data = response.body()
                     data?.let {
                         val feedback = it
-                        println("${feedback.id}, ${feedback.username}")
-                        if(feedback.id == 1) {
+                        println("${feedback.success}, ${feedback.message}")
+                        if(feedback.success == 1) {
                             startActivity(
                                 Intent(
                                     requireContext(),
@@ -266,7 +265,8 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
             progressDialog.show()
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha + "&jenisProduk=${arguments?.get(keyParams).toString()}"
+            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha +
+                    "&jenisProduk=${arguments?.get(keyParams).toString()}&idPengguna=$idPengguna"
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =
@@ -345,54 +345,54 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
             queue.add(stringRequest)
         }
 
-    private val cekData: Unit
-        get() {
-            if(context == null) return
-            val queue = Volley.newRequestQueue(context)
-            Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha
-            //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
-            Log.i(_tag, url)
-            val stringRequest: StringRequest =
-                object : StringRequest(Method.GET, url, Response.Listener { response: String? ->
-                    try {
-                        val jsonObject = JSONObject(response)
-                        val status: Int = jsonObject.getInt("success")
-                        if (status == 1) {
-                            if(activity == null) return@Listener
-                            gantiIconWifi(true)
-                            isRunnerRunning = false
-                            return@Listener
-                        }
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    }
-                    gantiIconWifi(false)
-                    isRunnerRunning = false
-                }, Response.ErrorListener { error: VolleyError ->
-                    gantiIconWifi(false)
-                    isRunnerRunning = false
-                }) {
-                    @Throws(AuthFailureError::class)
-                    override fun getParams(): Map<String, String> {
-                        val params: MutableMap<String, String> = HashMap()
-                        params["status"] = "ok"
-                        return params
-                    }
-                }
-            stringRequest.retryPolicy = object : RetryPolicy {
-                override fun getCurrentTimeout(): Int {
-                    return 50000
-                }
-
-                override fun getCurrentRetryCount(): Int {
-                    return 50000
-                }
-
-                override fun retry(error: VolleyError) {}
-            }
-            queue.add(stringRequest)
-        }
+//    private val cekData: Unit
+//        get() {
+//            if(context == null) return
+//            val queue = Volley.newRequestQueue(context)
+//            Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
+//            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha
+//            //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
+//            Log.i(_tag, url)
+//            val stringRequest: StringRequest =
+//                object : StringRequest(Method.GET, url, Response.Listener { response: String? ->
+//                    try {
+//                        val jsonObject = JSONObject(response)
+//                        val status: Int = jsonObject.getInt("success")
+//                        if (status == 1) {
+//                            if(activity == null) return@Listener
+//                            gantiIconWifi(true)
+//                            isRunnerRunning = false
+//                            return@Listener
+//                        }
+//                    } catch (e: JSONException) {
+//                        e.printStackTrace()
+//                    }
+//                    gantiIconWifi(false)
+//                    isRunnerRunning = false
+//                }, Response.ErrorListener { error: VolleyError ->
+//                    gantiIconWifi(false)
+//                    isRunnerRunning = false
+//                }) {
+//                    @Throws(AuthFailureError::class)
+//                    override fun getParams(): Map<String, String> {
+//                        val params: MutableMap<String, String> = HashMap()
+//                        params["status"] = "ok"
+//                        return params
+//                    }
+//                }
+//            stringRequest.retryPolicy = object : RetryPolicy {
+//                override fun getCurrentTimeout(): Int {
+//                    return 50000
+//                }
+//
+//                override fun getCurrentRetryCount(): Int {
+//                    return 50000
+//                }
+//
+//                override fun retry(error: VolleyError) {}
+//            }
+//            queue.add(stringRequest)
+//        }
 
     private fun tambahDataLokal(itemProduk: ItemProduk) {
         try {

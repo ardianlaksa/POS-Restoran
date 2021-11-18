@@ -87,11 +87,13 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
     private Menu menuTemp;
     private int statusJaringan = 0;
     private final String _tag = getClass().getSimpleName();
+    private String tipeStruk;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
+        tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "");
         String tema = sharedPreferences.getString(Url.setTema, "0");
         if(tema.equalsIgnoreCase("0")){
             DataTersimpanActivity.this.setTheme(R.style.Theme_First);
@@ -303,6 +305,8 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
                             pnObj.put("nmProduk",d.getNama());
                             pnObj.put("qty",d.getQty());
                             pnObj.put("hrgProduk",d.getHarga());
+                            pnObj.put("isPajak",d.getIsPajak());
+                            pnObj.put("tipeStruk",tipeStruk);
                             jsonArr.put(pnObj);
                         }
                         rootObject.put("produk",jsonArr);
@@ -368,7 +372,6 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
         mCount.moveToFirst();
         int countTersimpan= mCount.getInt(0);
         Log.d("DETAIL_TERSIMPAN", "getDetailTersimpan: "+mCount.getInt(0)+"/"+mCount.getInt(1)+"/"+mCount.getString(2)+"/"+mCount.getString(3)+"/"+mCount.getInt(4)+"/"+mCount.getInt(5));
-      //  Toast.makeText(this, String.valueOf(idTrx), Toast.LENGTH_LONG).show();
         mCount.close();
 
         try {
@@ -383,6 +386,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
                 it.setNo(no);
                 int total = (Integer.parseInt(f.getQty())) * (Integer.parseInt(f.getHarga()));
                 it.setTotal(String.valueOf(total));
+                it.setIsPajak(f.isPajak);
                 itemDetailTersimpans.add(it);
                 no++;
             }

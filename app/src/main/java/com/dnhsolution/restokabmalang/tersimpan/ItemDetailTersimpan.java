@@ -8,6 +8,7 @@ public class ItemDetailTersimpan {
     String qty;
     String total;
     String id_produk;
+    String isPajak;
 
     public int getId() {
         return id;
@@ -63,5 +64,13 @@ public class ItemDetailTersimpan {
 
     public void setId_produk(String id_produk) {
         this.id_produk = id_produk;
+    }
+
+    public String getIsPajak() {
+        return isPajak;
+    }
+
+    public void setIsPajak(String value) {
+        this.isPajak = value;
     }
 }

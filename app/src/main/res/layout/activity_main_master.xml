@@ -6,7 +6,7 @@
     android:focusable="true"
     style="?pageBackground"
     android:background="@drawable/bg_dashboard2"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true" >
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -34,20 +34,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/scCetakBilling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/cetak_billing"
+            android:textColor="@color/actionbar_bg_blue" />
+
         <RelativeLayout
             android:id="@+id/rlbtnInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/_8">
+            android:layout_marginTop="@dimen/_8"
+            android:layout_below="@id/scCetakBilling">
 
             <Button
                 android:id="@+id/bInput"
                 style="?button"
-                android:fontFamily="@font/nunitosansregular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#4CAF50"
+                android:fontFamily="@font/nunitosansregular"
                 android:text="@string/title_tambah_data"
                 android:textColor="#fff" />
 
@@ -109,13 +118,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8"
                 android:background="#737373"
-                android:text="Logout"
                 android:fontFamily="@font/nunitosansregular"
+                android:text="Logout"
                 android:textColor="#fff" />
 
         </RelativeLayout>
-
-
 
     </RelativeLayout>
 

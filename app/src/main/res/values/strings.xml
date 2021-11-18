@@ -84,6 +84,7 @@
     <string name="batas_waktu_sinkron">Batas Waktu Sinkron</string>
     <string name="billing">Billing</string>
     <string name="bulanan">Bulanan</string>
+    <string name="cetak_billing">Cetak Billing</string>
     <string name="diskon_tidak_valid">Diskon Tidak Valid</string>
     <string name="minuman">Minuman</string>
     <string name="cetak"><b>\n\nRestoran Maju Jaya 1</b>\n</string>
