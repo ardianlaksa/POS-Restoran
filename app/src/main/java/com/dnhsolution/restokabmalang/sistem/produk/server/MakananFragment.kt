@@ -56,6 +56,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import retrofit2.Call
 import android.widget.Toast
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.utilities.HapusProdukMasterOnTask
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -73,6 +74,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         return inflater.inflate(R.layout.fragment_server, parent, false)
     }
 
+    private var uuid: String? = null
     private lateinit var idPengguna: String
     private var isSearch: Boolean = false
     private lateinit var searchView: SearchView
@@ -164,46 +166,16 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         setHasOptionsMenu(true)
         val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
-        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
+        idPengguna = MainActivity.idPengguna ?: ""
+        uuid = ProdukMasterActivity.uuid
 
         databaseHandler = DatabaseHandler(context)
         rvProduk = view.findViewById<View>(R.id.rvProduk) as RecyclerView
         tvKet = view.findViewById<View>(R.id.tvKet) as TextView
-//        val mLayoutManagerss: RecyclerView.LayoutManager = LinearLayoutManager(context)
         rvProduk!!.layoutManager = GridLayoutManager(context, 3)
         rvProduk!!.itemAnimator = DefaultItemAnimator()
         produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext(),this)
         rvProduk!!.adapter = produkAdapter
-//        rvProduk!!.addOnItemTouchListener(object : OnItemTouchListener {
-//            var gestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-//                override fun onSingleTapUp(motionEvent: MotionEvent): Boolean {
-//                    return true
-//                }
-//            })
-//
-//            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-//                ChildView = rvProduk!!.findChildViewUnder(e.x, e.y)
-//                if (ChildView != null && gestureDetector.onTouchEvent(e)) {
-//                    RecyclerViewClickedItemPos = rvProduk!!.getChildAdapterPosition(ChildView!!)
-//                    val url_image = itemProduks[RecyclerViewClickedItemPos].url_image
-//                    val nama_barang = itemProduks[RecyclerViewClickedItemPos].nama_barang
-//                    val id_barang = itemProduks[RecyclerViewClickedItemPos].id_barang
-//                    val harga = itemProduks[RecyclerViewClickedItemPos].harga
-//                    val ket = itemProduks[RecyclerViewClickedItemPos].keterangan
-//                    val isPajak = itemProduks[RecyclerViewClickedItemPos].isPajak
-//                    val jenisProduk = itemProduks[RecyclerViewClickedItemPos].jenisProduk
-//
-//                    dialogEdit(url_image, nama_barang, id_barang, harga, ket, isPajak, jenisProduk)
-//
-//                    Log.d("TAG", RecyclerViewClickedItemPos.toString())
-//                }
-//                return false
-//            }
-//
-//            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-//            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-//        })
-
         if (CheckNetwork().checkingNetwork((context)!!)) {
             ambilData
             tvKet!!.visibility = View.GONE
@@ -281,21 +253,21 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
                             while (i < jsonArray.length()) {
                                 try {
                                     val jO: JSONObject = jsonArray.getJSONObject(i)
-                                    val id: ItemProduk = ItemProduk()
+                                    val itemProduk = ItemProduk()
                                     val idBarang: String = jO.getString("ID_BARANG")
-                                    id.id_barang = idBarang
-                                    id.nama_barang = jO.getString("NM_BARANG")
-                                    id.url_image = jO.getString("FOTO")
-                                    id.harga = jO.getString("HARGA")
-                                    id.keterangan = jO.getString("KETERANGAN")
-                                    id.isPajak = jO.getString("ISPAJAK")
-                                    id.jenisProduk = jO.getString("JENIS_PRODUK")
-                                    id.status = true
+                                    itemProduk.id_barang = idBarang
+                                    itemProduk.nama_barang = jO.getString("NM_BARANG")
+                                    itemProduk.url_image = jO.getString("FOTO")
+                                    itemProduk.harga = jO.getString("HARGA")
+                                    itemProduk.keterangan = jO.getString("KETERANGAN")
+                                    itemProduk.isPajak = jO.getString("ISPAJAK")
+                                    itemProduk.jenisProduk = jO.getString("JENIS_PRODUK")
+                                    itemProduk.status = true
                                     Log.d("NM_BARANG", jO.getString("NM_BARANG"))
                                     if (databaseHandler!!.CountDataProdukId(idBarang.toInt()) == 0) tambahDataLokal(
-                                        id
+                                        itemProduk
                                     )
-                                    itemProduks.add(id)
+                                    itemProduks.add(itemProduk)
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
                                     progressDialog.dismiss()
@@ -977,27 +949,31 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
                 //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
                 // tvStatus.setText(s);
                 //
-                if (s.equals("sukses", ignoreCase = true)) {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(context, "Data berhasil diupdate !", Toast.LENGTH_SHORT).show()
-                    val fl = File(e_nama_file)
-                    val deleted = fl.delete()
-                    e_nama_file = ""
-                    updateDataLokal()
-                    ambilData
-                } else if (s.equals("gagal", ignoreCase = true)) {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(context, "Data gagal diupdate !", Toast.LENGTH_SHORT).show()
-                } else {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
+                when {
+                    s.equals("sukses", ignoreCase = true) -> {
+                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                        Toast.makeText(context, "Data berhasil diupdate !", Toast.LENGTH_SHORT).show()
+                        val fl = File(e_nama_file)
+                        val deleted = fl.delete()
+                        e_nama_file = ""
+                        updateDataLokal()
+                        ambilData
+                    }
+                    s.equals("gagal", ignoreCase = true) -> {
+                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                        Toast.makeText(context, "Data gagal diupdate !", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                        Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
                 var msg: String? = null
-                msg = u.uploadDataUmum(e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file
+                msg = u.uploadDataUmum(idPengguna,e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file
                     , slctdIspajak, slctdTipeProduk)
                 return msg
             }
@@ -1011,8 +987,8 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         get() {
             itemProduks.clear()
             produkAdapter!!.notifyDataSetChanged()
-            val jml_data = databaseHandler!!.CountDataProduk()
-            if (jml_data == 0) {
+            val jmlData = databaseHandler!!.CountDataProduk()
+            if (jmlData == 0) {
                 tvKet!!.visibility = View.VISIBLE
             } else {
                 tvKet!!.visibility = View.GONE
@@ -1382,46 +1358,45 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
 
             override fun onPostExecute(s: String?) {
                 super.onPostExecute(s)
-                // uploading.dismiss();
                 Log.d("HASIL", s!!)
-                //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
-                // tvStatus.setText(s);
-                //
-                if (s.equals("sukses", ignoreCase = true)) {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(
-                        requireContext(),
-                        "Data berhasil ditambah !",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    startActivity(Intent(requireContext(), ProdukMasterActivity::class.java))
-                    activity?.finish()
-                } else if (s.equals("gagal", ignoreCase = true)) {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(requireContext(), "Data gagal ditambah !", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(requireContext(), s, Toast.LENGTH_SHORT).show()
+                when {
+                    s.equals("sukses", ignoreCase = true) -> {
+//                        databaseHandler!!.insert_produk(
+//                            com.dnhsolution.restokabmalang.database.ItemProduk(
+//                                0, idTmpUsaha, e_nama, e_harga, e_ket, t_nama_file, "1",slctdIspajak,slctdTipeProduk
+//                            )
+//                        )
+                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                        Toast.makeText(
+                            requireContext(),
+                            "Data berhasil ditambah !",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        startActivity(Intent(requireContext(), ProdukMasterActivity::class.java))
+                        activity?.finish()
+                    }
+                    s.equals("gagal", ignoreCase = true) -> {
+                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                        Toast.makeText(requireContext(), "Data gagal ditambah !", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    else -> {
+                        if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+                        Toast.makeText(requireContext(), s, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
             override fun doInBackground(vararg p0: Void?): String? {
-                databaseHandler!!.insert_produk(
-                    com.dnhsolution.restokabmalang.database.ItemProduk(
-                        0, idTmpUsaha, e_nama, e_harga, e_ket, t_nama_file, "1",slctdIspajak,slctdTipeProduk
-                    )
-                )
-
-                if (databaseHandler == null) {
-                    Log.d("DATABASE_INSERT", "gagal")
-                } else {
-                    Log.d("DATABASE_INSERT", "berhasil")
-                }
+//                if (databaseHandler == null) {
+//                    Log.d("DATABASE_INSERT", "gagal")
+//                } else {
+//                    Log.d("DATABASE_INSERT", "berhasil")
+//                }
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(e_nama, e_ket, e_harga, t_nama_file, idTmpUsaha,slctdIspajak,slctdTipeProduk)
+                msg = u.uploadDataBaru(idPengguna,e_nama, e_ket, e_harga, t_nama_file, idTmpUsaha,slctdIspajak,slctdTipeProduk)
                 return msg
             }
         }

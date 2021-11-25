@@ -1,6 +1,5 @@
 package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -17,7 +16,6 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
@@ -104,7 +102,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "-1").toString()
+        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
         argumenValue = arguments?.get(keyParams).toString()
         argumenValue2 = arguments?.get(keyParams2) as ArrayList<*>?
         databaseHandler = DatabaseHandler(requireContext())
@@ -501,7 +499,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 val params = HashMap<String, String>()
                 val sharedPreferences: SharedPreferences =
                     context!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-                val idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "-1")
+                val idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
                 params["alamat"] = alamat
                 params["nama_usaha"] = nama
                 params["email"] = email

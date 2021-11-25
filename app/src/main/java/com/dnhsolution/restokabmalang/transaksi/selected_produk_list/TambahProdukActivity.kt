@@ -42,7 +42,7 @@ class TambahProdukActivity:AppCompatActivity(), ProdukOnTask {
         Log.i(_tag,"onResume $valueArgsFromKeranjang")
 
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "0").toString()
+        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
 
         databaseHandler = DatabaseHandler(this)
 

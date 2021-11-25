@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -261,7 +260,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
                 SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
                 final String kd_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0");
-                final String id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0");
+                final String id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
 
                 params.put("kd_pengguna",kd_pengguna);
                 params.put("id_tempat_usaha",id_tempat_usaha);
@@ -372,6 +371,9 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             mService.write(PrinterCommands.ESC_ENTER);
 
             mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+            mService.sendMessage("No. Trx : "+idTrx, "");
+
+            mService.write(PrinterCommands.ESC_ALIGN_LEFT);
             mService.sendMessage("Tanggal : "+tanggal, "");
 
             mService.write(PrinterCommands.ESC_ALIGN_LEFT);
@@ -402,7 +404,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             if(tipeStruk.equalsIgnoreCase("1")) {
-                writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : " + tvJmlPajak.getText().toString());
+                writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak Resto: " + tvJmlPajak.getText().toString());
             }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);

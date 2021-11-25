@@ -11,13 +11,13 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.utilities.RekapBulananOnTask
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
-import kotlinx.android.synthetic.main.fragment_rekap_bulanan.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -36,8 +36,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         }
     }
 
+    private var idPengguna: String? = null
+    private var idTmpUsaha: String? = null
     private lateinit var tipeStruk: String
-    private lateinit var idPengguna: String
     private lateinit var tvTotal: TextView
     private lateinit var tvTotalPajak: TextView
     private lateinit var recyclerView: RecyclerView
@@ -76,7 +77,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
     private var selectedThn = "Tahun"
     private var bulan = "1"
     private var tahun = "1"
-    private var idTmpUsaha = "-1"
     private lateinit var btnCari : Button
     private lateinit var btnReset : Button
 
@@ -100,9 +100,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
         tipeStruk = sharedPreferences?.getString(Url.SESSION_TIPE_STRUK, "").toString()
-        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
+        idTmpUsaha = MainActivity.idTempatUsaha
+        idPengguna = MainActivity.idPengguna
 
         spiBln.setSelection(0)
         spiThn.setSelection(0)

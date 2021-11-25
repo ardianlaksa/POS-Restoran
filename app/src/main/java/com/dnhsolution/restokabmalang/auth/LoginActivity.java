@@ -310,13 +310,8 @@ public class LoginActivity extends AppCompatActivity {
                     if(pesan.equalsIgnoreCase("0")){
                         Toast.makeText(LoginActivity.this, "Gagal Login. Username atau Password salah !", Toast.LENGTH_SHORT).show();
                     }else if(pesan.equalsIgnoreCase("1")){
-                        //String username = json.getString("username");
-//                        String dptb1 = json.getString("dptb_1");
-//                        String dptb2 = json.getString("dptb_2");
-//                        String dpph = json.getString("dpph");
-
-
                         json = jsonArray.getJSONObject(1);
+                        Log.i("json1",json.toString());
                         String idTempatusaha = json.getString("ID_TEMPAT_USAHA");
                         String idPengguna = json.getString("ID_PENGGUNA");
                         String nmTempatUsaha = json.getString("NM_TEMPAT_USAHA");

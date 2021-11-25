@@ -44,19 +44,20 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvNama"
-                android:text="No. Trx"
+                android:text="@string/title_no_trx"
                 android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
                 android:id="@+id/tvNama"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:paddingStart="@dimen/_4"
                 android:paddingEnd="@dimen/_4"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleNama"
                 app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center_horizontal"
+                app:layout_constraintBottom_toTopOf="@id/tvHarga"
+                android:gravity="top"
                 android:text="@string/text"
                 android:textStyle="bold"
                 android:fontFamily="@font/nunitosansregular"
@@ -66,10 +67,9 @@
                 android:id="@+id/tvTitleDisc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Omzet"
+                android:text="@string/title_omzet"
                 android:textSize="@dimen/f_10"
                 android:layout_marginEnd="@dimen/_8"
-                android:layout_marginRight="@dimen/_8"
                 android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintBottom_toBottomOf="@id/tvDisc"
                 app:layout_constraintRight_toLeftOf="@id/tvDisc"/>
@@ -91,16 +91,17 @@
                 android:id="@+id/tvTitleHarga"
                 android:layout_width="@dimen/_56"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/tvHarga"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/tvHarga"
-                android:text="Tanggal"
+                android:layout_marginTop="@dimen/_4"
+                android:text="@string/title_tgl"
                 android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
                 android:id="@+id/tvHarga"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_4"
                 android:paddingStart="@dimen/_4"
                 android:paddingEnd="@dimen/_4"
@@ -108,7 +109,7 @@
                 app:layout_constraintLeft_toRightOf="@id/tvTitleHarga"
                 app:layout_constraintRight_toLeftOf="@id/tvTotal"
                 app:layout_constraintTop_toBottomOf="@id/tvNama"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/text"
                 android:textColor="@android:color/holo_red_light"/>
 
@@ -133,7 +134,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvQty"
-                android:text="Disc"
+                android:text="@string/title_diskon"
                 android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 

@@ -30,9 +30,11 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.MainActivity.Companion.adMasterProduk
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.sistem.MainMaster
 import com.dnhsolution.restokabmalang.sistem.produk.server.*
 import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
@@ -101,25 +103,15 @@ class ProdukMasterActivity : AppCompatActivity() {
         viewPager.adapter = sectionsPagerAdapter
         val tabs = findViewById<TabLayout>(R.id.tabs)
         tabs.setupWithViewPager(viewPager)
-//        fab = findViewById(R.id.fab)
-//        tv_count = findViewById<View>(R.id.text_count) as TextView
         requestMultiplePermissions()
         if (adMasterProduk == 1) return
-
-//        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-//        alertDialog.setTitle("Tutorial");
-//        alertDialog.setMessage("1. Tap tombol tambah kanan atas untuk menambahkan produk\n\n" +
-//                "Icon panah kanan & kiri hijau menandakan status data produk sudah tersinkron.\n" +
-//                "Icon refresh kuning menandakan status data produk butuh disinkron.");
-//        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                (dialog, which) -> dialog.dismiss());
-//        alertDialog.show();
         adMasterProduk = 1
     }
 
     override fun onResume() {
         super.onResume()
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         supportActionBar!!.title = label
         val tema = sharedPreferences.getString(Url.setTema, "0")
         if (tema.equals("0", ignoreCase = true)) {
@@ -802,7 +794,7 @@ class ProdukMasterActivity : AppCompatActivity() {
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
+                msg = u.uploadDataBaru(MainActivity.idPengguna,t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
                 return msg
             }
         }
@@ -816,5 +808,6 @@ class ProdukMasterActivity : AppCompatActivity() {
         private const val MY_CAMERA_PERMISSION_CODE = 100
         private const val FILE_SELECT_CODE = 5
         private const val IMAGE_DIRECTORY = "/POSRestoran"
+        var uuid: String? = null
     }
 }

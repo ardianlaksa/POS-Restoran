@@ -11,9 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dnhsolution.restokabmalang.R;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class TersimpanAdater extends RecyclerView.Adapter<TersimpanAdater.MyViewHolder> {
@@ -44,7 +41,7 @@ public class TersimpanAdater extends RecyclerView.Adapter<TersimpanAdater.MyView
     @Override
     public TersimpanAdater.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_list_rekap_harian2, parent, false);
+                .inflate(R.layout.item_list_tersimpan, parent, false);
 
         return new MyViewHolder(itemView);
     }

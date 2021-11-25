@@ -1,7 +1,5 @@
 package com.dnhsolution.restokabmalang
 
-
-
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -28,7 +26,6 @@ import com.dnhsolution.restokabmalang.data.DataFragment
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.sistem.MainMaster
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity
-import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
 import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -43,7 +40,6 @@ import java.util.*
 import androidx.fragment.app.FragmentManager
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 
-
 class MainActivity : AppCompatActivity() {
 
     companion object{
@@ -52,12 +48,12 @@ class MainActivity : AppCompatActivity() {
         var adMasterProduk = 0
         var adTransaksi = 0
         var jumlahProdukTerpilih = 0
+        var idPengguna: String? = null
+        var idTempatUsaha: String? = null
+        var uuid: String? = null
     }
 
     private val _tag = javaClass.simpleName
-
-    //    private lateinit var textMessage: TextView
-
     var nama: String = ""
     var email: String = ""
     var telp: String = ""
@@ -117,14 +113,15 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
 
-        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
-        val email = sharedPreferences.getString(Url.SESSION_EMAIL, "0")
-        val telp = sharedPreferences.getString(Url.SESSION_TELP, "0")
-        val namausaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
-        val id_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "null")
+        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "")
+        val email = sharedPreferences.getString(Url.SESSION_EMAIL, "")
+        val telp = sharedPreferences.getString(Url.SESSION_TELP, "")
+        val namausaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
+        idTempatUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0")
         status_batas = sharedPreferences.getString(Url.SESSION_STATUS_BATAS, "nonaktif").toString()
 
-        Log.i("json", "$alamat, $email, $telp, $namausaha, $id_pengguna");
 
         if(alamat!!.equals("", ignoreCase = true) || email!!.equals("", ignoreCase = true) ||
             telp!!.equals("", ignoreCase = true) || namausaha!!.equals("", ignoreCase = true)){
@@ -134,6 +131,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         supportActionBar!!.title = label
+
+        Log.i("MAO", "$idPengguna, $idTempatUsaha");
+
         navView = findViewById(R.id.nav_view)
 //        navView!!.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
         navView?.setOnItemSelectedListener { item ->

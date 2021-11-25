@@ -59,7 +59,8 @@ class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
         holder.ivIcSync.setImageResource(if (itemProduk.status) R.drawable.ic_baseline_sync_alt_24_green else R.drawable.ic_baseline_sync_24_yellow)
 
 //        holder.nama.setText(itemProduk.getNama_barang()+" "+itemProduk.getIsPajak()+" "+itemProduk.getJenisProduk());
-        holder.nama.text = itemProduk.nama_barang
+        val a = itemProduk.nama_barang
+        holder.nama.text = a
         val url = Url.serverFoto + itemProduk.url_image
         Glide.with(holder.ivFoto.context).load(url)
             .override(512, 512)

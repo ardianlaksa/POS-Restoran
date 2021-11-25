@@ -322,6 +322,9 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
             mService.write(PrinterCommands.ESC_ENTER);
 
             mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+            mService.sendMessage("No. Trx : "+idTrx, "");
+
+            mService.write(PrinterCommands.ESC_ALIGN_LEFT);
             mService.sendMessage("Tanggal : "+tanggal, "");
 
             mService.write(PrinterCommands.ESC_ALIGN_LEFT);
@@ -350,7 +353,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
             writePrint(PrinterCommands.ESC_ALIGN_CENTER, tvDisc.getText().toString()+" : "+tvJmlDisc.getText().toString());
 
             if(tipeStruk.equalsIgnoreCase("1")) {
-                writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak : " + tvJmlPajak.getText().toString());
+                writePrint(PrinterCommands.ESC_ALIGN_CENTER, "Pajak Resto : " + tvJmlPajak.getText().toString());
             }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);

@@ -143,7 +143,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
-        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
 
         if(tipeStruk == "2") llPajak.visibility = View.GONE

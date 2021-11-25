@@ -11,6 +11,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.DRekapHarianJsonTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
@@ -32,7 +33,8 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         }
     }
 
-    private lateinit var idPengguna: String
+    private var idPengguna: String? = null
+    private var idTmpUsaha: String? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewD: RecyclerView
     private lateinit var tvTotal: TextView
@@ -49,11 +51,10 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     private var jsonTaskDetail: AsyncTask<String, Void, String?>? = null
     private var params = ""
     private var tanggal = ""
-    private var idTmpUsaha = "-1"
     private var tempItemsHarian = ArrayList<RekapHarianListElement>()
     private var tempItemsDHarian = ArrayList<DRekapHarianListElement>()
     private var adapterList:RekapHarianListAdapter? = null
-    private var adapterListD:DRekapHarianListAdapter? = null
+    private var adapterListD:DRekapHarianListAdapter2? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,9 +68,9 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         ivDate = view.findViewById(R.id.ivDate) as ImageView
         etDate = view.findViewById(R.id.etDate) as EditText
 
-        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
-        idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "").toString()
+//        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = MainActivity.idTempatUsaha.toString()
+        idPengguna = MainActivity.idPengguna.toString()
 
         recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
 
@@ -260,7 +261,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 //                    tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
 
                     adapterListD = context?.let {
-                        DRekapHarianListAdapter(
+                        DRekapHarianListAdapter2(
                             tempItemsDHarian,
                             it
                         )

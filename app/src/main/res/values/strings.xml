@@ -22,6 +22,7 @@
     <string name="title_omzet">Omzet</string>
     <string name="title_tgl">Tgl</string>
     <string name="title_nama_barang">Nama Barang</string>
+    <string name="title_no_trx">No. Trx</string>
     <string name="title_diskripsi">Diskripsi</string>
     <string name="title_foto">Foto</string>
     <string name="title_tambah_file">Tambah File</string>

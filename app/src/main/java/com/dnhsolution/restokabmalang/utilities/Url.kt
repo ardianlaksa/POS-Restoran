@@ -8,7 +8,7 @@ object Url {
     const val SESSION_USERNAME = "username"
     const val SESSION_ID_PENGGUNA = "idPengguna"
     const val SESSION_ID_TEMPAT_USAHA = "idTempatUsaha"
-    const val SESSION_ISCETAK_BILLING = "idTempatUsaha"
+    const val SESSION_ISCETAK_BILLING = "isCetakBilling"
     const val SESSION_NAMA_TEMPAT_USAHA = "nama_tempat_usaha"
     const val SESSION_ALAMAT = "alamat"
     const val SESSION_EMAIL = "email"

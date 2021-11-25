@@ -39,6 +39,7 @@ import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakListElement
 import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukListElement
 import com.karumi.dexter.listener.PermissionRequest
@@ -617,7 +618,7 @@ class DetailProduk() : AppCompatActivity() {
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
                 var msg: String? = null
-                msg = u.uploadDataUmum(
+                msg = u.uploadDataUmum(MainActivity.idPengguna,
                     etNama!!.text.toString(), etKeterangan!!.text.toString(),
                     etHarga!!.text.toString().replace(".", ""), id, url_image, nama_file,
                     slctdIspajak,slctdTipeProduk

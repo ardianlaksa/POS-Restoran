@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.database.DatabaseHandler;
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork;
@@ -88,12 +89,14 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
     private int statusJaringan = 0;
     private final String _tag = getClass().getSimpleName();
     private String tipeStruk;
+    private String idPengguna;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "");
+        idPengguna = MainActivity.Companion.getIdPengguna();
         String tema = sharedPreferences.getString(Url.setTema, "0");
         if(tema.equalsIgnoreCase("0")){
             DataTersimpanActivity.this.setTheme(R.style.Theme_First);
@@ -160,7 +163,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
         rvData.setAdapter(adapter);
 
         String idTempatUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
-        String url = Url.serverPos + "getProduk?idTmpUsaha=" + idTempatUsaha+"&jenisProduk=0";
+        String url = Url.serverPos + "getProduk?idTmpUsaha=" + idTempatUsaha+"&jenisProduk=0&idPengguna="+idPengguna;
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
@@ -191,7 +194,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
 
                 if(ChildView != null && gestureDetector.onTouchEvent(e)) {
                     RecyclerViewClickedItemPos = rvData.getChildAdapterPosition(ChildView);
-                    Log.d("hhhhuu", String.valueOf(RecyclerViewClickedItemPos));
+//                    Log.d("hhhhuu", String.valueOf(RecyclerViewClickedItemPos));
                     int id_data = dataTersimpan.get(RecyclerViewClickedItemPos).getId();
                     DialogDetailTrx(id_data);
                     //Toast.makeText(DataTersimpanActivity.this, String.valueOf(id_data), Toast.LENGTH_SHORT).show();
@@ -275,7 +278,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
                 SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
                 String idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
-                String pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "");
+                String pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0");
 
                 List<ItemTersimpan> listDataTersimpanUpload = databaseHandler.getDataTersimpanUpload();
 

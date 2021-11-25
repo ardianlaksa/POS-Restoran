@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,9 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.android.volley.*;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.auth.LoginActivity;
 import com.dnhsolution.restokabmalang.utilities.ThemeApplication;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.dnhsolution.restokabmalang.utilities.Utils;
@@ -26,9 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SistemFragment extends AppCompatActivity {
@@ -203,7 +198,7 @@ public class SistemFragment extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 //sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
                 final String kd_pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0");
-                final String id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0");
+                final String id_tempat_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
 
                 params.put("kd_pengguna",kd_pengguna);
                 params.put("id_tempat_usaha",id_tempat_usaha);
