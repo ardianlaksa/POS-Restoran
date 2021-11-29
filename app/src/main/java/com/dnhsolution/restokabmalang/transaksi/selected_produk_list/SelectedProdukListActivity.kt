@@ -62,6 +62,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var produkAdapter: SelectedProdukListAdapter? = null
     private val _tag: String = javaClass.simpleName
     private var idPengguna: String? = null
+    private var uuid: String? = null
     private var idTmpUsaha: String? = null
     private var valueDiskon: Int = 0
     private var valueDiskonRupiah: Int = 0
@@ -144,6 +145,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
 
         if(tipeStruk == "2") llPajak.visibility = View.GONE
@@ -563,6 +565,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
     private fun createJson() : String{
         val rootObject= JSONObject()
+        rootObject.put("uuid",uuid)
         rootObject.put("idTmptUsaha",idTmpUsaha)
         rootObject.put("user",idPengguna)
         rootObject.put("disc_rp",valueDiskonRupiah)

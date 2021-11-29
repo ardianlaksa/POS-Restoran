@@ -55,7 +55,9 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
     private lateinit var searchView: SearchView
     private var valueArgsFromKeranjang: Int? = null
     private var produkAdapter: ProdukListAdapter? = null
-    private var idTmpUsaha: String = "0"
+    private var idPengguna: String? = null
+    private var idTmpUsaha: String? = null
+    private var uuid: String? = null
 
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
@@ -101,16 +103,18 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        idTmpUsaha = sharedPreferences?.getString(Url.SESSION_ID_TEMPAT_USAHA, "").toString()
+//        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = TambahProdukTransaksiActivity.idTmpUsaha
+        idPengguna = TambahProdukTransaksiActivity.idPengguna
+        uuid = TambahProdukTransaksiActivity.uuid
         argumenValue = arguments?.get(keyParams).toString()
         argumenValue2 = arguments?.get(keyParams2) as ArrayList<*>?
         databaseHandler = DatabaseHandler(requireContext())
 
-        val alamat = sharedPreferences?.getString(Url.SESSION_ALAMAT, "0")
-        val email = sharedPreferences?.getString(Url.SESSION_EMAIL, "0")
-        val telp = sharedPreferences?.getString(Url.SESSION_TELP, "0")
-        val namausaha = sharedPreferences?.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+//        val alamat = sharedPreferences?.getString(Url.SESSION_ALAMAT, "0")
+//        val email = sharedPreferences?.getString(Url.SESSION_EMAIL, "0")
+//        val telp = sharedPreferences?.getString(Url.SESSION_TELP, "0")
+//        val namausaha = sharedPreferences?.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
 
 //        if(alamat!!.equals("0", ignoreCase = true) || email!!.equals("0", ignoreCase = true) ||
 //            telp!!.equals("0", ignoreCase = true) || namausaha!!.equals("0", ignoreCase = true)){
@@ -119,7 +123,10 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
         if(produkAdapter == null)
             if(CheckNetwork().checkingNetwork(requireContext())) {
-                val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&jenisProduk=${arguments?.get(keyParams).toString()}"
+//                val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&jenisProduk=${arguments?.get(keyParams).toString()}"
+                val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
+                        "jenisProduk=${arguments?.get(keyParams).toString()}&" +
+                        "idPengguna=$idPengguna&uuid=$uuid"
                 Log.i(_tag,stringUrl)
                 jsonTask = ProdukListJsonTask(this).execute(stringUrl)
             } else {

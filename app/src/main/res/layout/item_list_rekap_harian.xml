@@ -29,7 +29,7 @@
             android:layout_marginLeft="@dimen/_8"
             android:layout_marginEnd="@dimen/_16"
             android:layout_marginRight="@dimen/_8"
-            android:fontFamily="@font/nunitosansregular"
+            android:textSize="@dimen/f_10"
             android:gravity="center"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,8 +71,9 @@
                 android:textSize="@dimen/f_10"
                 android:layout_marginEnd="@dimen/_8"
                 android:fontFamily="@font/nunitosansregular"
-                app:layout_constraintBottom_toBottomOf="@id/tvDisc"
-                app:layout_constraintRight_toLeftOf="@id/tvDisc"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tvDisc"
+                app:layout_constraintBottom_toTopOf="@+id/tvTotal"/>
 
             <TextView
                 android:visibility="invisible"
@@ -125,7 +126,7 @@
                 android:layout_marginEnd="@dimen/_8"
                 android:layout_marginRight="@dimen/_8"
                 android:fontFamily="@font/nunitosansregular"
-                app:layout_constraintTop_toBottomOf="@id/tvDisc"
+                app:layout_constraintTop_toBottomOf="@id/tvTitleDisc"
                 app:layout_constraintRight_toRightOf="parent" />
 
             <TextView

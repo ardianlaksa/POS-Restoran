@@ -65,7 +65,7 @@ import retrofit2.http.*
 import com.google.gson.GsonBuilder
 
 
-class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
+class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
     override fun onCreateView(
         inflater: LayoutInflater,
         parent: ViewGroup?,
@@ -75,7 +75,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
     }
 
     private var uuid: String? = null
-    private lateinit var idPengguna: String
+    private var idPengguna: String? = null
     private var isSearch: Boolean = false
     private lateinit var searchView: SearchView
     private var slctdTipeProduk: String? = null
@@ -135,7 +135,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         private val IMAGE_DIRECTORY = "/POSRestoran"
 
         @JvmStatic
-        fun newInstance(params: String) = MakananFragment().apply {
+        fun newInstance(params: String) = ProdukMasterFragment().apply {
             arguments = Bundle().apply {
                 putString(keyParams,params)
             }
@@ -166,7 +166,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
         setHasOptionsMenu(true)
         val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
-        idPengguna = MainActivity.idPengguna ?: ""
+        idPengguna = ProdukMasterActivity.idPengguna
         uuid = ProdukMasterActivity.uuid
 
         databaseHandler = DatabaseHandler(context)
@@ -238,7 +238,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
             val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha +
-                    "&jenisProduk=${arguments?.get(keyParams).toString()}&idPengguna=$idPengguna"
+                    "&jenisProduk=${arguments?.get(keyParams).toString()}&idPengguna=$idPengguna&uuid=$uuid"
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =
@@ -973,7 +973,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
                 var msg: String? = null
-                msg = u.uploadDataUmum(idPengguna,e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file
+                msg = u.uploadDataUmum(idPengguna,uuid,e_nama, e_ket, e_harga, e_id, e_gambar_lama, e_nama_file
                     , slctdIspajak, slctdTipeProduk)
                 return msg
             }
@@ -1396,7 +1396,7 @@ class MakananFragment() : Fragment(), HapusProdukMasterOnTask {
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(idPengguna,e_nama, e_ket, e_harga, t_nama_file, idTmpUsaha,slctdIspajak,slctdTipeProduk)
+                msg = u.uploadDataBaru(idPengguna,uuid,e_nama, e_ket, e_harga, t_nama_file, idTmpUsaha,slctdIspajak,slctdTipeProduk)
                 return msg
             }
         }

@@ -75,9 +75,12 @@ class ProdukMasterActivity : AppCompatActivity() {
     var t_ket: String? = null
     var databaseHandler: DatabaseHandler? = null
     private var toolbar: Toolbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         if (tema.equals("0", ignoreCase = true)) {
@@ -794,7 +797,7 @@ class ProdukMasterActivity : AppCompatActivity() {
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(MainActivity.idPengguna,t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
+                msg = u.uploadDataBaru(idPengguna,uuid,t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
                 return msg
             }
         }
@@ -808,6 +811,7 @@ class ProdukMasterActivity : AppCompatActivity() {
         private const val MY_CAMERA_PERMISSION_CODE = 100
         private const val FILE_SELECT_CODE = 5
         private const val IMAGE_DIRECTORY = "/POSRestoran"
+        var idPengguna: String? = null
         var uuid: String? = null
     }
 }

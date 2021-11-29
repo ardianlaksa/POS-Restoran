@@ -63,9 +63,8 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
     private BluetoothService mService = null;
     private boolean isPrinterReady = false;
 
-
     SharedPreferences sharedPreferences;
-    String idTrx="";
+    String idTrx="0";
     DatabaseHandler databaseHandler;
     private String tipeStruk;
 

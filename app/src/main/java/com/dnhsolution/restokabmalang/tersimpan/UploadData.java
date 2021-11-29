@@ -1,25 +1,14 @@
 package com.dnhsolution.restokabmalang.tersimpan;
 
-/**
- * Created by KHAN on 08/04/2018.
- */
-import android.util.Log;
-
 import com.dnhsolution.restokabmalang.utilities.Url;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 public class UploadData {
     public static final String UPLOAD_URL= Url.setKeranjangTransaksi;
@@ -37,8 +26,6 @@ public class UploadData {
         byte[] buffer;
         int maxBufferSize = 1 * 1024 * 1024;
         String tgl_penelitian="";
-
-
 
         try {
 

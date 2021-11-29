@@ -30,7 +30,7 @@
             android:layout_marginLeft="@dimen/_8"
             android:layout_marginEnd="@dimen/_16"
             android:layout_marginRight="@dimen/_8"
-            android:fontFamily="@font/nunitosansregular"
+            android:textSize="@dimen/f_10"
             android:gravity="center"/>
 
         <LinearLayout

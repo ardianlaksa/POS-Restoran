@@ -1,5 +1,6 @@
 package com.dnhsolution.restokabmalang.transaksi.selected_produk_list
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
+import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,10 +38,17 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
 
     companion object{
         var jumlahProdukTerpilih = 0
+        var uuid: String? = null
+        var idPengguna: String? = null
+        var idTmpUsaha: String? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         setContentView(R.layout.activity_tambahh_produk_transaksi)
         setSupportActionBar(toolbar)
 

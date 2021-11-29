@@ -38,7 +38,7 @@ class SplashActivity : AppCompatActivity() {
     interface IsCetakBillingServices {
         @FormUrlEncoded
         @POST("pdrd/Android/AndroidJsonPOS/setCekUuid")
-        fun getPosts(@Field("id") id: String): Call<CekUUIDPojo>
+        fun getPosts(@Field("id") id: String,@Field("uuid") uuid: String): Call<CekUUIDPojo>
     }
 
     object CekUUIDResultFeedback {
@@ -62,12 +62,13 @@ class SplashActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
         status = sharedPreferences?.getString(Url.SESSION_STS_LOGIN, "0")
         val idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "0")
+        val uuid = sharedPreferences?.getString(Url.SESSION_UUID, "")
 
         svgView = findViewById<View>(R.id.ivLogoDaerah) as AnimatedSvgView
         databaseHandler = DatabaseHandler(this)
         svgView!!.postDelayed({
             svgView!!.start()
-            idPengguna?.let { cekUUIDFungsi(it) }
+            cekUUIDFungsi(idPengguna!!,uuid!!)
         }, 500)
         if (!CheckNetwork().checkingNetwork(this)){
             if (status.equals("0", ignoreCase = true)) {
@@ -87,9 +88,9 @@ class SplashActivity : AppCompatActivity() {
 //        }, 4000)
     }
 
-    private fun cekUUIDFungsi(value : String){
+    private fun cekUUIDFungsi(value : String, value2: String){
         val postServices = CekUUIDResultFeedback.create()
-        postServices.getPosts(value).enqueue(object : Callback<CekUUIDPojo> {
+        postServices.getPosts(value,value2).enqueue(object : Callback<CekUUIDPojo> {
 
             override fun onFailure(call: Call<CekUUIDPojo>, error: Throwable) {
                 Log.e(_tag, "errornya ${error.message}")

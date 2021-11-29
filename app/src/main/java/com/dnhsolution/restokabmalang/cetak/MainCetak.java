@@ -63,6 +63,7 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
 
     SharedPreferences sharedPreferences;
     private String idTrx = "0";
+    private String nmPetugas = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -203,12 +204,14 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                     JSONObject jsonObject = new JSONObject(response);
                     JSONArray jsonArray = jsonObject.getJSONArray("result");
                     JSONObject json = jsonArray.getJSONObject(0);
+                    Log.d(_tag,jsonObject.toString());
                     String pesan = json.getString("pesan");
                     if(pesan.equalsIgnoreCase("0") || pesan.equalsIgnoreCase("2")){
-                        Toast.makeText(MainCetak.this, "Data kosong !", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainCetak.this, R.string.data_kosong, Toast.LENGTH_SHORT).show();
                     }else if(pesan.equalsIgnoreCase("1")){
-
+                        idTrx = json.getString("idTrx");
                         tvSubtotal.setText(json.getString("sub_total"));
+                        nmPetugas = json.getString("nmPetugas");
 //                        tvDisc.setText(json.getString("disc"));
                         tvJmlDisc.setText(json.getString("jml_disc"));
                         tvJmlPajak.setText(json.getString("jml_pajak"));
@@ -217,7 +220,6 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
                         int i;
                         for (i = 1; i < jsonArray.length(); i++) {
                             try {
-
                                 JSONObject jO = jsonArray.getJSONObject(i);
                                 ItemProduk id = new ItemProduk();
                                 id.setNo(i);
@@ -353,11 +355,6 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             return;
         }
         if (isPrinterReady) {
-//            if (etText.getText().toString().isEmpty()) {
-//                Toast.makeText(this, "Cant print null text", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-
             SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
             String nm_tempat_usaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0");
             String alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0");
@@ -376,8 +373,10 @@ public class MainCetak extends AppCompatActivity implements EasyPermissions.Perm
             mService.write(PrinterCommands.ESC_ALIGN_LEFT);
             mService.sendMessage("Tanggal : "+tanggal, "");
 
-            mService.write(PrinterCommands.ESC_ALIGN_LEFT);
-            mService.sendMessage("Kasir   : "+nm_tempat_usaha, "");
+            if(!nmPetugas.equalsIgnoreCase("")) {
+                mService.write(PrinterCommands.ESC_ALIGN_LEFT);
+                mService.sendMessage("Kasir   : " + nmPetugas, "");
+            }
 
             mService.write(PrinterCommands.ESC_ALIGN_CENTER);
             mService.sendMessage("--------------------------------", "");

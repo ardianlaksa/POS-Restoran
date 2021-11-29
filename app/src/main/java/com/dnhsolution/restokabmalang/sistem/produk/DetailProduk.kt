@@ -51,6 +51,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class DetailProduk() : AppCompatActivity() {
+    private var idPengguna: String? = null
+    private var uuid: String? = null
     lateinit var sharedPreferences: SharedPreferences
     var ivFotoLama: ImageView? = null
     var ivFotoBaru: ImageView? = null
@@ -95,6 +97,8 @@ class DetailProduk() : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         if (tema.equals("0", ignoreCase = true)) {
@@ -618,7 +622,7 @@ class DetailProduk() : AppCompatActivity() {
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
                 var msg: String? = null
-                msg = u.uploadDataUmum(MainActivity.idPengguna,
+                msg = u.uploadDataUmum(idPengguna,uuid,
                     etNama!!.text.toString(), etKeterangan!!.text.toString(),
                     etHarga!!.text.toString().replace(".", ""), id, url_image, nama_file,
                     slctdIspajak,slctdTipeProduk

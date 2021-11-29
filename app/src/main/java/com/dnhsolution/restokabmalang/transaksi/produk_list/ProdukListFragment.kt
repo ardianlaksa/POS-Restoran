@@ -51,6 +51,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
     private var idPengguna: String? = null
     private var idTmpUsaha: String? = null
+    private var uuid: String? = null
     private lateinit var tvBadgeMenuLanjut: TextView
     private var transaksiFragment: TransaksiFragment? = null
     private lateinit var argumenValue: String
@@ -114,6 +115,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 //        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = MainActivity.idTempatUsaha
         idPengguna = MainActivity.idPengguna
+        uuid = MainActivity.uuid
         argumenValue = arguments?.get(keyParams).toString()
         databaseHandler = DatabaseHandler(requireContext())
 
@@ -131,7 +133,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             if(CheckNetwork().checkingNetwork(requireContext())) {
                 val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
                         "jenisProduk=${arguments?.get(keyParams).toString()}&" +
-                        "idPengguna=$idPengguna"
+                        "idPengguna=$idPengguna&uuid=$uuid"
                 Log.i(_tag,stringUrl)
                 jsonTask = ProdukListJsonTask(this).execute(stringUrl)
             } else {

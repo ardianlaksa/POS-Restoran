@@ -1,6 +1,5 @@
 package com.dnhsolution.restokabmalang.data.rekap_billing
 
-import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -139,13 +138,14 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
 
                     if(spinThnArray.size == 0)
                         spinThnArray.add(tahunMasaPajak)
-                }
 
-                if(spinThnArray.size == 1) {
-                    val tahunMin1 = spinThnArray[0].toInt()-1
-                    val tahunMin2 = tahunMin1-1
-                    spinThnArray.add(tahunMin1.toString())
-                    spinThnArray.add(tahunMin2.toString())
+//                    itemsBilling?.let {
+//                        if (it.size > 50) {
+//                            if (!spinThnArray.contains(tahunMasaPajak)) spinThnArray.add(
+//                                tahunMasaPajak
+//                            )
+//                        }
+//                    }
                 }
 
                 val spinThnAdapter = context?.let {

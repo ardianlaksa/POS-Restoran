@@ -37,6 +37,7 @@
     <string name="snack_bar_undo">Undo</string>
 
     <!--Notif-->
+    <string name="data_terhapus">Data Terhapus</string>
     <string name="tidak_terkoneksi_internet">Tidak ada koneksi internet !</string>
     <string name="silakan_cek_input_data">Silakan cek input data</string>
     <string name="empty_data">Empty Data</string>

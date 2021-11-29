@@ -90,13 +90,18 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
     private final String _tag = getClass().getSimpleName();
     private String tipeStruk;
     private String idPengguna;
+    private String idTmptUsaha;
+    private String uuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
         String label = sharedPreferences.getString(Url.setLabel, "Belum disetting");
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "");
-        idPengguna = MainActivity.Companion.getIdPengguna();
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0");
+        idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "");
+
         String tema = sharedPreferences.getString(Url.setTema, "0");
         if(tema.equalsIgnoreCase("0")){
             DataTersimpanActivity.this.setTheme(R.style.Theme_First);
@@ -162,8 +167,8 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
         rvData.setLayoutManager(linearLayoutManager);
         rvData.setAdapter(adapter);
 
-        String idTempatUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
-        String url = Url.serverPos + "getProduk?idTmpUsaha=" + idTempatUsaha+"&jenisProduk=0&idPengguna="+idPengguna;
+        String url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmptUsaha+
+                "&jenisProduk=0&idPengguna="+idPengguna+"&uuid="+uuid;
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
@@ -275,11 +280,6 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
             @Override
             protected String doInBackground(Void... params) {
 
-                SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
-
-                String idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
-                String pengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0");
-
                 List<ItemTersimpan> listDataTersimpanUpload = databaseHandler.getDataTersimpanUpload();
 
                 String msg = "";
@@ -288,8 +288,9 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
                         UploadData u = new UploadData();
 
                         JSONObject rootObject = new JSONObject();
+                        rootObject.put("uuid",uuid);
                         rootObject.put("idTmptUsaha",idTmptUsaha);
-                        rootObject.put("user",pengguna);
+                        rootObject.put("user",idPengguna);
                         rootObject.put("disc_rp",f.getDisc_rp());
                         String disc = f.getDisc();
                         if(disc.isEmpty()){

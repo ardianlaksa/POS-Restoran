@@ -9,6 +9,7 @@
         <item android:id="@+id/action_menu_wifi"
             app:showAsAction="always"
             android:icon="@drawable/ic_baseline_wifi_24_gray"
+            android:visible="false"
             android:title="@string/title_wifi"/>
         <item android:id="@+id/action_menu_lanjut"
             app:showAsAction="ifRoom"

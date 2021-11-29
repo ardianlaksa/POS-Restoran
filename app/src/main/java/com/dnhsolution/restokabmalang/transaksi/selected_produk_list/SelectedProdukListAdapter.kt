@@ -61,10 +61,10 @@ class SelectedProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private
     private fun showUndoSnackbar() {
         val view = activity.findViewById(R.id.coordinator) as CoordinatorLayout
         val snackbar = Snackbar.make(
-            view, R.string.text,
+            view, R.string.data_terhapus,
             Snackbar.LENGTH_LONG
         )
-        snackbar.setAction(R.string.snack_bar_undo, { v -> undoDelete() })
+        snackbar.setAction(R.string.snack_bar_undo) { v -> undoDelete() }
         snackbar.show()
     }
 

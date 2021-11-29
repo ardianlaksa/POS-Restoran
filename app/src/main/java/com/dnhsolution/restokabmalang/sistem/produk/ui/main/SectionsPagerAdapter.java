@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.dnhsolution.restokabmalang.R;
-import com.dnhsolution.restokabmalang.sistem.produk.server.MakananFragment;
+import com.dnhsolution.restokabmalang.sistem.produk.server.ProdukMasterFragment;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -34,11 +34,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
         if(position == 0)
-            return MakananFragment.newInstance("1");
+            return ProdukMasterFragment.newInstance("1");
         else if(position == 1)
-            return MakananFragment.newInstance("2");
+            return ProdukMasterFragment.newInstance("2");
         else
-            return MakananFragment.newInstance("3");
+            return ProdukMasterFragment.newInstance("3");
     }
 
     @Nullable

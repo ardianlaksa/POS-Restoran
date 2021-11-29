@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.*;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.dnhsolution.restokabmalang.BuildConfig;
 import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
 import com.dnhsolution.restokabmalang.utilities.Url;
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     LinearLayout LAktivasi, LLogin, LKeterangan;
     String kode_aktivasi = "";
     private String uniqueID = "";
+    private String versiApp = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         et3 = findViewById(R.id.et3);
         et4 = findViewById(R.id.et4);
         uniqueID = UUID.randomUUID().toString();
+        versiApp = BuildConfig.VERSION_CODE+"."+BuildConfig.VERSION_NAME;
 
         et1.requestFocus();
         et1.addTextChangedListener(new TextWatcher() {
@@ -370,6 +373,7 @@ public class LoginActivity extends AppCompatActivity {
                 params.put("password", etPassword.getText().toString());
                 params.put("kode_aktivasi", kode_aktivasi);
                 params.put("UUID", uniqueID);
+                params.put("versiApp", versiApp);
                 Log.d("getParams", params.toString());
 
                 return params;

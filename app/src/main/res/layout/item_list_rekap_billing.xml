@@ -27,6 +27,7 @@
             android:layout_marginEnd="@dimen/_16"
             android:background="@drawable/circle_green_bg"
             android:gravity="center"
+            android:textSize="@dimen/f_10"
             android:textColor="@android:color/white" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

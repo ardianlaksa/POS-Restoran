@@ -22,7 +22,7 @@ public class UploadData {
 
     private int serverResponseCode;
 
-    public String uploadDataUmum(String idPengguna,
+    public String uploadDataUmum(String idPengguna,String uuid,
             String nama_barang, String keterangan, String harga, String id_barang,
             String foto_lama, String foto_baru, String slctdIspajak, String slctdTipeProduk) {
 
@@ -54,6 +54,13 @@ public class UploadData {
                     + lineEnd);
             dos.writeBytes(lineEnd);
             dos.writeBytes(idPengguna);
+            dos.writeBytes(lineEnd);
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"uuid\""
+                    + lineEnd);
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(uuid);
             dos.writeBytes(lineEnd);
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);
@@ -174,7 +181,7 @@ public class UploadData {
         }
     }
 
-    public String uploadDataBaru(String idPengguna,
+    public String uploadDataBaru(String idPengguna,String uuid,
             String nama_barang, String keterangan, String harga, String foto, String id_tmp_usaha
             , String slctdIspajak, String slctdTipeProduk) {
 
@@ -206,6 +213,13 @@ public class UploadData {
                     + lineEnd);
             dos.writeBytes(lineEnd);
             dos.writeBytes(idPengguna);
+            dos.writeBytes(lineEnd);
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"uuid\""
+                    + lineEnd);
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(uuid);
             dos.writeBytes(lineEnd);
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);
