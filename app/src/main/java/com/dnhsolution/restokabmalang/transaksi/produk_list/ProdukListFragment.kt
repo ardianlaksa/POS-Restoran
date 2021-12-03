@@ -221,7 +221,9 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
                 if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
                 else produkAdapter =
-                    ProdukListAdapter(requireContext(), produks)
+                    context?.let {
+                        ProdukListAdapter(it, produks)
+                    }
 
                 if (gvMainActivity == null) return
                 gvMainActivity.adapter = produkAdapter
