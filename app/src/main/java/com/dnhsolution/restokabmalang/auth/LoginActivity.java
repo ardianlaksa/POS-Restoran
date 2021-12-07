@@ -379,6 +379,7 @@ public class LoginActivity extends AppCompatActivity {
                 return params;
             }
         };
+
         stringRequest.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {

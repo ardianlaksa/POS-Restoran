@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -55,7 +56,6 @@ class TransaksiFragment : Fragment() {
 
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                Log.e("Selected_Page", position.toString())
             }
 
             override fun onPageScrollStateChanged(state: Int) {
@@ -63,7 +63,6 @@ class TransaksiFragment : Fragment() {
                 Log.e("onPageScrollState", state.toString())
             }
         })
-
         return view
     }
 
@@ -103,7 +102,6 @@ class TransaksiFragment : Fragment() {
 
     private inner class ScreenSlidePagerAdapter(fa: Fragment) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = titles.size
-
         override fun createFragment(position: Int): Fragment = ProdukListFragment.newInstance((position+1).toString())
     }
 }

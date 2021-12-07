@@ -14,6 +14,7 @@
         <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_dashboard2.xml" value="0.2" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_logox.xml" value="0.17685185185185184" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/badge_background.xml" value="0.23692307692307693" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/border_transparant.xml" value="0.23333333333333334" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_wifi_24_gray.xml" value="0.20277777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/news_bottom_nav_bg.xml" value="0.1625" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_detail_produk.xml" value="0.18" />
@@ -23,6 +24,7 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_cetak.xml" value="0.17708333333333334" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_master.xml" value="0.1933876811594203" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml" value="0.10157041540020263" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_sistem.xml" value="0.17255434782608695" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_produk.xml" value="0.1234375" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_tambahh_produk_transaksi.xml" value="0.14175724637681159" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/content_data_tersimpan.xml" value="0.1933876811594203" />
@@ -51,6 +53,7 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_sptpd.xml" value="0.5" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_tersimpan.xml" value="0.5" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml" value="0.25" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk_shimmering.xml" value="0.22" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_bulan.xml" value="0.1046875" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_ispajak.xml" value="0.14479166666666668" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_tipe_produk.xml" value="0.1" />

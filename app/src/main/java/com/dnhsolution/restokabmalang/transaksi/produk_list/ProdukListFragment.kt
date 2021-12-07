@@ -103,6 +103,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         super.onResume()
         val fm: FragmentManager = (context as MainActivity).supportFragmentManager
         transaksiFragment = fm.findFragmentById(R.id.frameLayout) as TransaksiFragment
+        startShimmering(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -129,18 +130,19 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 //            DialogKelengkapan()
 //        }
 
-        if(produkAdapter == null)
-            if(CheckNetwork().checkingNetwork(requireContext())) {
+        if(produkAdapter == null) {
+            if (CheckNetwork().checkingNetwork(requireContext())) {
                 val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
                         "jenisProduk=${arguments?.get(keyParams).toString()}&" +
                         "idPengguna=$idPengguna&uuid=$uuid"
-                Log.i(_tag,stringUrl)
+                Log.i(_tag, stringUrl)
                 jsonTask = ProdukListJsonTask(this).execute(stringUrl)
             } else {
                 getDataLokal()
             }
-        else {
+        }else {
             gvMainActivity.adapter = produkAdapter
+            startShimmering(false)
         }
 
         gvMainActivity.setOnItemClickListener { _, _, position, _ ->
@@ -156,6 +158,18 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         if(MainActivity.adTransaksi == 1) return
 
         MainActivity.adTransaksi = 1
+    }
+
+    private fun startShimmering(arg: Boolean){
+        if(arg) {
+            shimmer_view_container.startShimmerAnimation()
+            shimmer_view_container.visibility = View.VISIBLE
+            gvMainActivity.visibility = View.GONE
+        } else {
+            shimmer_view_container.stopShimmerAnimation()
+            shimmer_view_container.visibility = View.GONE
+            gvMainActivity.visibility = View.VISIBLE
+        }
     }
 
     private fun setupBadge() {
@@ -227,14 +241,18 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
                 if (gvMainActivity == null) return
                 gvMainActivity.adapter = produkAdapter
+                startShimmering(false)
 
             } else {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                startShimmering(false)
             }
         } catch (e: JSONException) {
             e.printStackTrace()
             Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+            startShimmering(false)
         }
+
     }
 
     private fun getDataLokal() {
