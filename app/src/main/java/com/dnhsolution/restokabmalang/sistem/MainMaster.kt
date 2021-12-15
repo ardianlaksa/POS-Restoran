@@ -16,6 +16,7 @@ import com.dnhsolution.restokabmalang.auth.SplashActivity
 import com.dnhsolution.restokabmalang.sistem.produk.DeletePojo
 import com.dnhsolution.restokabmalang.sistem.produk.ProdukMasterActivity
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.DefaultPojo
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.gson.GsonBuilder
 import retrofit2.Call
@@ -41,7 +42,7 @@ class MainMaster : AppCompatActivity() {
     interface IsCetakBillingServices {
         @FormUrlEncoded
         @POST("pdrd/Android/AndroidJsonPOS/setUpdateUserCetakBilling")
-        fun getPosts(@Field("id") id: String,@Field("isCetakBilling") isCetakBillingValue: Int): Call<DeletePojo>
+        fun getPosts(@Field("id") id: String,@Field("isCetakBilling") isCetakBillingValue: Int): Call<DefaultPojo>
     }
 
     object CetakBillingResultFeedback {
@@ -153,15 +154,15 @@ class MainMaster : AppCompatActivity() {
 
     private fun isCetakBillingFungsi(value : String){
         val postServices = CetakBillingResultFeedback.create()
-        postServices.getPosts(value,isCetakBilling).enqueue(object : Callback<DeletePojo> {
+        postServices.getPosts(value,isCetakBilling).enqueue(object : Callback<DefaultPojo> {
 
-            override fun onFailure(call: Call<DeletePojo>, error: Throwable) {
+            override fun onFailure(call: Call<DefaultPojo>, error: Throwable) {
                 Log.e(_tag, "errornya ${error.message}")
             }
 
             override fun onResponse(
-                call: Call<DeletePojo>,
-                response: retrofit2.Response<DeletePojo>
+                call: Call<DefaultPojo>,
+                response: retrofit2.Response<DefaultPojo>
             ) {
                 if (response.isSuccessful) {
                     val data = response.body()

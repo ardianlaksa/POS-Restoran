@@ -252,16 +252,18 @@
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/bBatalTrx"
+                android:layout_marginTop="@dimen/_24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/batal_transaksi" />
+
             <LinearLayout
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="@dimen/_24"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_4"
-                android:paddingStart="@dimen/_4"
-                android:paddingRight="@dimen/_4"
-                android:paddingEnd="@dimen/_4"
                 android:orientation="horizontal">
-
 
                 <Button
                     android:id="@+id/btnKembali"
@@ -270,7 +272,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Kembali"
+                    android:text="@string/kembali"
                     android:textSize="@dimen/f_16"
                     android:fontFamily="@font/nunitosansregular"
                     android:maxLines="1"/>
@@ -282,7 +284,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Cetak"
+                    android:text="@string/cetak"
                     android:textColor="#fff"
                     android:textSize="@dimen/f_16"
                     android:fontFamily="@font/nunitosansregular"

@@ -170,7 +170,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             }
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
             tvTotalPajak.text = AddingIDRCurrency().formatIdrCurrency(totalPajakValue)
-//            tvTotalPajak.text = "Perbaikan"//AddingIDRCurrency().formatIdrCurrency(totalValue)
             adapterList = context?.let {
                 RekapBulananListAdapter(
                     tempItemsBulanan,
@@ -189,24 +188,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 }
 
                 selectedThn = spinThnArray[position]
-
-               //Toast.makeText(context, selectedThn+", "+selectedBln, Toast.LENGTH_SHORT).show()
-//                tempItemsBulanan = ArrayList()
-//                itemsBulanan!!.forEach { event ->
-//                    val tgl = (event.tgl).split("/")
-//                    if (selectedThn == tgl[0] && selectedBln == tgl[1]) {
-//                        tempItemsBulanan.add(event)
-//                    }
-//                }
-//
-//                adapterList = context?.let {
-//                    RekapBulananListAdapter(
-//                        tempItemsBulanan,
-//                        it
-//                    )
-//                }
-//
-//                recyclerView.adapter = adapterList
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -273,8 +254,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 if (itemsBulanan != null && itemsBulanan!!.size > 0) {
                     spinBlnArray.clear()
                     spinThnArray.clear()
-//                    spinThnArray.add("Tahun")
-//                    spinBlnArray.add(RekapBulananBlnSpinElement("0", "Bulan"))
                     for (index in itemsBulanan!!.indices) {
                         val stringTgl = itemsBulanan!![index].tgl
                         if (stringTgl.isNotEmpty()) {
@@ -320,19 +299,19 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
                     var totalValue = 0.0
                     var totalPajakValue = 0.0
-                    val today = getCurrentDate().split("-")
-                    selectedThn = today[2]
-                    selectedBln = today[0]
+//                    val today = getCurrentDate().split("-")
+//                    selectedThn = today[2]
+//                    selectedBln = today[0]
 
                     itemsBulanan!!.forEach { event ->
                         val tgl = (event.tgl).split("-")
-                        println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
-                        if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
+//                        println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
+//                        if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
                             tempItemsBulanan.add(event)
                             totalValue += event.omzet
                             totalPajakValue += event.pajak
-                            println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
-                        }
+//                            println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
+//                        }
                     }
 
                     tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
@@ -345,17 +324,6 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                         )
                     }
 
-//                    for(ttl in itemsBulanan!!) {
-//                        totalValue += ttl.omzet
-//                    }
-//                    tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-//
-//                    val adapterList = context?.let {
-//                        RekapBulananListAdapter(
-//                            itemsBulanan!!,
-//                            it
-//                        )
-//                    }
                     recyclerView.adapter = adapterList
                     recyclerView.layoutManager = (LinearLayoutManager(context))
                 }
@@ -371,7 +339,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
     private fun getCurrentDate(): String {
         val current = Date()
-        val frmt = SimpleDateFormat("MM-dd-yyyy")
+        val frmt = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
         return frmt.format(current)
     }
 }

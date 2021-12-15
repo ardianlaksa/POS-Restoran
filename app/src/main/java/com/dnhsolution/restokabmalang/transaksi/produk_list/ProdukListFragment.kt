@@ -101,9 +101,13 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
     override fun onResume() {
         super.onResume()
+        if (CheckNetwork().checkingNetwork(requireContext()))
+            startShimmering(true)
+        else
+            startShimmering(false)
+
         val fm: FragmentManager = (context as MainActivity).supportFragmentManager
         transaksiFragment = fm.findFragmentById(R.id.frameLayout) as TransaksiFragment
-        startShimmering(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -142,7 +146,6 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             }
         }else {
             gvMainActivity.adapter = produkAdapter
-            startShimmering(false)
         }
 
         gvMainActivity.setOnItemClickListener { _, _, position, _ ->
@@ -162,9 +165,9 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
     private fun startShimmering(arg: Boolean){
         if(arg) {
-            shimmer_view_container.startShimmerAnimation()
-            shimmer_view_container.visibility = View.VISIBLE
             gvMainActivity.visibility = View.GONE
+            shimmer_view_container.visibility = View.VISIBLE
+            shimmer_view_container.startShimmerAnimation()
         } else {
             shimmer_view_container.stopShimmerAnimation()
             shimmer_view_container.visibility = View.GONE

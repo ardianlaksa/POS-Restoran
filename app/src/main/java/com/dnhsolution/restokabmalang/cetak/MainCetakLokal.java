@@ -109,6 +109,7 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         tvTotal = findViewById(R.id.tvTotal);
         tv_status = findViewById(R.id.tv_status);
 
+        Button bBatalTrx = findViewById(R.id.bBatalTrx);
         btnCetak = findViewById(R.id.btnCetak);
         btnKembali = findViewById(R.id.btnKembali);
         btnPilih = findViewById(R.id.btnPilihBT);
@@ -128,6 +129,13 @@ public class MainCetakLokal extends AppCompatActivity implements EasyPermissions
         if(tipeStruk.equalsIgnoreCase("2")) llPajak.setVisibility(View.GONE);
         btnKembali.setOnClickListener(v -> {
             setResult(RESULT_OK);
+            finish();
+        });
+
+        bBatalTrx.setOnClickListener(v -> {
+            Log.d(_tag,"");
+            databaseHandler.delete_by_id_trx(Integer.parseInt(idTrx));
+            databaseHandler.delete_by_id_detail_trx(Integer.parseInt(idTrx));
             finish();
         });
 
