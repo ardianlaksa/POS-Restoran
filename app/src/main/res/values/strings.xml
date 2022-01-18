@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Resto Kab Malang</string>
     <string name="title_bantuan">Bantuan</string>
+    <string name="title_export">Export</string>
     <string name="title_home">Home</string>
     <string name="title_data">Data</string>
     <string name="title_tersimpan">Tersimpan</string>
@@ -83,25 +84,36 @@
         <item>Ungu</item>
     </string-array>
 
-    <string name="tanggal_kosong">-- / -- / ----</string>
     <string name="batas_waktu_sinkron">Batas Waktu Sinkron</string>
     <string name="batal_transaksi">Batal Transaksi</string>
     <string name="billing">Billing</string>
+    <string name="bluetooth_tidak_didukung">Bluetooth tidak didukung</string>
+    <string name="ble_tidak_didukung">BLE tidak didukung</string>
     <string name="bulanan">Bulanan</string>
+    <string name="cetak">Cetak</string>
     <string name="cetak_billing">Cetak Billing</string>
     <string name="diskon_tidak_valid">Diskon Tidak Valid</string>
-    <string name="minuman">Minuman</string>
-    <string name="cetak">Cetak</string>
     <string name="dll">Dll</string>
+    <string name="fasilitas">Fasilitas</string>
+    <string name="gambar">Gambar</string>
     <string name="harian">Harian</string>
+    <string name="kamera">Kamera</string>
+    <string name="kirim_email">Kirim Email</string>
     <string name="kode_billing_cln">Kode Billing : </string>
-    <string name="makanan">Makanan</string>
-    <string name="masa_cln">Masa : </string>
-    <string name="nilai_pajak_cln">Nilai Pajak : </string>
+    <string name="koneksi_terputus">Koneksi terputus</string>
     <string name="lain_lain">Lain-lain</string>
     <string name="login">Login</string>
+    <string name="makanan">Makanan</string>
+    <string name="masa_cln">Masa : </string>
+    <string name="minuman">Minuman</string>
+    <string name="nilai_pajak_cln">Nilai Pajak : </string>
     <string name="selamat_datang">Selamat Datang</string>
+    <string name="sedang_menghubungkan">Sedang menghubungkan&#8230;</string>
     <string name="tanggal_bayar">Tanggal Bayar</string>
+    <string name="tanggal_kosong">-- / -- / ----</string>
+    <string name="terhubung_dengan_perangkat">Terhubung dengan perangkat</string>
+    <string name="tidak_terhubung_ke_perangkat">Tidak terhubung ke perangkat</string>
+    <string name="video">Video</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

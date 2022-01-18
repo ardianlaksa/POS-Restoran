@@ -81,9 +81,7 @@ public class DashFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        // Layout tampilan untuk fragment ini
         setHasOptionsMenu(true);
-//        return inflater.inflate(R.layout.fragment_dashboard, parent, false);
         return inflater.inflate(R.layout.fragment_dashboard2, parent, false);
     }
 
@@ -113,35 +111,22 @@ public class DashFragment extends Fragment {
         tvTrxTersimpan = view.findViewById(R.id.tvTransaksiTersimpan);
         tvBatas= view.findViewById(R.id.tvBatas);
         ivInfo= view.findViewById(R.id.ivInfo);
-//        cvTransaksi= view.findViewById(R.id.cvTransaksi);
+        TextView tvJudul = view.findViewById(R.id.textView);
+
+        String valueJudul = "";
+        if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("01")) valueJudul = "POS Hotel";
+        if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("02")) valueJudul = "POS Restoran";
+        if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("03")) valueJudul = "POS Hotel";
+        tvJudul.setText(valueJudul);
 
         batasSinkronAngka = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "7");
         db = databaseHandler.getReadableDatabase();
         batasSinkron();
 
-        ivInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openDialog();
-            }
-        });
-//        cvTransaksi.setOnClickListener(v -> startActivity(new Intent(getContext(), DataTersimpanActivity.class)));
-
-//        cvProduk.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(getContext(), MasterProduk.class));
-//            }
-//        });
+        ivInfo.setOnClickListener(view1 -> openDialog());
 
         if(MainActivity.Companion.getAdDashboard() == 1) return;
-
-//        tampilAlertDialogTutorial();
-
         MainActivity.Companion.setAdDashboard(1);
-
-
-        // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
     }
 
     public void batasSinkron(){

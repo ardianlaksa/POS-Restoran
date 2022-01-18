@@ -1,13 +1,23 @@
 package com.dnhsolution.restokabmalang.data.rekap_harian
 
+import android.Manifest
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.Settings
+import android.text.SpannableString
+import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.*
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,13 +26,47 @@ import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.DRekapHarianJsonTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
 import com.dnhsolution.restokabmalang.utilities.*
+import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.POST
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, RekapHarianDetailOnTask {
+interface UploadPdfService {
+        @FormUrlEncoded
+        @POST("pdrd/Android/AndroidJsonPOS/notifEmailPdf")
+        fun sendPosts(
+            @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
+            , @Field("tgl") tgl: String
+        ): Call<DefaultPojo>
+    }
+
+    object UploadPdfResultFeedback {
+
+        fun create(): UploadPdfService {
+            val gson = GsonBuilder()
+                .setLenient()
+                .create()
+            val retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .baseUrl(Url.serverBase)
+                .build()
+            return retrofit.create(UploadPdfService::class.java)
+        }
+    }
+
+class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, RekapHarianDetailOnTask,
+    PDFUtility.OnDocumentClose {
 
     companion object {
         @JvmStatic
@@ -55,6 +99,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     private var tempItemsDHarian = ArrayList<DRekapHarianListElement>()
     private var adapterList:RekapHarianListAdapter? = null
     private var adapterListD:DRekapHarianListAdapter2? = null
+    private val IMAGE_DIRECTORY = "/POSRestoran"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -63,6 +108,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
+        setHasOptionsMenu(true)
         spiTgl = view.findViewById(R.id.spinTgl) as Spinner
         tvTotal = view.findViewById(R.id.tvTotal) as TextView
         ivDate = view.findViewById(R.id.ivDate) as ImageView
@@ -101,12 +147,92 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
         etDate.setText(getCurrentDate())
 
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri: Uri = Uri.fromParts("package", requireContext().packageName, null)
+            intent.data = uri
+            startActivity(intent)
+        }
+
+//            val file: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                File("${context?.getExternalFilesDir(null)}$IMAGE_DIRECTORY")
+//            } else {
+//                File("${Environment.getExternalStorageDirectory().absolutePath}$IMAGE_DIRECTORY")
+//            }
+//
+//            if (!file.exists()) {
+//                file.mkdirs()
+//            }
+//
+//            val newFile = File(file, "sample.pdf")
+//
+//            try {
+//                PDFUtility.createPdf(requireContext(), this, tempItemsHarian, newFile.path, true)
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                Log.e(_tag, "Error Creating Pdf")
+//                Toast.makeText(context, "Error Creating Pdf", Toast.LENGTH_SHORT).show()
+//            }
+
         return view
+    }
+
+    private fun kirimEmail(idPengguna : String?, idTmpUsaha : String?){
+        val postServices = UploadPdfResultFeedback.create()
+        postServices.sendPosts(idPengguna ?: ""
+            ,idTmpUsaha ?: "", tanggal
+        ).enqueue(object : Callback<DefaultPojo> {
+
+            override fun onFailure(call: Call<DefaultPojo>, error: Throwable) {
+                Log.e(_tag, "errornya ${error.message}")
+            }
+
+            override fun onResponse(
+                call: Call<DefaultPojo>,
+                response: retrofit2.Response<DefaultPojo>
+            ) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    data?.let {
+                        val feedback = it
+                        println("${feedback.success}, ${feedback.message}")
+                        if(feedback.success == 1) {
+                            Toast.makeText(context,feedback.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_data_harian, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.action_menu_email -> {
+                kirimEmail(idPengguna, idTmpUsaha)
+                true
+            } R.id.action_menu_bantuan -> {
+//                tampilAlertDialogTutorial()
+                true
+            }else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun updateLabel() {
         val myFormat = "dd-MM-yyyy" //In which you need put here
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
 
         etDate.setText(sdf.format(myCalendar.time))
         tanggal = sdf.format(myCalendar.time)
@@ -153,16 +279,14 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                     val disc_rp = rArray.getJSONObject(i).getInt("DISC_RP")
                     val omzet = rArray.getJSONObject(i).getInt("OMZET")
                     val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
+                    val concatProduk = rArray.getJSONObject(i).getString("CONCATPRODUK")
 
                     itemsHarian?.add(
                         RekapHarianListElement(
-                            idTrx,"", 0, 0, disc_rp, omzet, tglTrx)
+                            idTrx,"", 0, 0, disc_rp, omzet, tglTrx, concatProduk)
                     )
                 }
 
-                itemsHarian.let {
-
-                }
                 if (itemsHarian != null && itemsHarian!!.size > 0) {
                     var totalValue = 0.0
                     tempItemsHarian = itemsHarian!!
@@ -170,21 +294,23 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                         totalValue += ttl.total
                     }
                     tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
-
-                    adapterList = context?.let {
-                        RekapHarianListAdapter(
-                            this,
-                            tempItemsHarian,
-                            it
-                        )
-                    }
-                    recyclerView.adapter = adapterList
-                    recyclerView.layoutManager = LinearLayoutManager(context)
                 }
 
             }else {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                tempItemsHarian = itemsHarian!!
+                tvTotal.text = AddingIDRCurrency().formatIdrCurrency(0.0)
             }
+
+            adapterList = context?.let {
+                RekapHarianListAdapter(
+                    this,
+                    tempItemsHarian,
+                    it
+                )
+            }
+            recyclerView.adapter = adapterList
+            recyclerView.layoutManager = LinearLayoutManager(context)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -281,5 +407,9 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
     override fun rekapHarianDetailOnTask(result: String?) {
         result?.let { dialogDetail(it) }
+    }
+
+    override fun onPDFDocumentClose(file: File?) {
+        Toast.makeText(context,"Sample Pdf Created",Toast.LENGTH_SHORT).show()
     }
 }

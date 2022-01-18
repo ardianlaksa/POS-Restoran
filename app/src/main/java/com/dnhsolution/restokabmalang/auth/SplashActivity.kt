@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.dnhsolution.restokabmalang.auth.LoginActivity
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.databinding.ActivitySplashBinding
 import com.dnhsolution.restokabmalang.sistem.MainMaster
 import com.dnhsolution.restokabmalang.sistem.produk.DeletePojo
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
@@ -31,6 +32,7 @@ class SplashActivity : AppCompatActivity() {
     private var status : String? = null
     private val _tag: String? = javaClass.simpleName
     var sharedPreferences: SharedPreferences? = null
+    private lateinit var binding: ActivitySplashBinding
 
     /*package*/
     var svgView: AnimatedSvgView? = null
@@ -38,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
     interface IsCetakBillingServices {
         @FormUrlEncoded
         @POST("pdrd/Android/AndroidJsonPOS/setCekUuid")
-        fun getPosts(@Field("id") id: String,@Field("uuid") uuid: String): Call<CekUUIDPojo>
+        fun getPosts(@Field("id") id: String?,@Field("uuid") uuid: String?): Call<CekUUIDPojo>
     }
 
     object CekUUIDResultFeedback {
@@ -58,7 +60,9 @@ class SplashActivity : AppCompatActivity() {
     var index = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
+        binding = ActivitySplashBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
         status = sharedPreferences?.getString(Url.SESSION_STS_LOGIN, "0")
         val idPengguna = sharedPreferences?.getString(Url.SESSION_ID_PENGGUNA, "0")
@@ -68,7 +72,7 @@ class SplashActivity : AppCompatActivity() {
         databaseHandler = DatabaseHandler(this)
         svgView!!.postDelayed({
             svgView!!.start()
-            cekUUIDFungsi(idPengguna!!,uuid!!)
+            cekUUIDFungsi(idPengguna,uuid)
         }, 500)
         if (!CheckNetwork().checkingNetwork(this)){
             if (status.equals("0", ignoreCase = true)) {
@@ -78,17 +82,9 @@ class SplashActivity : AppCompatActivity() {
             }
             finish()
         }
-//        Handler().postDelayed({
-//            if (status.equals("0", ignoreCase = true)) {
-//                startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
-//            } else {
-//                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-//            }
-//            finish()
-//        }, 4000)
     }
 
-    private fun cekUUIDFungsi(value : String, value2: String){
+    private fun cekUUIDFungsi(value : String?, value2: String?){
         val postServices = CekUUIDResultFeedback.create()
         postServices.getPosts(value,value2).enqueue(object : Callback<CekUUIDPojo> {
 

@@ -15,32 +15,30 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.databinding.ActivityDeviceBinding;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.zj.btsdk.BluetoothService;
 
 import java.util.Set;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class DeviceActivity extends AppCompatActivity {
 
-    @BindView(R.id.paired_devices)
+//    @BindView(R.id.paired_devices)
     ListView lvPairedDevice;
-    @BindView(R.id.new_devices)
+//    @BindView(R.id.new_devices)
     ListView lvNewDevice;
-    @BindView(R.id.title_new_devices)
+//    @BindView(R.id.title_new_devices)
     TextView tvNewDevice;
-    @BindView(R.id.title_paired_devices)
+//    @BindView(R.id.title_paired_devices)
     TextView tvPairedDevice;
 
     public static final String EXTRA_DEVICE_ADDRESS = "device_address";
     private BluetoothService mService = null;
     private ArrayAdapter<String> newDeviceAdapter;
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -48,12 +46,13 @@ public class DeviceActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                     newDeviceAdapter.add(device.getName() + "\n" + device.getAddress());
-                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                    setTitle("Pilih Perangkat");
-                    if (newDeviceAdapter.getCount() == 0) {
-                        newDeviceAdapter.add("Perangkat tidak ditemukan");
-                    }
                 }
+//                else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+//                    setTitle("Pilih Perangkat");
+//                    if (newDeviceAdapter.getCount() == 0) {
+//                        newDeviceAdapter.add("Perangkat tidak ditemukan");
+//                    }
+//                }
             }
         }
     };
@@ -61,9 +60,15 @@ public class DeviceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device);
+        com.dnhsolution.restokabmalang.databinding.ActivityDeviceBinding binding = ActivityDeviceBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
         setTitle("Perangkat Bluetooth");
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
+        lvPairedDevice = binding.pairedDevices;
+        lvNewDevice = binding.newDevices;
+        tvNewDevice = binding.titleNewDevices;
+        tvPairedDevice = binding.titlePairedDevices;
 
         ArrayAdapter<String> pairedDeviceAdapter = new ArrayAdapter<>(this, R.layout.device_name);
         lvPairedDevice.setAdapter(pairedDeviceAdapter);
@@ -92,38 +97,34 @@ public class DeviceActivity extends AppCompatActivity {
             String noDevice = "Tidak ada perangkat terhubung!";
             pairedDeviceAdapter.add(noDevice);
         }
+
+        binding.buttonScan.setOnClickListener(view1 -> {
+            doDiscovery();
+            view.setVisibility(View.GONE);
+        });
     }
 
-    @OnClick(R.id.button_scan)
-    public void scan(View view) {
-        doDiscovery();
-        view.setVisibility(View.GONE);
-    }
+    private final AdapterView.OnItemClickListener mDeviceClickListener = (parent, view, position, id) -> {
+        mService.cancelDiscovery();
 
-    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mService.cancelDiscovery();
+        String info = ((TextView) view).getText().toString();
+        String address = info.substring(info.length() - 17);
 
-            String info = ((TextView) view).getText().toString();
-            String address = info.substring(info.length() - 17);
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+        SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
-            Intent intent = new Intent();
-            intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
-            SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
+        //membuat editor untuk menyimpan data ke shared preferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-            //membuat editor untuk menyimpan data ke shared preferences
-            SharedPreferences.Editor editor = sharedPreferences.edit();
+        //menambah data ke editor
+        editor.putString(Url.SESSION_PRINTER_BT, address);
 
-            //menambah data ke editor
-            editor.putString(Url.SESSION_PRINTER_BT, address);
+        //menyimpan data ke editor
+        editor.apply();
 
-            //menyimpan data ke editor
-            editor.apply();
-
-            setResult(RESULT_OK, intent);
-            finish();
-        }
+        setResult(RESULT_OK, intent);
+        finish();
     };
 
     private void doDiscovery() {

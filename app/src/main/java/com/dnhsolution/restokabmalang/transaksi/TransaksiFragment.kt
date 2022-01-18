@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -17,16 +16,19 @@ import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.reflect.Array
 
 class TransaksiFragment : Fragment() {
 
     private lateinit var tabMain: TabLayout
     private lateinit var viewpager: ViewPager2
-    var apsMakanan = ArrayList<ProdukListElement>()
-    var apsMinuman = ArrayList<ProdukListElement>()
-    var apsDll = ArrayList<ProdukListElement>()
+    var apsSatu = ArrayList<ProdukListElement>()
+    var apsDua = ArrayList<ProdukListElement>()
+    var apsTiga = ArrayList<ProdukListElement>()
+    var apsEmpat = ArrayList<ProdukListElement>()
 
-    private val titles = arrayOf("Makanan", "Minuman", "DLL")
+    private var titles = arrayOf("Makanan", "Minuman", "DLL")
+    private var argTab = arrayOf("")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -38,8 +40,13 @@ class TransaksiFragment : Fragment() {
         val fragmentAdapter = ScreenSlidePagerAdapter(this)
         viewpager.adapter = fragmentAdapter
 
+        argTab = MainActivity.argTab
+
+        if(MainActivity.jenisPajak == "01") {
+            titles = arrayOf("Fasilitas", "DLL")
+        }
+
         TabLayoutMediator(tabMain, viewpager) { tab, position ->
-            //To get the first name of doppelganger celebrities
             tab.text = titles[position]
         }.attach()
 
@@ -54,10 +61,6 @@ class TransaksiFragment : Fragment() {
                 (activity as MainActivity).toolbar.collapseActionView()
             }
 
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-            }
-
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
                 Log.e("onPageScrollState", state.toString())
@@ -69,19 +72,20 @@ class TransaksiFragment : Fragment() {
     fun tambahDataApsList(arg: String,produk: ProdukListElement){
         when(arg){
             "2" -> {
-                if(apsMinuman.contains(produk)) apsMinuman.remove(produk)
-                else apsMinuman.add(produk)
-                println("tambahDataApsList $arg ${apsMinuman.size}")
+                if(apsDua.contains(produk)) apsDua.remove(produk)
+                else apsDua.add(produk)
             }
             "3" -> {
-                if(apsDll.contains(produk)) apsDll.remove(produk)
-                else apsDll.add(produk)
-                println("tambahDataApsList $arg ${apsDll.size}")
+                if(apsTiga.contains(produk)) apsTiga.remove(produk)
+                else apsTiga.add(produk)
+            }
+            "4" -> {
+                if(apsEmpat.contains(produk)) apsEmpat.remove(produk)
+                else apsEmpat.add(produk)
             }
             else -> {
-                if(apsMakanan.contains(produk)) apsMakanan.remove(produk)
-                else apsMakanan.add(produk)
-                println("tambahDataApsList $arg ${apsMakanan.size}")
+                if(apsSatu.contains(produk)) apsSatu.remove(produk)
+                else apsSatu.add(produk)
             }
         }
     }
@@ -89,19 +93,22 @@ class TransaksiFragment : Fragment() {
     fun tampilDataApsList(arg: String) : ArrayList<ProdukListElement>{
         return when(arg){
             "2" -> {
-                apsMinuman
+                apsDua
             }
             "3" -> {
-                apsDll
+                apsTiga
+            }
+            "4" -> {
+                apsEmpat
             }
             else -> {
-                apsMakanan
+                apsSatu
             }
         }
     }
 
     private inner class ScreenSlidePagerAdapter(fa: Fragment) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = titles.size
-        override fun createFragment(position: Int): Fragment = ProdukListFragment.newInstance((position+1).toString())
+        override fun createFragment(position: Int): Fragment = ProdukListFragment.newInstance(argTab[position])
     }
 }

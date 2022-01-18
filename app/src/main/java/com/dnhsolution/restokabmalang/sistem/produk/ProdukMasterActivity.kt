@@ -4,9 +4,11 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
+import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.AsyncTask
@@ -22,7 +24,9 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -38,6 +42,7 @@ import com.dnhsolution.restokabmalang.sistem.MainMaster
 import com.dnhsolution.restokabmalang.sistem.produk.server.*
 import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.PilihanAttachmentFragmentDialog
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
@@ -48,6 +53,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import kotlinx.coroutines.launch
 import java.io.*
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -56,6 +62,7 @@ import java.util.*
 
 class ProdukMasterActivity : AppCompatActivity() {
 
+    private val _tag = javaClass.simpleName
     private lateinit var slctdJenisProduk: String
     private lateinit var slctdIspajak: String
 
@@ -75,6 +82,9 @@ class ProdukMasterActivity : AppCompatActivity() {
     var t_ket: String? = null
     var databaseHandler: DatabaseHandler? = null
     private var toolbar: Toolbar? = null
+    private val requestPermissionRequestStorageCode = 2
+    private val requestCaptureImage:Int = 100
+    private val requestPickImage = 1046
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,79 +141,6 @@ class ProdukMasterActivity : AppCompatActivity() {
             this@ProdukMasterActivity.setTheme(R.style.Theme_Sixth)
         }
     }
-
-//    fun gantiIconWifi(value: Boolean) {
-//        if (value) {
-//            menuTemp!!.getItem(2).icon =
-//                ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_green)
-//            statusJaringan = 1
-//        } else {
-//            menuTemp!!.getItem(2).icon =
-//                ContextCompat.getDrawable(this, R.drawable.ic_baseline_wifi_24_gray)
-//            statusJaringan = 0
-//        }
-//    }
-
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        val inflater = menuInflater
-//        inflater.inflate(R.menu.menu_master, menu)
-//        menuTemp = menu
-//        val searchItem = menu.findItem(R.id.action_menu_cari)
-//        searchView = searchItem.actionView as SearchView
-//        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
-//        searchView.onActionViewExpanded()
-//        val stringTextSearch:CharSequence = getString(R.string.cari)
-//        val ss1 = SpannableString(stringTextSearch)
-//        ss1.setSpan(RelativeSizeSpan(0.7f), 0, ss1.length, 0) // set size
-//        val searchEditText = searchView.findViewById<View>(androidx.appcompat.R.id.search_src_text) as EditText
-//        searchEditText.hint = ss1
-//
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String): Boolean {
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                val fm: FragmentManager = supportFragmentManager
-//                val fragment: ServerFragment =
-//                    fm.findFragmentById(R.id.view_pager) as ServerFragment
-//                fragment.produkAdapter!!.filter.filter(newText)
-//                return false
-//            }
-//        })
-//
-//        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-//            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
-//                isSearch = true
-//                return true
-//            }
-//
-//            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
-//                isSearch = false
-//                val fm: FragmentManager = supportFragmentManager
-//                val fragment: ServerFragment =
-//                    fm.findFragmentById(R.id.view_pager) as ServerFragment
-//                fragment.produkAdapter!!.filter.filter("")
-//                return true
-//            }
-//        })
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == R.id.action_menu_lanjut) {
-//            if (CheckNetwork().checkingNetwork(this) && statusJaringan == 1) dialogTambah() else Toast.makeText(
-//                this,
-//                R.string.tidak_terkoneksi_internet,
-//                Toast.LENGTH_SHORT
-//            ).show()
-//            return true
-//        } else if (item.itemId == R.id.action_menu_bantuan) {
-//            tampilAlertDialogTutorial()
-//            return true
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     private fun openDialog() {
         val alertDialog = AlertDialog.Builder(this@ProdukMasterActivity).create()
@@ -323,105 +260,108 @@ class ProdukMasterActivity : AppCompatActivity() {
                 dialogBuilder.dismiss()
             }
         }
+
         ivTambahFoto.setOnClickListener {
-            wallpaperDirectory =
-                File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
-            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                wallpaperDirectory!!.mkdirs()
-            }
-            val builder = AlertDialog.Builder(this@ProdukMasterActivity)
-            builder.setMessage("Pilihan Tambah Foto")
-                .setPositiveButton("Galeri") { dialog, id ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (checkSelfPermission(Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            requestPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                ),
-                                MY_CAMERA_PERMISSION_CODE
-                            )
-                            //showFileChooser();
-                        } else {
-                            wallpaperDirectory = File(
-                                Environment.getExternalStorageDirectory()
-                                    .toString() + IMAGE_DIRECTORY
-                            )
-                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                                wallpaperDirectory!!.mkdirs()
-                            }
-                            showFileChooser()
-                            status = "t"
-                        }
-                    } else {
-                        wallpaperDirectory = File(
-                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
-                        )
-                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                            wallpaperDirectory!!.mkdirs()
-                        }
-                        showFileChooser()
-                        status = "t"
-                    }
-                }
-                .setNegativeButton("Kamera") { dialog, id ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (checkSelfPermission(Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            requestPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                ),
-                                MY_CAMERA_PERMISSION_CODE
-                            )
-                            //showFileChooser();
-                        } else {
-                            wallpaperDirectory = File(
-                                Environment.getExternalStorageDirectory()
-                                    .toString() + IMAGE_DIRECTORY
-                            )
-                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                                wallpaperDirectory!!.mkdirs()
-                            }
-                            val cal = Calendar.getInstance()
-                            val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-                            tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            val f = File(wallpaperDirectory, tempNameFile)
-                            val photoURI = FileProvider.getUriForFile(
-                                applicationContext,
-                                BuildConfig.APPLICATION_ID + ".provider",
-                                f
-                            )
-                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                            startActivityForResult(cameraIntent, CAMERA_REQUEST)
-                            status = "t"
-                        }
-                    } else {
-                        wallpaperDirectory = File(
-                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
-                        )
-                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                            wallpaperDirectory!!.mkdirs()
-                        }
-                        val cal = Calendar.getInstance()
-                        val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-                        tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        val f = File(wallpaperDirectory, tempNameFile)
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
-                        startActivityForResult(intent, CAMERA_REQUEST)
-                        status = "t"
-                    }
-                }
-            val alert = builder.create()
-            alert.show()
+            requestPermissions("storage")
+//            wallpaperDirectory =
+//                File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
+//            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+//                wallpaperDirectory!!.mkdirs()
+//            }
+//            val builder = AlertDialog.Builder(this@ProdukMasterActivity)
+//            builder.setMessage("Pilihan Tambah Foto")
+//                .setPositiveButton("Galeri") { dialog, id ->
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        if (checkSelfPermission(Manifest.permission.CAMERA)
+//                            != PackageManager.PERMISSION_GRANTED
+//                        ) {
+//                            requestPermissions(
+//                                arrayOf(
+//                                    Manifest.permission.CAMERA,
+//                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                                ),
+//                                MY_CAMERA_PERMISSION_CODE
+//                            )
+//                            //showFileChooser();
+//                        } else {
+//                            wallpaperDirectory = File(
+//                                Environment.getExternalStorageDirectory()
+//                                    .toString() + IMAGE_DIRECTORY
+//                            )
+//                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+//                                wallpaperDirectory!!.mkdirs()
+//                            }
+//                            showFileChooser()
+//                            status = "t"
+//                        }
+//                    } else {
+//                        wallpaperDirectory = File(
+//                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
+//                        )
+//                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+//                            wallpaperDirectory!!.mkdirs()
+//                        }
+//                        showFileChooser()
+//                        status = "t"
+//                    }
+//                }
+//                .setNegativeButton("Kamera") { dialog, id ->
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        if (checkSelfPermission(Manifest.permission.CAMERA)
+//                            != PackageManager.PERMISSION_GRANTED
+//                        ) {
+//                            requestPermissions(
+//                                arrayOf(
+//                                    Manifest.permission.CAMERA,
+//                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                                ),
+//                                MY_CAMERA_PERMISSION_CODE
+//                            )
+//                            //showFileChooser();
+//                        } else {
+//                            wallpaperDirectory = File(
+//                                Environment.getExternalStorageDirectory()
+//                                    .toString() + IMAGE_DIRECTORY
+//                            )
+//                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+//                                wallpaperDirectory!!.mkdirs()
+//                            }
+//                            val cal = Calendar.getInstance()
+//                            val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+//                            tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+//                            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//                            val f = File(wallpaperDirectory, tempNameFile)
+//                            val photoURI = FileProvider.getUriForFile(
+//                                applicationContext,
+//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                f
+//                            )
+//                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+//                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+//                            startActivityForResult(cameraIntent, CAMERA_REQUEST)
+//                            status = "t"
+//                        }
+//                    } else {
+//                        wallpaperDirectory = File(
+//                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
+//                        )
+//                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
+//                            wallpaperDirectory!!.mkdirs()
+//                        }
+//                        val cal = Calendar.getInstance()
+//                        val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+//                        tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
+//                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//                        val f = File(wallpaperDirectory, tempNameFile)
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
+//                        startActivityForResult(intent, CAMERA_REQUEST)
+//                        status = "t"
+//                    }
+//                }
+//            val alert = builder.create()
+//            alert.show()
         }
+
         etHarga.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
@@ -456,6 +396,184 @@ class ProdukMasterActivity : AppCompatActivity() {
         })
         dialogBuilder.setView(dialogView)
         dialogBuilder.show()
+    }
+
+    private fun requestPermissions(text: String) {
+        if(text == "storage") {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), requestPermissionRequestStorageCode)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == requestPermissionRequestStorageCode) {
+            when {
+                grantResults.isEmpty() -> {
+                    // If user interaction was interrupted, the permission request is cancelled and you
+                    // receive empty arrays.
+                    Log.i(_tag, "User interaction was cancelled.")
+                }
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    Log.i(_tag, "Permission granted.")
+                    val ft = supportFragmentManager.beginTransaction()
+                    val prev = supportFragmentManager.findFragmentByTag("dialog")
+                    if (prev != null) {
+                        ft.remove(prev)
+                    }
+//                  ft.addToBackStack(null)
+                    val dialogFragment = PilihanAttachmentFragmentDialog()
+                    dialogFragment.show(ft, "dialog")
+                }
+                else -> {
+                }
+            }
+        }
+    }
+
+    fun openCameraIntent() {
+        val values = ContentValues()
+        val timeStamp =  SimpleDateFormat("yyyyMMdd_HHmmss",
+            Locale.getDefault()).format(Date())
+        val imageFileName = "IMG_" + timeStamp + "_"
+        values.put(MediaStore.Images.Media.TITLE, imageFileName)
+        values.put(MediaStore.Images.Media.DESCRIPTION, "POS Android")
+        contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+//        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
+        startActivityForResult(intent, requestCaptureImage)
+    }
+
+    // Trigger gallery selection for a photo
+    fun onPickPhoto() {
+        // Create intent for picking a photo from the gallery
+        val intent = Intent(Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+        if (intent.resolveActivity(packageManager) != null) {
+            // Bring up gallery to select a photo
+            startActivityForResult(intent, requestPickImage)
+        }
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_CANCELED) {
+            return
+        }
+        if (requestCode == requestPickImage) {
+            filePath = data!!.data
+            val a = RealPathUtil.getRealPath(
+                applicationContext, filePath
+            )
+            if (resultCode == RESULT_OK) {
+                // Get the Uri of the selected file
+                val sourceLocation = File(a)
+                val cal = Calendar.getInstance()
+                val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
+                val filename = "Gallery_" + sdf.format(cal.time) + ".jpg"
+                val targetLocation = File(wallpaperDirectory.toString(), filename)
+                if (sourceLocation.exists()) {
+                    Log.v("Pesan", "Proses Pindah")
+                    try {
+                        val `in`: InputStream = FileInputStream(sourceLocation)
+                        val out: OutputStream = FileOutputStream(targetLocation)
+                        // Copy the bits from instream to outstream
+                        val buf = ByteArray(1024)
+                        var len: Int
+                        while (`in`.read(buf).also { len = it } > 0) {
+                            out.write(buf, 0, len)
+                        }
+                        `in`.close()
+                        out.close()
+                        Log.v("Pesan", "Copy file successful.")
+                    } catch (e: FileNotFoundException) {
+                        e.printStackTrace()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    Log.v("Pesan", "Copy file failed. Source file missing.")
+                }
+                val file = File(wallpaperDirectory.toString(), filename)
+                val file_size = (file.length() / 1024).toString().toInt()
+                Log.d("PirangMB", file_size.toString())
+                    Glide.with(ivGambar!!.context).load(File(file.absolutePath).toString())
+                        .placeholder(R.mipmap.ic_foto)
+                        .centerCrop()
+                        .fitCenter()
+                        .listener(object : RequestListener<Drawable?> {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any,
+                                target: Target<Drawable?>,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                Log.e("xmx1", "Error " + e.toString())
+                                return false
+                            }
+
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any,
+                                target: Target<Drawable?>,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                Log.e("xmx1", "no Error ")
+                                return false
+                            }
+                        })
+                        .into(ivGambar!!)
+                    ivGambar!!.visibility = View.VISIBLE
+                    t_nama_file = file.absolutePath
+            }
+        } else if (requestCode == requestCaptureImage) {
+            if (resultCode == RESULT_OK) {
+                println("CAMERA_REQUEST1")
+                val pathFile = data?.getStringExtra("pathFile") ?: ""
+                val filePhoto = File(pathFile)
+                val file_size = (filePhoto.length() / 1024).toString().toInt()
+                Log.d(_tag, file_size.toString())
+                Glide.with(ivGambar!!.context).load(filePhoto)
+                    .placeholder(R.mipmap.ic_foto)
+                    .centerCrop()
+                    .fitCenter()
+                    .listener(object : RequestListener<Drawable?> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any,
+                            target: Target<Drawable?>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            Log.e("xmx1", "Error " + e.toString())
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any,
+                            target: Target<Drawable?>,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            Log.e("xmx1", "no Error ")
+                            return false
+                        }
+                    })
+                    .into(ivGambar!!)
+                ivGambar!!.visibility = View.VISIBLE
+                if (!t_nama_file.equals("", ignoreCase = true)) {
+                    val fl = File(t_nama_file)
+                    val deleted = fl.delete()
+                }
+                t_nama_file = pathFile
+            }
+        }
     }
 
     private fun requestMultiplePermissions() {
@@ -539,209 +657,7 @@ class ProdukMasterActivity : AppCompatActivity() {
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_CANCELED) {
-            return
-        }
-        if (requestCode == FILE_SELECT_CODE) {
-            filePath = data!!.data
-            val a = RealPathUtil.getRealPath(
-                applicationContext, filePath
-            )
-            if (resultCode == RESULT_OK) {
-                // Get the Uri of the selected file
-                val uri = data.data
-                Log.d("Foto", "File Uri: " + uri.toString())
-                // Get the path
-                Log.d("Foto", "File Path: $a")
-                val sourceLocation = File(a)
-                val cal = Calendar.getInstance()
-                val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-                val filename = "Gallery_" + sdf.format(cal.time) + ".jpg"
-                val targetLocation = File(wallpaperDirectory.toString(), filename)
-                if (sourceLocation.exists()) {
-                    Log.v("Pesan", "Proses Pindah")
-                    try {
-                        val `in`: InputStream = FileInputStream(sourceLocation)
-                        val out: OutputStream = FileOutputStream(targetLocation)
-                        // Copy the bits from instream to outstream
-                        val buf = ByteArray(1024)
-                        var len: Int
-                        while (`in`.read(buf).also { len = it } > 0) {
-                            out.write(buf, 0, len)
-                        }
-                        `in`.close()
-                        out.close()
-                        Log.v("Pesan", "Copy file successful.")
-                    } catch (e: FileNotFoundException) {
-                        e.printStackTrace()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                } else {
-                    Log.v("Pesan", "Copy file failed. Source file missing.")
-                }
-                val file = File(wallpaperDirectory.toString(), filename)
-                val file_size = (file.length() / 1024).toString().toInt()
-                Log.d("PirangMB", file_size.toString())
-                if (status.equals("e", ignoreCase = true)) {
-                    Glide.with(ivGambarBaru!!.context).load(File(file.absolutePath).toString())
-                        .placeholder(R.mipmap.ic_foto)
-                        .centerCrop()
-                        .fitCenter()
-                        .listener(object : RequestListener<Drawable?> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "Error " + e.toString())
-                                return false
-                            }
 
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "no Error ")
-                                return false
-                            }
-                        })
-                        .into(ivGambarBaru!!)
-                    ivGambarBaru!!.visibility = View.VISIBLE
-                    if (!e_nama_file.equals("", ignoreCase = true)) {
-                        val fl = File(e_nama_file)
-                        val deleted = fl.delete()
-                    }
-                    e_nama_file = file.absolutePath
-                } else if (status.equals("t", ignoreCase = true)) {
-                    Glide.with(ivGambar!!.context).load(File(file.absolutePath).toString())
-                        .placeholder(R.mipmap.ic_foto)
-                        .centerCrop()
-                        .fitCenter()
-                        .listener(object : RequestListener<Drawable?> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "Error " + e.toString())
-                                return false
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "no Error ")
-                                return false
-                            }
-                        })
-                        .into(ivGambar!!)
-                    ivGambar!!.visibility = View.VISIBLE
-                    if (!t_nama_file.equals("", ignoreCase = true)) {
-                        val fl = File(t_nama_file)
-                        val deleted = fl.delete()
-                    }
-                    t_nama_file = file.absolutePath
-                }
-            }
-        } else if (requestCode == CAMERA_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                println("CAMERA_REQUEST1")
-                //                        Bitmap photo = (Bitmap) data.getExtras().get("data");
-                var f = File(wallpaperDirectory.toString())
-                Log.d("File", f.toString())
-                for (temp in f.listFiles()) {
-                    if (temp.name == tempNameFile) {
-                        f = temp
-                        val filePhoto = File(wallpaperDirectory.toString(), tempNameFile)
-                        val file_size = (filePhoto.length() / 1024).toString().toInt()
-                        Log.d("PirangMB", file_size.toString())
-                        if (status.equals("e", ignoreCase = true)) {
-                            Glide.with(ivGambarBaru!!.context).load(File(f.absolutePath).toString())
-                                .placeholder(R.mipmap.ic_foto)
-                                .centerCrop()
-                                .fitCenter()
-                                .listener(object : RequestListener<Drawable?> {
-                                    override fun onLoadFailed(
-                                        e: GlideException?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "Error " + e.toString())
-                                        return false
-                                    }
-
-                                    override fun onResourceReady(
-                                        resource: Drawable?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        dataSource: DataSource,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "no Error ")
-                                        return false
-                                    }
-                                })
-                                .into(ivGambarBaru!!)
-                            ivGambarBaru!!.visibility = View.VISIBLE
-                            if (!e_nama_file.equals("", ignoreCase = true)) {
-                                val fl = File(e_nama_file)
-                                val deleted = fl.delete()
-                            }
-                            e_nama_file = f.absolutePath
-                        } else if (status.equals("t", ignoreCase = true)) {
-                            Glide.with(ivGambar!!.context).load(File(f.absolutePath).toString())
-                                .placeholder(R.mipmap.ic_foto)
-                                .centerCrop()
-                                .fitCenter()
-                                .listener(object : RequestListener<Drawable?> {
-                                    override fun onLoadFailed(
-                                        e: GlideException?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "Error " + e.toString())
-                                        return false
-                                    }
-
-                                    override fun onResourceReady(
-                                        resource: Drawable?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        dataSource: DataSource,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "no Error ")
-                                        return false
-                                    }
-                                })
-                                .into(ivGambar!!)
-                            ivGambar!!.visibility = View.VISIBLE
-                            if (!t_nama_file.equals("", ignoreCase = true)) {
-                                val fl = File(t_nama_file)
-                                val deleted = fl.delete()
-                            }
-                            t_nama_file = f.absolutePath
-                        }
-                        break
-                    }
-                }
-            }
-        }
-    }
 
     private fun TambahData() {
         class TambahData : AsyncTask<Void?, Int?, String?>() {

@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         var idPengguna: String? = null
         var idTempatUsaha: String? = null
         var uuid: String? = null
+        var jenisPajak: String? = null
+        var argTab = arrayOf("1","2","3")
+        var namaUser: String? = null
+        var emailUser: String? = null
     }
 
     private val _tag = javaClass.simpleName
@@ -84,6 +88,8 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences: SharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
+        jenisPajak = sharedPreferences.getString(Url.SESSION_JENIS_PAJAK, "00")
+
         when {
             tema!!.equals("0", ignoreCase = true) -> {
                 this@MainActivity.setTheme(R.style.Theme_First)
@@ -121,6 +127,8 @@ class MainActivity : AppCompatActivity() {
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         idTempatUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0")
         status_batas = sharedPreferences.getString(Url.SESSION_STATUS_BATAS, "nonaktif").toString()
+        namaUser = sharedPreferences.getString(Url.SESSION_NAME, "")
+        emailUser = sharedPreferences.getString(Url.SESSION_EMAIL, "")
 
 
         if(alamat!!.equals("", ignoreCase = true) || email!!.equals("", ignoreCase = true) ||
@@ -130,7 +138,12 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = label
+        supportActionBar?.title = label
+//        when (jenisPajak) {
+//            "01" -> supportActionBar?.title = "POS Hotel"
+//            "02" -> supportActionBar?.title = "POS Restoran"
+//            "03" -> supportActionBar?.title = "POS Hiburan"
+//        }
 
         Log.i("MAO", "$idPengguna, $idTempatUsaha");
 
@@ -535,7 +548,7 @@ class MainActivity : AppCompatActivity() {
             //Toast.makeText(this@MainActivity, "run looping, total data : "+jml, Toast.LENGTH_SHORT).show()
             mHandler!!.postDelayed(this, 3000)
         }
-    } //runnable
+    }
 
     override fun onPause() {
         super.onPause()
@@ -548,11 +561,5 @@ class MainActivity : AppCompatActivity() {
         mHandler = Handler()
         mHandler!!.postDelayed(m_Runnable, 3000)
     }
-//    fun getDaysAgo(daysAgo: Int): Date {
-//        val calendar = Calendar.getInstance()
-//        calendar.add(Calendar.DAY_OF_YEAR, +daysAgo)
-//
-//        return calendar.time
-//    }
 
 }

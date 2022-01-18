@@ -22,6 +22,7 @@ import com.android.volley.toolbox.Volley;
 import com.dnhsolution.restokabmalang.BuildConfig;
 import com.dnhsolution.restokabmalang.MainActivity;
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.databinding.ActivityLoginBinding;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,26 +42,31 @@ public class LoginActivity extends AppCompatActivity {
     String kode_aktivasi = "";
     private String uniqueID = "";
     private String versiApp = "";
+    private String packageNameApp = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        ActivityLoginBinding binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        etPassword = findViewById(R.id.etPassword);
-        etUsername = findViewById(R.id.etUsername);
-        btnLogin = findViewById(R.id.btnLogin);
-        bPassword =  findViewById(R.id.bPassword);
+        etPassword = binding.etPassword;
 
-        LAktivasi = findViewById(R.id.LAktivasi);
-        LLogin = findViewById(R.id.LLogin);
-        LKeterangan = findViewById(R.id.LKeterangan);
-        et1 = findViewById(R.id.et1);
-        et2 = findViewById(R.id.et2);
-        et3 = findViewById(R.id.et3);
-        et4 = findViewById(R.id.et4);
+        etUsername = binding.etUsername;
+        btnLogin = binding.btnLogin;
+        bPassword =  binding.bPassword;
+
+        LAktivasi = binding.LAktivasi;
+        LLogin = binding.LLogin;
+        LKeterangan = binding.LKeterangan;
+        et1 = binding.et1;
+        et2 = binding.et2;
+        et3 = binding.et3;
+        et4 = binding.et4;
         uniqueID = UUID.randomUUID().toString();
         versiApp = BuildConfig.VERSION_CODE+"."+BuildConfig.VERSION_NAME;
+        packageNameApp = this.getPackageName();
 
         et1.requestFocus();
         et1.addTextChangedListener(new TextWatcher() {
@@ -325,6 +331,8 @@ public class LoginActivity extends AppCompatActivity {
                         String telp = json.getString("TELP");
                         String tipeStruk = json.getString("TIPE_STRUK");
                         String isCetakBilling = json.getString("ISCETAK_BILLING");
+                        String namaUser = json.getString("NAME");
+
 
                         SharedPreferences sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -345,6 +353,16 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Url.SESSION_TIPE_STRUK,tipeStruk);
                         editor.putString(Url.SESSION_ISCETAK_BILLING,isCetakBilling);
                         editor.putString(Url.SESSION_UUID,uniqueID);
+                        editor.putString(Url.SESSION_NAME,namaUser);
+                        String jenisPajak = "00";
+                        if(packageNameApp.equalsIgnoreCase("com.dnhsolution.restokabmalang"))
+                            jenisPajak = "02";
+                        else if(packageNameApp.equalsIgnoreCase("com.dnhsolution.hotelkabmalang"))
+                            jenisPajak = "01";
+                        else if(packageNameApp.equalsIgnoreCase("com.dnhsolution.hiburankabmalang"))
+                            jenisPajak = "03";
+
+                        editor.putString(Url.SESSION_JENIS_PAJAK,jenisPajak);
 
                         //menyimpan data ke editor
                         editor.apply();
@@ -359,6 +377,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
+                btnLogin.setEnabled(true);
             }
         }, error -> {
             progressDialog.dismiss();

@@ -43,16 +43,18 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:layout_gravity="bottom"
-            android:enabled="false"
-            android:inputType="date"
             android:id="@+id/etDate"
-            android:layout_weight="1"
             android:layout_width="0dp"
-            android:textColor="#363636"
-            android:text="@string/tanggal_kosong"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:enabled="false"
             android:fontFamily="@font/nunitosansregular"
-            android:layout_height="wrap_content" />
+            android:inputType="date"
+            android:minHeight="48dp"
+            android:text="@string/tanggal_kosong"
+            android:textColor="#363636" />
+
         <Spinner
             android:visibility="gone"
             android:layout_marginRight="5dp"

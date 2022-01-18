@@ -48,9 +48,12 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.bProses -> {
-                if(isDiskonValid)
-                    showDialog("Konfirmasi","Apakan anda ingin memproses?")
-                else Toast.makeText(this,R.string.diskon_tidak_valid,Toast.LENGTH_SHORT).show()
+                if(isDiskonValid) {
+                    val jumlahObjek = obyek?.size ?: 0
+                    if (jumlahObjek > 0)
+                        showDialog("Konfirmasi", "Apakan anda ingin memproses?")
+                    else Toast.makeText(applicationContext, R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                } else Toast.makeText(this,R.string.diskon_tidak_valid,Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
@@ -28,11 +29,13 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var tabMain: TabLayout
     private lateinit var viewpager: ViewPager2
-    var apsMakanan = ArrayList<ProdukListElement>()
-    var apsMinuman = ArrayList<ProdukListElement>()
-    var apsDll = ArrayList<ProdukListElement>()
+    var apsSatu = ArrayList<ProdukListElement>()
+    var apsDua = ArrayList<ProdukListElement>()
+    var apsTiga = ArrayList<ProdukListElement>()
+    var apsEmpat = ArrayList<ProdukListElement>()
 
-    private val titles = arrayOf("Makanan", "Minuman", "DLL")
+    private var titles = arrayOf("Makanan", "Minuman", "DLL")
+    private var argTab = arrayOf("")
     private val _tag = javaClass.simpleName
     var valueArgsFromKeranjang: ArrayList<ProdukSerializable>? = null
 
@@ -51,6 +54,12 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         setContentView(R.layout.activity_tambahh_produk_transaksi)
         setSupportActionBar(toolbar)
+
+        argTab = MainActivity.argTab
+
+        if(MainActivity.jenisPajak == "01") {
+            titles = arrayOf("Fasilitas", "DLL")
+        }
 
         val i = intent
         valueArgsFromKeranjang = i.getParcelableArrayListExtra("ARRAYLIST")
@@ -102,7 +111,7 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
             if(!produk.isFavorite) {
                 var valueIndex = -1
                 valueArgsFromKeranjang!!.forEachIndexed { index, produkSerializable ->
-                    println("tambahDataApsList forEachIndexed ${produk.idItem} ${produkSerializable.idItem}")
+//                    println("tambahDataApsList forEachIndexed ${produk.idItem} ${produkSerializable.idItem}")
                     if (produk.idItem == produkSerializable.idItem) {
                         valueIndex = index
                     }
@@ -111,22 +120,26 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
             }
             when(arg){
                 "2" -> {
-                    if(apsMinuman.contains(produk)) {
-                        apsMinuman.remove(produk)
-                    }else apsMinuman.add(produk)
-                    println("tambahDataApsList $arg ${apsMinuman.size}")
+                    if(apsDua.contains(produk)) {
+                        apsDua.remove(produk)
+                    }else apsDua.add(produk)
+//                    println("tambahDataApsList $arg ${apsDua.size}")
                 }
                 "3" -> {
-                    if(apsDll.contains(produk)) {
-                        apsDll.remove(produk)
-                    } else apsDll.add(produk)
-                    println("tambahDataApsList $arg ${apsDll.size}")
+                    if(apsTiga.contains(produk)) {
+                        apsTiga.remove(produk)
+                    } else apsTiga.add(produk)
+//                    println("tambahDataApsList $arg ${apsTiga.size}")
+                }
+                "4" -> {
+                    if(apsEmpat.contains(produk)) apsEmpat.remove(produk)
+                    else apsEmpat.add(produk)
                 }
                 else -> {
-                    if(apsMakanan.contains(produk)) {
-                        apsMakanan.remove(produk)
-                    } else apsMakanan.add(produk)
-                    println("tambahDataApsList $arg ${apsMakanan.size}")
+                    if(apsSatu.contains(produk)) {
+                        apsSatu.remove(produk)
+                    } else apsSatu.add(produk)
+//                    println("tambahDataApsList $arg ${apsSatu.size}")
                 }
             }
             loadingLayout?.visibility = View.INVISIBLE
@@ -136,20 +149,22 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
     fun tampilDataApsList(arg: String) : ArrayList<ProdukListElement>{
         return when(arg){
             "2" -> {
-                apsMinuman
+                apsDua
             }
             "3" -> {
-                apsDll
+                apsTiga
+            }
+            "4" -> {
+                apsEmpat
             }
             else -> {
-                apsMakanan
+                apsSatu
             }
         }
     }
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = titles.size
-
-        override fun createFragment(position: Int): Fragment = TambahProdukListFragment.newInstance((position+1).toString(),valueArgsFromKeranjang)
+        override fun createFragment(position: Int): Fragment = TambahProdukListFragment.newInstance((argTab[position]),valueArgsFromKeranjang)
     }
 }

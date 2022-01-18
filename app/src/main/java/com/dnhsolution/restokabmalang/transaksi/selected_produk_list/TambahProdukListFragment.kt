@@ -61,12 +61,8 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
-    private val makananFavoritProdukKey = "makananFavoritProdukKey"
-    private val minumanFavoritProdukKey = "minumanFavoritProdukKey"
-    private val dllFavoritProdukKey = "dllFavoritProdukKey"
-    var produkSerializable: ProdukSerializable? = null
     var produks:ArrayList<ProdukListElement> = ArrayList()
-    val argTab = arrayOf("1","2","3")
+    private var argTab = arrayOf("")
 
     var databaseHandler: DatabaseHandler? = null
 
@@ -111,15 +107,12 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         argumenValue2 = arguments?.get(keyParams2) as ArrayList<*>?
         databaseHandler = DatabaseHandler(requireContext())
 
-//        val alamat = sharedPreferences?.getString(Url.SESSION_ALAMAT, "0")
-//        val email = sharedPreferences?.getString(Url.SESSION_EMAIL, "0")
-//        val telp = sharedPreferences?.getString(Url.SESSION_TELP, "0")
-//        val namausaha = sharedPreferences?.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+        argTab = MainActivity.argTab
 
-//        if(alamat!!.equals("0", ignoreCase = true) || email!!.equals("0", ignoreCase = true) ||
-//            telp!!.equals("0", ignoreCase = true) || namausaha!!.equals("0", ignoreCase = true)){
-//            DialogKelengkapan()
-//        }
+        if (CheckNetwork().checkingNetwork(requireContext()))
+            startShimmering(true)
+        else
+            startShimmering(false)
 
         if(produkAdapter == null)
             if(CheckNetwork().checkingNetwork(requireContext())) {
@@ -149,12 +142,18 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         if(MainActivity.adTransaksi == 1) return
 
         MainActivity.adTransaksi = 1
+    }
 
-//        for(value in argTab){
-//            if(value != argumenValue) {
-//                println("$value")
-//            }
-//        }
+    private fun startShimmering(arg: Boolean){
+        if(arg) {
+            gvMainActivity.visibility = View.GONE
+            shimmer_view_container.visibility = View.VISIBLE
+            shimmer_view_container.startShimmerAnimation()
+        } else {
+            shimmer_view_container.stopShimmerAnimation()
+            shimmer_view_container.visibility = View.GONE
+            gvMainActivity.visibility = View.VISIBLE
+        }
     }
 
     private fun tampilAlertDialogTutorial() {
@@ -221,13 +220,15 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                         }
                     }
                 }
-
+                startShimmering(false)
             } else {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                startShimmering(false)
             }
         } catch (e: JSONException) {
             e.printStackTrace()
             Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+            startShimmering(false)
         }
     }
 

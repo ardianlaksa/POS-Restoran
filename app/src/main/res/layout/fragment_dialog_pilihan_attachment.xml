@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/bCamera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/kamera"/>
+
+    <Button
+        android:id="@+id/bGambar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/gambar" />
+
+    <Button
+        android:id="@+id/bVideo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/video"/>
+
+</LinearLayout>
