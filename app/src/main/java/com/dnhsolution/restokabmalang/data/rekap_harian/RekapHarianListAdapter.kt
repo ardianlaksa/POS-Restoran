@@ -6,13 +6,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.utilities.RekapHarianDetailLongClick
 import com.dnhsolution.restokabmalang.utilities.RekapHarianDetailOnTask
 
-class RekapHarianListAdapter(onTask: RekapHarianDetailOnTask, itemList: ArrayList<RekapHarianListElement>,
-                             private val context: Context) :
+class RekapHarianListAdapter(onTask: RekapHarianDetailOnTask,onClick: RekapHarianDetailLongClick
+                             , itemList: ArrayList<RekapHarianListElement>, private val context: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var mItemList: ArrayList<RekapHarianListElement>? = null
     private var onTask: RekapHarianDetailOnTask? = null
+    private var onClick: RekapHarianDetailLongClick? = null
 
     val _tag = javaClass.simpleName
 
@@ -20,11 +22,12 @@ class RekapHarianListAdapter(onTask: RekapHarianDetailOnTask, itemList: ArrayLis
         mItemList = itemList
         Log.d(_tag,"${mItemList?.size}")
         this.onTask = onTask
+        this.onClick = onClick
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_list_rekap_harian, parent, false)
-        return RekapHarianListHolder.newInstance(view, context, onTask)
+        return RekapHarianListHolder.newInstance(view, context, onTask, onClick)
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {

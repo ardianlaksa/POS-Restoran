@@ -61,24 +61,36 @@
                         android:layout_weight=".3"
                         android:paddingTop="@dimen/_4"
                         android:paddingBottom="@dimen/_4"
-                        android:text="No"
-                        android:textSize="@dimen/f_16"
+                        android:text="@string/title_no"
+                        android:textSize="@dimen/f_10"
                         android:fontFamily="@font/nunitosansregular"
                         android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="@dimen/_1"
+                        android:layout_height="match_parent"
+                        android:background="#363636"
+                        android:contentDescription="@string/separator" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.5"
-                        android:text="Nama Item"
-                        android:textSize="@dimen/f_16"
+                        android:text="@string/title_nama_item"
+                        android:textSize="@dimen/f_10"
                         android:textStyle="bold"
-                        android:gravity="center_horizontal"
                         android:maxLines="1"
-                        android:ellipsize="end"
+                        android:paddingStart="@dimen/_4"
+                        android:paddingEnd="0dp"
                         android:paddingTop="@dimen/_4"
                         android:fontFamily="@font/nunitosansregular"
                         android:paddingBottom="@dimen/_4"/>
+
+                    <ImageView
+                        android:layout_width="@dimen/_1"
+                        android:layout_height="match_parent"
+                        android:background="#363636"
+                        android:contentDescription="@string/separator" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -87,19 +99,25 @@
                         android:gravity="center_horizontal"
                         android:paddingBottom="@dimen/_4"
                         android:paddingTop="@dimen/_4"
-                        android:text="Qty"
-                        android:textSize="@dimen/f_16"
+                        android:text="@string/title_qty"
+                        android:textSize="@dimen/f_10"
                         android:fontFamily="@font/nunitosansregular"
                         android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="@dimen/_1"
+                        android:layout_height="match_parent"
+                        android:background="#363636"
+                        android:contentDescription="@string/separator" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Harga"
-                        android:textSize="@dimen/f_16"
+                        android:text="@string/title_harga"
+                        android:textSize="@dimen/f_10"
                         android:textStyle="bold"
-                        android:gravity="center_horizontal"
+                        android:gravity="end"
                         android:paddingTop="@dimen/_4"
                         android:fontFamily="@font/nunitosansregular"
                         android:paddingBottom="@dimen/_4"/>
@@ -116,7 +134,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
 
@@ -130,59 +148,57 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="right"
-                android:gravity="right"
-                >
+                android:orientation="horizontal" >
 
                 <TextView
-                    android:layout_marginLeft="150dp"
-                    android:text="Subtotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text="@string/title_sub_total"
                     android:textColor="#000"
-                    android:textSize="18dp"
-                    android:layout_width="match_parent"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:textSize="@dimen/f_12"
+                    android:fontFamily="@font/nunitosansregular" />
 
                 <TextView
                     android:id="@+id/tvSubtotal"
-                    android:gravity="right"
-                    android:layout_width="150dp"
-                    android:textColor="#000"
-                    android:textSize="18dp"
-                    android:text="0"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:gravity="end"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".75"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/f_16"
+                    android:text="@string/_0"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/nunitosansregular" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="right"
-                android:gravity="right"
-                >
+                android:orientation="horizontal" >
 
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
                     android:id="@+id/tvDisc"
-                    android:layout_marginLeft="150dp"
-                    android:text="Disc"
+                    android:text="@string/title_diskon"
                     android:textColor="#000"
-                    android:textSize="18dp"
-                    android:layout_width="match_parent"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:textSize="@dimen/f_12"
+                    android:fontFamily="@font/nunitosansregular" />
 
                 <TextView
                     android:id="@+id/tvJmlDisc"
-                    android:gravity="right"
-                    android:layout_width="150dp"
-                    android:textColor="#000"
-                    android:textSize="18dp"
-                    android:text="0"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".75"
+                    android:gravity="end"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/f_16"
+                    android:text="@string/_0"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/nunitosansregular" />
 
             </LinearLayout>
 
@@ -190,29 +206,29 @@
                 android:id="@+id/llPajak"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="right"
-                android:gravity="right" >
+                android:orientation="horizontal" >
 
                 <TextView
                     android:id="@+id/tvPajak"
-                    android:layout_marginLeft="150dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
                     android:text="@string/pajak"
                     android:textColor="#000"
-                    android:textSize="18dp"
-                    android:layout_width="match_parent"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:textSize="@dimen/f_12"
+                    android:fontFamily="@font/nunitosansregular" />
 
                 <TextView
                     android:id="@+id/tvJmlPajak"
-                    android:gravity="right"
-                    android:layout_width="150dp"
-                    android:textColor="#000"
-                    android:textSize="18dp"
-                    android:text="0"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".75"
+                    android:gravity="end"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/f_16"
+                    android:text="@string/_0"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/nunitosansregular" />
 
             </LinearLayout>
 
@@ -226,38 +242,43 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="right"
-                android:gravity="right"
-                >
+                android:orientation="horizontal" >
 
                 <TextView
-                    android:layout_marginLeft="150dp"
-                    android:text="Total "
+                    android:text="@string/title_total"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
                     android:textColor="#000"
-                    android:textSize="18dp"
-                    android:layout_width="match_parent"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:textSize="@dimen/f_12"
+                    android:fontFamily="@font/nunitosansregular" />
 
                 <TextView
                     android:id="@+id/tvTotal"
-                    android:gravity="right"
-                    android:layout_width="150dp"
-                    android:textColor="#000"
-                    android:textSize="18dp"
-                    android:text="0"
-                    android:fontFamily="@font/nunitosansregular"
-                    android:layout_height="wrap_content" />
+                    android:gravity="end"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".75"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/f_18"
+                    android:text="@string/_0"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/nunitosansregular" />
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/bBatalTrx"
                 android:layout_marginTop="@dimen/_24"
+                android:layout_marginStart="@dimen/_4"
+                android:paddingStart="@dimen/_8"
+                android:paddingEnd="@dimen/_8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/batal_transaksi" />
+                android:textSize="@dimen/f_10"
+                android:text="@string/batal_transaksi"
+                android:textColor="@android:color/white"
+                android:background="@color/actionbar_bg_red"/>
 
             <LinearLayout
                 android:layout_marginTop="@dimen/_24"
@@ -267,7 +288,7 @@
 
                 <Button
                     android:id="@+id/btnKembali"
-                    android:layout_margin="5dp"
+                    android:layout_margin="@dimen/_4"
                     android:background="#BEBEBE"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

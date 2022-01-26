@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.databinding.FragmentDataBinding
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
 import com.google.android.material.tabs.TabLayoutMediator
@@ -29,13 +30,14 @@ class TransaksiFragment : Fragment() {
 
     private var titles = arrayOf("Makanan", "Minuman", "DLL")
     private var argTab = arrayOf("")
+    private lateinit var binding : FragmentDataBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_data, container, false)
-        viewpager = view.findViewById(R.id.viewpager_main) as ViewPager2
-        tabMain = view.findViewById(R.id.tabs_main) as TabLayout
+        binding = FragmentDataBinding.inflate(layoutInflater)
+        val view = binding.root
+//        val view =  inflater.inflate(R.layout.fragment_data, container, false)
+        viewpager = binding.viewpagerMain
+        tabMain = binding.tabsMain
 
         val fragmentAdapter = ScreenSlidePagerAdapter(this)
         viewpager.adapter = fragmentAdapter

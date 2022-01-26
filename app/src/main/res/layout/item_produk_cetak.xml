@@ -10,52 +10,52 @@
         android:id="@+id/llHeaderListRealisasi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/_4"
+        android:orientation="horizontal"
         android:paddingStart="@dimen/_4"
-        android:paddingRight="@dimen/_4"
+        android:paddingLeft="@dimen/_4"
         android:paddingEnd="@dimen/_4"
-        android:orientation="horizontal">
+        android:paddingRight="@dimen/_4">
 
         <TextView
-            android:gravity="center"
             android:id="@+id/tvNo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".3"
+            android:fontFamily="@font/nunitosansregular"
             android:paddingTop="@dimen/_4"
             android:paddingBottom="@dimen/_4"
-            android:text="1."
-            android:textSize="@dimen/f_16"
-            android:fontFamily="@font/nunitosansregular"
-            android:textStyle="bold" />
+            android:text="@string/_0"
+            android:textSize="@dimen/f_12" />
 
         <TextView
             android:id="@+id/tvNama"
-            android:paddingLeft="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.5"
-            android:text="Nama Item"
-            android:textSize="@dimen/f_16"
-            android:textStyle="bold"
-            android:fontFamily="@font/nunitosansregular"
-            android:gravity="left|center_horizontal"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:fontFamily="@font/nunitosansregular"
+            android:gravity="start"
+            android:maxLines="1"
+            android:paddingStart="@dimen/_4"
             android:paddingTop="@dimen/_4"
-            android:paddingBottom="@dimen/_4"/>
+            android:paddingEnd="0dp"
+            android:paddingBottom="@dimen/_4"
+            android:text="@string/text"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/f_16"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvQty"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:gravity="center_horizontal"
-            android:paddingBottom="@dimen/_4"
-            android:paddingTop="@dimen/_4"
-            android:text="12"
-            android:textSize="@dimen/f_16"
             android:fontFamily="@font/nunitosansregular"
+            android:gravity="center_horizontal"
+            android:paddingTop="@dimen/_4"
+            android:paddingBottom="@dimen/_4"
+            android:text="@string/_0"
+            android:textSize="@dimen/f_12"
             android:textStyle="bold" />
 
         <TextView
@@ -63,13 +63,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="12.000"
-            android:textSize="@dimen/f_16"
             android:fontFamily="@font/nunitosansregular"
-            android:textStyle="bold"
-            android:gravity="right|center_horizontal"
+            android:gravity="end|center_horizontal"
             android:paddingTop="@dimen/_4"
-            android:paddingBottom="@dimen/_4"/>
+            android:paddingBottom="@dimen/_4"
+            android:text="@string/_0"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/f_16"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.utilities.RekapBulananOnTask
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
+import com.dnhsolution.restokabmalang.databinding.FragmentRekapBulananBinding
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import org.json.JSONException
@@ -64,21 +66,22 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
     private lateinit var spiBln: Spinner
     private lateinit var spiThn: Spinner
+    private var tempItemsBulanan = ArrayList<RekapBulananListElement>()
     private var itemsBulanan:ArrayList<RekapBulananListElement>? = null
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
-    private var tempItemsBulanan = ArrayList<RekapBulananListElement>()
     private var spinThnArray = ArrayList<String>()
     private var spinBlnArray = ArrayList<RekapBulananBlnSpinElement>()
     private var adapterList:RekapBulananListAdapter? = null
     private var isOpenedThn = false
     private var isOpenedBln = false
-    private var selectedBln = "0"
-    private var selectedThn = "Tahun"
-    private var bulan = "1"
-    private var tahun = "1"
+    private var selectedBln = ""
+    private var selectedThn = ""
+    private var bulan = ""
+    private var tahun = ""
     private lateinit var btnCari : Button
     private lateinit var btnReset : Button
+    private lateinit var binding: FragmentRekapBulananBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -86,18 +89,16 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_rekap_bulanan, container, false)
-        spiBln = view.findViewById(R.id.spinBln) as Spinner
-        spiThn = view.findViewById(R.id.spinThn) as Spinner
-        recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
-
-        tvTotal = view.findViewById(R.id.tvTotal) as TextView
-        tvTotalPajak = view.findViewById(R.id.tvTotalPajak) as TextView
-        btnCari = view.findViewById(R.id.btnCari) as Button
-        btnReset = view.findViewById(R.id.btnReset) as Button
-
+        binding = FragmentRekapBulananBinding.inflate(layoutInflater)
+        val view = binding.root
+//        val view = inflater.inflate(R.layout.fragment_rekap_bulanan, container, false)
+        spiBln = binding.spinBln
+        spiThn = binding.spinThn
+        recyclerView = binding.recyclerView
+        tvTotal = binding.tvTotal
+        tvTotalPajak = binding.tvTotalPajak
+        btnCari = binding.btnCari
+        btnReset = binding.btnReset
 
         val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         tipeStruk = sharedPreferences?.getString(Url.SESSION_TIPE_STRUK, "").toString()
@@ -108,12 +109,13 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         spiThn.setSelection(0)
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapBulanan}?BULAN=$bulan&TAHUN=$tahun" +
+            val stringUrl = "${Url.getRekapBulanan1}?BULAN=$bulan&TAHUN=$tahun" +
                     "&idTmpUsaha=$idTmpUsaha&tipeStruk=$tipeStruk&idPengguna=$idPengguna"
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_conn_lost,null))
         }
 
         btnCari.setOnClickListener{
@@ -123,12 +125,12 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             tempItemsBulanan = ArrayList()
             itemsBulanan!!.forEach { event ->
                 val tgl = (event.tgl).split("-")
-                println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
-                if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
+//                println("TAHUN : "+ tgl[0]+", BULAN : "+tgl[1]+", OMZET"+event.omzet)
+                if (selectedThn == tgl[0] && selectedBln == tgl[1]) {
                     tempItemsBulanan.add(event)
                     totalValue += event.omzet
                     totalPajakValue += event.pajak
-                    println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
+//                    println("TAHUN : "+ tgl[0]+", BULAN : "+tgl[1]+", OMZET"+event.omzet)
                 }
             }
 
@@ -150,23 +152,22 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             spiBln.setSelection(0)
             spiThn.setSelection(0)
 
-            val today = getCurrentDate().split("-")
-            selectedThn = today[2]
-            selectedBln = today[0]
+//            val today = getCurrentDate().split("-")
+            selectedThn = "-1"
+            selectedBln = "-1"
 
             var totalValue = 0.0
             var totalPajakValue = 0.0
             tempItemsBulanan = ArrayList()
-
             itemsBulanan!!.forEach { event ->
-                val tgl = (event.tgl).split("-")
-                println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
-                if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
-                    tempItemsBulanan.add(event)
-                    totalValue += event.omzet
-                    totalPajakValue += event.pajak
-                    println("TAHUN : "+ tgl[2]+", BULAN : "+tgl[0]+", OMZET"+event.omzet)
-                }
+//                val tgl = (event.tgl).split("-")
+//                println("TAHUN : "+ tgl[0]+", BULAN : "+tgl[1]+", OMZET"+event.omzet)
+//                if (selectedThn == tgl[2] && selectedBln == tgl[0]) {
+                tempItemsBulanan.add(event)
+                totalValue += event.omzet
+                totalPajakValue += event.pajak
+//                println("TAHUN : "+ tgl[0]+", BULAN : "+tgl[1]+", OMZET"+event.omzet)
+//                }
             }
             tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
             tvTotalPajak.text = AddingIDRCurrency().formatIdrCurrency(totalPajakValue)
@@ -214,10 +215,12 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
     override fun rekapBulananOnTask(result: String?) {
         if (result == null) {
-            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.visibility = View.VISIBLE
             return
         } else if (result == "") {
-            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.visibility = View.VISIBLE
             return
         }
 
@@ -228,7 +231,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
             val message = jsonObj.getString("message")
 
             itemsBulanan = ArrayList()
-            itemsBulanan!!.clear()
+            itemsBulanan?.clear()
 
             if (success == 1) {
                 val rArray = jsonObj.getJSONArray("result")
@@ -251,26 +254,26 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 }
 
 
-                if (itemsBulanan != null && itemsBulanan!!.size > 0) {
+//                if (itemsBulanan != null && itemsBulanan!!.size > 0) {
                     spinBlnArray.clear()
                     spinThnArray.clear()
                     for (index in itemsBulanan!!.indices) {
                         val stringTgl = itemsBulanan!![index].tgl
                         if (stringTgl.isNotEmpty()) {
                             val listTgl = (itemsBulanan!![index].tgl).split("-")
-                            if (!spinThnArray.contains(listTgl[2])) spinThnArray.add(listTgl[2])
+                            if (!spinThnArray.contains(listTgl[0])) spinThnArray.add(listTgl[0])
 
-                            println("Tahun : "+listTgl[2])
+                            println("Tahun : "+listTgl[0])
                             for (itemBulan in listBulan) {
-                                if (itemBulan.key == listTgl[0]) {
+                                if (itemBulan.key == listTgl[1]) {
                                     var isAda = false
                                     spinBlnArray.forEach { event ->
-                                        if (event.idItem == listTgl[0]) {
+                                        if (event.idItem == listTgl[1]) {
                                             isAda = true
-                                            println("Bulan : "+listTgl[0])
+                                            println("Bulan : "+listTgl[1])
                                         }
                                     }
-                                    if (!isAda) spinBlnArray.add(RekapBulananBlnSpinElement(listTgl[0], itemBulan.value))
+                                    if (!isAda) spinBlnArray.add(RekapBulananBlnSpinElement(listTgl[1], itemBulan.value))
                                     break
                                 }
                             }
@@ -326,14 +329,15 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
                     recyclerView.adapter = adapterList
                     recyclerView.layoutManager = (LinearLayoutManager(context))
-                }
+//                }
 
+                binding.ivIconDataKosong.visibility = View.GONE
             } else {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                binding.ivIconDataKosong.visibility = View.VISIBLE
             }
         } catch (e: JSONException) {
             e.printStackTrace()
-            //Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
         }
     }
 

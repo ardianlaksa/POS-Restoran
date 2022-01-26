@@ -140,65 +140,21 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/llKumpulanTotal"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginEnd="@dimen/_4"
-        android:layout_marginRight="@dimen/_4"
-        android:padding="6dp">
-
-        <TextView
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="@dimen/_36"
-            android:layout_height="wrap_content"
-            android:text="No"
-            android:gravity="center"
-            android:textSize="@dimen/f_16"
-            android:layout_marginStart="@dimen/_8"
-            android:layout_marginLeft="@dimen/_8"
-            android:layout_marginEnd="@dimen/_16"
-            android:layout_marginRight="@dimen/_8"
-            android:fontFamily="@font/nunitosansregular"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/_4">
-
-            <TextView
-                android:layout_weight="0.4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Tanggal"
-                android:textSize="@dimen/f_16"
-                android:fontFamily="@font/nunitosansregular"
-                />
-
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Omzet"
-                android:textSize="@dimen/f_16"
-                android:fontFamily="@font/nunitosansregular"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/ll2"
+        app:layout_constraintTop_toBottomOf="@id/llKumpulanTotal"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/ivIconDataKosong"
+        android:layout_width="@dimen/_96"
+        android:layout_height="@dimen/_96"
+        android:src="@drawable/ic_data_empty"
+        app:layout_constraintTop_toBottomOf="@id/llKumpulanTotal"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

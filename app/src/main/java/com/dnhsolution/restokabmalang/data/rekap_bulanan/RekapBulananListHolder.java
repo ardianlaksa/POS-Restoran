@@ -10,35 +10,25 @@ import com.dnhsolution.restokabmalang.R;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 class RekapBulananListHolder extends RecyclerView.ViewHolder {
-    private final TextView numItem,omzet,tgl,disc,total;
-//    private final View view;
-//    private final Context context;
+    private final TextView numItem,omzet,tgl;
 
     static RekapBulananListHolder newInstance(View parent, Context context) {
         TextView tvMid = parent.findViewById(R.id.mId);
         TextView tvNumItem = parent.findViewById(R.id.tvNumItem);
         TextView tvOmzet = parent.findViewById(R.id.tvOmzet);
         TextView tvTgl = parent.findViewById(R.id.tvTgl);
-        TextView tvDisc = parent.findViewById(R.id.tvDisc);
-        TextView tvTotal = parent.findViewById(R.id.tvTotal);
-        return new RekapBulananListHolder(parent, context, tvMid, tvNumItem, tvOmzet, tvTgl
-                , tvDisc, tvTotal);
+        return new RekapBulananListHolder(parent, context, tvMid, tvNumItem, tvOmzet, tvTgl);
     }
 
     private RekapBulananListHolder(final View parent, final Context context, TextView id
-            , final TextView tvNumItem, final TextView tvOmzet, final TextView tvTgl
-            , final TextView tvDisc, final TextView tvTotal) {
+            , final TextView tvNumItem, final TextView tvOmzet, final TextView tvTgl) {
         super(parent);
-//        this.context = context;
-//        mId = id;
         numItem = tvNumItem;
         omzet = tvOmzet;
         tgl = tvTgl;
-        disc = tvDisc;
-        total = tvTotal;
-//        view = parent;
 
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,14 +44,14 @@ class RekapBulananListHolder extends RecyclerView.ViewHolder {
         String omzetValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getOmzet());
         omzet.setText(omzetValue);
 
-        final String OLD_FORMAT = "MM-dd-yyyy";
+        final String OLD_FORMAT = "yyyy-MM-dd";
         final String NEW_FORMAT = "dd-MM-yyyy";
 
 // August 12, 2010
         String oldDateString = itemText.getTgl();
         String newDateString;
 
-        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.getDefault());
         Date d = null;
         try {
             d = sdf.parse(oldDateString);
@@ -71,7 +61,7 @@ class RekapBulananListHolder extends RecyclerView.ViewHolder {
         sdf.applyPattern(NEW_FORMAT);
         newDateString = sdf.format(d);
         tgl.setText(newDateString);
-        disc.setText(String.valueOf(itemText.getDisc()));
+//        disc.setText(String.valueOf(itemText.getDisc()));
 //        String totalValue = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());
 //        total.setText(totalValue);
     }

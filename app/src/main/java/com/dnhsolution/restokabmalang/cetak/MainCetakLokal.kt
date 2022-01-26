@@ -330,7 +330,6 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
                             "[C]<b>$nmTmpUsaha</b>\n"+
                             "[C]$alamat\n"+
                             "[L]\n"+
-                            "[L]\n"+
                             "[L]No. Trx : $idTrx\n"+
                             "[L]Tanggal : $tanggal\n"+
                             "[L]Kasir   : $nmPetugas\n"+
@@ -344,10 +343,10 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
                         text += "[L]$nmProduk\n" +
                                 "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
                     }
-                    val subTotal = tvSubtotal?.text.toString().replace(".", "")
+//                    val subTotal = tvSubtotal?.text.toString().replace(".", "")
 
                     text += "[C]--------------------------------\n"+
-                            "[L]Subtotal[R]$subTotal\n"+
+                            "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
                             "[L]Disc[R]${tvJmlDisc?.text}\n"+
                             "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"+
                             "[C]--------------------------------\n"+

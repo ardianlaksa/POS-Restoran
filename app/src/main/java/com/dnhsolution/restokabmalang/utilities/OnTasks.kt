@@ -20,6 +20,10 @@ interface RekapHarianDetailOnTask {
     fun rekapHarianDetailOnTask(result:String?)
 }
 
+interface RekapHarianDetailLongClick {
+    fun rekapHarianDetailLongClick(result:String?)
+}
+
 interface KeranjangTransaksiOnTask {
     fun keranjangTransaksiOnTask(result:String?)
 }

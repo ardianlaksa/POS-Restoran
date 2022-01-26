@@ -171,6 +171,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         builder.show()
                     }
+                    toolbar.title = resources.getString(R.string.app_name)
                     return@setOnItemSelectedListener true
                 }
 

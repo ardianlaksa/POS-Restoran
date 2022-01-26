@@ -43,9 +43,11 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.Myholder> 
     public void onBindViewHolder(Myholder holder, int position) {
         final ItemProduk itemProduk = itemProduks.get(position);
 
-        holder.no.setText(String.valueOf(itemProduk.getNo()));
+        String nomorString = itemProduk.getNo()+".";
+        holder.no.setText(nomorString);
         holder.nama_item.setText(itemProduk.getNama_produk());
-        holder.qty.setText(itemProduk.getQty());
+        String qtyString = "( "+itemProduk.getQty()+" )";
+        holder.qty.setText(qtyString);
         holder.harga.setText(itemProduk.getHarga());
 
 

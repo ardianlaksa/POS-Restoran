@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.*
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
+import com.dnhsolution.restokabmalang.databinding.FragmentRekapBillingBinding
 import com.dnhsolution.restokabmalang.utilities.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -45,13 +47,16 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
     private lateinit var btnCari : Button
     private lateinit var btnReset : Button
     private var thnMasaPajak = 0
+    private lateinit var binding: FragmentRekapBillingBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_rekap_billing, container, false)
-        btnCari = view.findViewById(R.id.btnCari) as Button
-        btnReset = view.findViewById(R.id.btnReset) as Button
-        spiThn = view.findViewById(R.id.spinThn) as Spinner
-        recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
+        binding = FragmentRekapBillingBinding.inflate(layoutInflater)
+        val view = binding.root
+//        val view = inflater.inflate(R.layout.fragment_rekap_billing, container, false)
+        btnCari = binding.btnCari
+        btnReset = binding.btnReset
+        spiThn = binding.spinThn
+        recyclerView = binding.recyclerView
 
 //        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = MainActivity.idTempatUsaha
@@ -64,7 +69,8 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
             Log.i(_tag,stringUrl)
             jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_conn_lost,null))
         }
 
         spiThn.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -104,10 +110,12 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
 
     override fun rekapBulananOnTask(result: String?) {
         if (result == null) {
-            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.visibility = View.VISIBLE
             return
         } else if (result == "") {
-            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.visibility = View.VISIBLE
             return
         }
 
@@ -168,8 +176,10 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
                 recyclerView.adapter = adapterList
                 recyclerView.layoutManager = (LinearLayoutManager(context))
 
+                binding.ivIconDataKosong.visibility = View.GONE
             } else {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                binding.ivIconDataKosong.visibility = View.VISIBLE
             }
         } catch (e: JSONException) {
             e.printStackTrace()
@@ -177,9 +187,9 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
         }
     }
 
-    private fun getCurrentDate(): String {
-        val current = Date()
-        val frmt = SimpleDateFormat("MM-dd-yyyy")
-        return frmt.format(current)
-    }
+//    private fun getCurrentDate(): String {
+//        val current = Date()
+//        val frmt = SimpleDateFormat("MM-dd-yyyy")
+//        return frmt.format(current)
+//    }
 }

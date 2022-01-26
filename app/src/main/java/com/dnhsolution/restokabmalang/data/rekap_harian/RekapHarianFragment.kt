@@ -1,6 +1,7 @@
 package com.dnhsolution.restokabmalang.data.rekap_harian
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
@@ -16,15 +17,21 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.cetak.DeviceActivity
+import com.dnhsolution.restokabmalang.cetak.MainCetak
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.DRekapHarianJsonTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
+import com.dnhsolution.restokabmalang.databinding.FragmentRekapHarianBinding
 import com.dnhsolution.restokabmalang.utilities.*
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -66,7 +73,7 @@ interface UploadPdfService {
     }
 
 class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, RekapHarianDetailOnTask,
-    PDFUtility.OnDocumentClose {
+    PDFUtility.OnDocumentClose,RekapHarianDetailLongClick {
 
     companion object {
         @JvmStatic
@@ -85,6 +92,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     private lateinit var spiTgl: Spinner
     private lateinit var etDate: EditText
     private lateinit var ivDate: ImageView
+    private lateinit var binding : FragmentRekapHarianBinding
 
     private val myCalendar = Calendar.getInstance()
 
@@ -107,28 +115,31 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
+//        val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
+        binding = FragmentRekapHarianBinding.inflate(layoutInflater)
+        val view = binding.root
         setHasOptionsMenu(true)
-        spiTgl = view.findViewById(R.id.spinTgl) as Spinner
-        tvTotal = view.findViewById(R.id.tvTotal) as TextView
-        ivDate = view.findViewById(R.id.ivDate) as ImageView
-        etDate = view.findViewById(R.id.etDate) as EditText
+        spiTgl = binding.spinTgl
+        tvTotal = binding.tvTotal
+        ivDate = binding.ivDate
+        etDate = binding.etDate
+        recyclerView = binding.recyclerView
 
 //        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = MainActivity.idTempatUsaha.toString()
         idPengguna = MainActivity.idPengguna.toString()
 
-        recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
-
         if(CheckNetwork().checkingNetwork(requireContext())) {
-            val stringUrl = "${Url.getRekapHarian}?tgl="+getCurrentDate()+"&idTmpUsaha="+idTmpUsaha+"&idPengguna="+idPengguna
+            if(tanggal.isEmpty()) tanggal = getCurrentDate()
+            val stringUrl = "${Url.getRekapHarian}?tgl="+tanggal+"&idTmpUsaha="+idTmpUsaha+"&idPengguna="+idPengguna
             Log.i(_tag,stringUrl)
             jsonTask = RekapHarianJsonTask(this).execute(stringUrl)
         } else {
-            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_conn_lost,null))
         }
 
-        val date = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+        val date = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
             // TODO Auto-generated method stub
             myCalendar.set(Calendar.YEAR, year)
             myCalendar.set(Calendar.MONTH, monthOfYear)
@@ -179,6 +190,16 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 //            }
 
         return view
+    }
+
+    var resultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+//            val data: Intent? = result.data
+//            Toast.makeText(requireContext(), "OK",Toast.LENGTH_SHORT).show()
+            updateLabel()
+        }
     }
 
     private fun kirimEmail(idPengguna : String?, idTmpUsaha : String?){
@@ -248,16 +269,18 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
     private fun getCurrentDate(): String {
         val current = Date()
-        val frmt = SimpleDateFormat("dd-MM-yyyy")
+        val frmt = SimpleDateFormat("dd-MM-yyyy",Locale.getDefault())
         return frmt.format(current)
     }
 
     override fun rekapHarianOnTask(result: String?) {
         if (result == null) {
-            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.visibility = View.VISIBLE
             return
         } else if (result == "") {
-            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.visibility = View.VISIBLE
             return
         }
 
@@ -295,16 +318,17 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                     }
                     tvTotal.text = AddingIDRCurrency().formatIdrCurrency(totalValue)
                 }
-
+                binding.ivIconDataKosong.visibility = View.GONE
             }else {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 tempItemsHarian = itemsHarian!!
                 tvTotal.text = AddingIDRCurrency().formatIdrCurrency(0.0)
+                binding.ivIconDataKosong.visibility = View.VISIBLE
             }
 
             adapterList = context?.let {
                 RekapHarianListAdapter(
-                    this,
+                    this, this,
                     tempItemsHarian,
                     it
                 )
@@ -316,7 +340,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         }
     }
 
-    fun dialogDetail(idTrx: String) {
+    private fun dialogDetail(idTrx: String) {
         val mBuilder = AlertDialog.Builder(context)
         val layoutInflater:LayoutInflater = LayoutInflater.from(context)
         val mView = layoutInflater.inflate(R.layout.dialog_detail_rekap_harian, null)
@@ -411,5 +435,10 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
     override fun onPDFDocumentClose(file: File?) {
         Toast.makeText(context,"Sample Pdf Created",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun rekapHarianDetailLongClick(result: String?) {
+        resultLauncher.launch(Intent(requireContext(), MainCetak::class.java).putExtra("getIdItem", result))
+//        requireContext().startActivity(Intent(context, MainCetak::class.java).putExtra("getIdItem", result))
     }
 }

@@ -40,11 +40,11 @@
 
             <TextView
                 android:id="@+id/tvTitleNama"
-                android:layout_width="@dimen/_56"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvNama"
-                android:text="@string/title_no_trx"
+                android:text="@string/no_trx_cln"
                 android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
@@ -52,16 +52,13 @@
                 android:id="@+id/tvNama"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingStart="@dimen/_4"
-                android:paddingEnd="@dimen/_4"
+                android:layout_marginStart="@dimen/_4"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleNama"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/tvHarga"
-                android:gravity="top"
                 android:text="@string/text"
-                android:textStyle="bold"
                 android:fontFamily="@font/nunitosansregular"
-                android:textColor="@android:color/holo_red_light" />
+                android:textColor="@android:color/holo_orange_dark" />
 
             <TextView
                 android:id="@+id/tvTitleDisc"
@@ -83,19 +80,18 @@
                 android:text=""
                 android:textColor="@color/colorAccent"
                 android:layout_marginEnd="@dimen/_8"
-                android:layout_marginRight="@dimen/_8"
                 android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvTitleHarga"
-                android:layout_width="@dimen/_56"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="@id/tvHarga"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="@dimen/_4"
-                android:text="@string/title_tgl"
+                android:text="@string/disc_cln"
                 android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
@@ -103,16 +99,14 @@
                 android:id="@+id/tvHarga"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_4"
-                android:paddingStart="@dimen/_4"
-                android:paddingEnd="@dimen/_4"
+                android:layout_marginStart="@dimen/_4"
                 android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleHarga"
                 app:layout_constraintRight_toLeftOf="@id/tvTotal"
                 app:layout_constraintTop_toBottomOf="@id/tvNama"
                 android:gravity="start"
                 android:text="@string/text"
-                android:textColor="@android:color/holo_red_light"/>
+                android:textColor="@android:color/holo_orange_dark"/>
 
             <TextView
                 android:id="@+id/tvTotal"
@@ -122,20 +116,41 @@
                 android:text="@string/rp_0"
                 android:textStyle="bold"
                 android:textColor="@color/colorAccent"
-                android:layout_marginTop="@dimen/_4"
                 android:layout_marginEnd="@dimen/_8"
-                android:layout_marginRight="@dimen/_8"
                 android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintTop_toBottomOf="@id/tvTitleDisc"
                 app:layout_constraintRight_toRightOf="parent" />
 
             <TextView
                 android:id="@+id/tvTitleQty"
-                android:layout_width="@dimen/_56"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvQty"
-                android:text="@string/title_diskon"
+                android:paddingBottom="@dimen/_2"
+                android:text="@string/tgl_cln"
+                android:fontFamily="@font/nunitosansregular"
+                android:textSize="@dimen/f_10"/>
+
+            <TextView
+                android:id="@+id/tvKasir"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/_4"
+                android:fontFamily="@font/nunitosansregular"
+                app:layout_constraintLeft_toRightOf="@id/tvTitleKasir"
+                app:layout_constraintTop_toBottomOf="@id/tvHarga"
+                android:text="@string/text"
+                android:textColor="@android:color/holo_orange_dark"/>
+
+            <TextView
+                android:id="@+id/tvTitleKasir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tvKasir"
+                android:paddingBottom="@dimen/_2"
+                android:text="@string/kasir_cln"
                 android:fontFamily="@font/nunitosansregular"
                 android:textSize="@dimen/f_10"/>
 
@@ -143,15 +158,12 @@
                 android:id="@+id/tvQty"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/_4"
-                android:paddingStart="@dimen/_4"
-                android:paddingEnd="@dimen/_4"
+                android:layout_marginStart="@dimen/_4"
                 android:fontFamily="@font/nunitosansregular"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleQty"
-                app:layout_constraintTop_toBottomOf="@id/tvHarga"
-                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/tvKasir"
                 android:text="@string/text"
-                android:textColor="@android:color/holo_red_light"/>
+                android:textColor="@android:color/holo_orange_dark"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

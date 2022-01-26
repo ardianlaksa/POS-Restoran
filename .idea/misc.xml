@@ -12,17 +12,59 @@
         <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/activity_main.xml" value="0.10099637681159421" />
         <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_dashboard.xml" value="0.15217391304347827" />
         <entry key="..\:/DATA_KANTOR/Project Android/2021/POS-Restoran-New/app/src/main/res/layout/fragment_dashboard2.xml" value="0.2" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_dashboard.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_data.xml" value="0.17777777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_logox.xml" value="0.17685185185185184" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_master.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_transaksi.xml" value="0.1359375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable-anydpi/ic_upload_data.xml" value="0.17777777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/badge_background.xml" value="0.23692307692307693" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/blue_gray_gradient_background.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/border_edit_text.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/border_foto.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/border_logo.xml" value="0.17777777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/border_transparant.xml" value="0.23333333333333334" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/btlm_line_shape.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/btn_login.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/button_wh.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/circle_green_bg.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/custom_rectangle.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/four_round_border.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/green_gray_gradient_background.xml" value="0.17777777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.1234375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_add_circle_24_gray.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_check_circle_24_dark_green.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_check_circle_24_gray.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_email_24_white.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_live_help_24.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_live_help_24_gray.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_sync_24_yellow.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_sync_alt_24_green.xml" value="0.17777777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_baseline_wifi_24_gray.xml" value="0.20277777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_close_black_24dp.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_help.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_help_black.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_launcher_background.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_photo_camera_gray_24dp.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_tutorial.xml" value="0.1359375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_visibility.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/ic_visibility_off.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/item_nomer.xml" value="0.17777777777777778" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/news_bottom_nav_bg.xml" value="0.1625" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/purple_gray_gradient_background.xml" value="0.1359375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/red_gray_gradient_background.xml" value="0.1359375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/spinner_wh_background.xml" value="0.1359375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/white_gray_gradient_background.xml" value="0.1359375" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/drawable/yellow_gray_gradient_background.xml" value="0.1359375" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_detail_produk.xml" value="0.18" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_keranjang.xml" value="0.18" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_keranjang2.xml" value="0.1852355072463768" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main.xml" value="0.1933876811594203" />
-        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_cetak.xml" value="0.17708333333333334" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_cetak.xml" value="0.33" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_main_master.xml" value="0.1933876811594203" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_produk.xml" value="0.10157041540020263" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/activity_master_sistem.xml" value="0.17255434782608695" />
@@ -42,6 +84,7 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_data_lama.xml" value="0.18931159420289856" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_dialog_pilihan_attachment.xml" value="0.20425724637681159" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_home.xml" value="0.16757246376811594" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_lokal.xml" value="0.10207700101317123" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_produk_list.xml" value="0.15307971014492755" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_billing.xml" value="0.1875" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_rekap_bulanan.xml" value="0.25" />
@@ -50,16 +93,19 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/fragment_server.xml" value="0.14492753623188406" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_d_rekap_harian.xml" value="0.33" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_produk.xml" value="0.10416666666666667" />
-        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_billing.xml" value="0.33" />
-        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_bulanan.xml" value="0.17552083333333332" />
-        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_harian.xml" value="0.33" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_billing.xml" value="0.38308457711442784" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_bulanan.xml" value="0.39419795221843" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_rekap_harian.xml" value="0.5" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_sptpd.xml" value="0.5" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_tersimpan.xml" value="0.5" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_list_tutorial.xml" value="0.10207700101317123" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk.xml" value="0.25" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk_cetak.xml" value="0.33" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_produk_shimmering.xml" value="0.22" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_bulan.xml" value="0.1046875" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_ispajak.xml" value="0.14479166666666668" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/item_spi_tipe_produk.xml" value="0.1" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/layout/layout_news_badge.xml" value="0.10207700101317123" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/bottom_nav_menu.xml" value="0.21296296296296297" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_data_harian.xml" value="0.221875" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_help.xml" value="0.20564102564102565" />
@@ -68,6 +114,8 @@
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tambah.xml" value="0.22447916666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_tersimpan.xml" value="0.22447916666666667" />
         <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/menu/menu_transaksi.xml" value="0.22447916666666667" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.17777777777777778" />
+        <entry key="..\:/Project/android/POS-Restoran/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1359375" />
       </map>
     </option>
   </component>

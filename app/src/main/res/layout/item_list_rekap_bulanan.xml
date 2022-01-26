@@ -33,131 +33,59 @@
             android:textSize="@dimen/f_10"
             android:gravity="center"/>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/_4">
 
             <TextView
-                android:layout_weight="0.6"
-                android:id="@+id/tvTgl"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/tanggal_kosong"
-                android:textSize="@dimen/f_16"
+                android:id="@+id/tvTitleTgl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toLeftOf="@id/tvTgl"
+                app:layout_constraintBottom_toBottomOf="@id/tvTgl"
+                android:layout_marginEnd="@dimen/_8"
+                android:text="@string/tanggal"
                 android:fontFamily="@font/nunitosansregular"
-                android:textColor="@android:color/holo_red_light"/>
+                android:textSize="@dimen/f_10"/>
 
             <TextView
-                android:layout_weight="1"
-                android:id="@+id/tvOmzet"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center|end"
-                android:text="@string/rp_0"
-                android:textStyle="bold"
-                android:textSize="@dimen/f_18"
+                android:id="@+id/tvTgl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/tanggal_kosong"
+                android:textSize="@dimen/f_10"
                 android:fontFamily="@font/nunitosansregular"
-                android:textColor="@android:color/holo_red_light"/>
-
-
-
-        </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/_4"
-            android:layout_weight="1">
+                android:textColor="@color/colorAccent"/>
 
             <TextView
                 android:id="@+id/tvTitleOmzet"
-                android:layout_width="@dimen/_56"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/tvOmzet2"
-                android:text="@string/title_omzet"
+                app:layout_constraintBottom_toBottomOf="@id/tvOmzet"
+                android:paddingBottom="@dimen/_2"
+                android:text="@string/omzet_cln"
                 android:textSize="@dimen/f_10"/>
 
             <TextView
-                android:id="@+id/tvOmzet2"
+                android:id="@+id/tvOmzet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/_4"
-                android:paddingEnd="@dimen/_4"
+                app:layout_constraintTop_toBottomOf="@id/tvTgl"
                 app:layout_constraintLeft_toRightOf="@id/tvTitleOmzet"
-                app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center_horizontal"
-                android:text="@string/text"
-                android:textStyle="bold"
-                android:textColor="@android:color/holo_red_light" />
-
-            <TextView
-                android:id="@+id/tvTitleDisc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_diskon"
-                android:textSize="@dimen/f_10"
-                android:layout_marginEnd="@dimen/_8"
-                android:layout_marginRight="@dimen/_8"
-                app:layout_constraintBottom_toBottomOf="@id/tvDisc"
-                app:layout_constraintRight_toLeftOf="@id/tvDisc"/>
-
-            <TextView
-                android:visibility="gone"
-                android:id="@+id/tvDisc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/_0"
-                android:textColor="@color/colorAccent"
-                android:layout_marginEnd="@dimen/_8"
-                android:layout_marginRight="@dimen/_8"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvTitleTgl"
-                android:layout_width="@dimen/_56"
-                android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/tvTgl2"
-                android:text="@string/title_tgl"
-                android:textSize="@dimen/f_10"/>
-
-            <TextView
-                android:id="@+id/tvTgl2"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/_4"
-                android:paddingStart="@dimen/_4"
-                android:paddingEnd="@dimen/_4"
-                app:layout_constraintLeft_toRightOf="@id/tvTitleTgl"
-                app:layout_constraintTop_toBottomOf="@id/tvOmzet2"
-                android:gravity="center"
-                android:text="@string/text"
-                android:textColor="@android:color/holo_red_light"/>
-
-            <TextView
-                android:visibility="gone"
-                android:id="@+id/tvTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/f_18"
+                android:layout_marginStart="@dimen/_4"
                 android:text="@string/rp_0"
                 android:textStyle="bold"
-                android:textColor="@color/colorAccent"
-                android:layout_marginTop="@dimen/_4"
-                android:layout_marginEnd="@dimen/_8"
-                android:layout_marginRight="@dimen/_8"
-                app:layout_constraintTop_toBottomOf="@id/tvDisc"
-                app:layout_constraintRight_toRightOf="parent" />
+                android:textSize="@dimen/f_18"
+                android:fontFamily="@font/nunitosansregular"
+                android:textColor="@android:color/holo_orange_dark"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
-
 
 </androidx.cardview.widget.CardView>
