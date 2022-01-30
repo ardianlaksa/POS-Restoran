@@ -44,6 +44,7 @@
             android:id="@+id/spinThn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:layout_weight="0.5"/>
 
         <Button
@@ -84,16 +85,16 @@
 
         <LinearLayout
             android:id="@+id/ll"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_marginEnd="@dimen/_8"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/_4"
                 android:layout_marginEnd="@dimen/_4"
+                android:textSize="@dimen/f_10"
                 android:text="@string/title_total"
                 android:fontFamily="@font/nunitosansregular"/>
 
@@ -103,7 +104,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
-                android:textSize="@dimen/f_16"
                 android:text="@string/rp_0"
                 android:fontFamily="@font/nunitosansregular"/>
 
@@ -111,9 +111,9 @@
 
         <LinearLayout
             android:id="@+id/llTotalPajak"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:gravity="end"
             app:layout_constraintTop_toBottomOf="@id/ll1"
             app:layout_constraintRight_toRightOf="parent"
             android:orientation="horizontal">
@@ -124,6 +124,7 @@
                 android:layout_marginRight="@dimen/_4"
                 android:layout_marginEnd="@dimen/_4"
                 android:text="@string/pajak"
+                android:textSize="@dimen/f_10"
                 android:fontFamily="@font/nunitosansregular"/>
 
             <TextView
@@ -132,7 +133,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
-                android:textSize="@dimen/f_16"
                 android:text="@string/rp_0"
                 android:fontFamily="@font/nunitosansregular"/>
 
@@ -144,6 +144,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layoutAnimation="@anim/layout_animation"
         app:layout_constraintTop_toBottomOf="@id/llKumpulanTotal"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

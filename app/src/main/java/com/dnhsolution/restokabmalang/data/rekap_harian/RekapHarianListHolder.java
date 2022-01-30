@@ -19,6 +19,7 @@ import com.dnhsolution.restokabmalang.utilities.Utils;
 
 class RekapHarianListHolder extends RecyclerView.ViewHolder {
     private final TextView numItem,mId,nama,Harga,qty,total;
+    private final TextView kasir;
 
     static RekapHarianListHolder newInstance(View parent, Context context
             , RekapHarianDetailOnTask onTask, RekapHarianDetailLongClick onClick) {
@@ -27,14 +28,15 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         TextView tvNama = parent.findViewById(R.id.tvNama);
         TextView tvPrice = parent.findViewById(R.id.tvHarga);
         TextView tvQty = parent.findViewById(R.id.tvQty);
+        TextView tvKasir = parent.findViewById(R.id.tvKasir);
         TextView tvTotal = parent.findViewById(R.id.tvTotal);
-        return new RekapHarianListHolder(parent, context, tvMid, tvNumItem, tvNama, tvPrice, tvQty
+        return new RekapHarianListHolder(parent, context, tvMid, tvNumItem, tvNama, tvPrice, tvQty, tvKasir
                 , tvTotal,onTask,onClick);
     }
 
     private RekapHarianListHolder(final View parent, final Context context, TextView id
             , final TextView tvNumItem, final TextView tvNama, final TextView tvPrice, final TextView tvQty
-            , final TextView tvTotal, final RekapHarianDetailOnTask onTask, final RekapHarianDetailLongClick onClick) {
+            ,final TextView tvKasir, final TextView tvTotal, final RekapHarianDetailOnTask onTask, final RekapHarianDetailLongClick onClick) {
         super(parent);
 //        this.context = context;
         mId = id;
@@ -43,6 +45,7 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         Harga = tvPrice;
         qty = tvQty;
         total = tvTotal;
+        kasir = tvKasir;
 //        view = parent;
 
         parent.setOnClickListener(v -> {
@@ -63,6 +66,7 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         mId.setText(String.valueOf(itemText.getIdItem()));
         nama.setText(String.valueOf(itemText.getIdItem()));
         qty.setText(itemText.getTgl());
+        kasir.setText(itemText.getName());
         String disc_rp = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getDisc());
         Harga.setText(disc_rp);
         String omzet = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());

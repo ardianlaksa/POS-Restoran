@@ -38,6 +38,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.fragment.app.FragmentManager
+import com.dnhsolution.restokabmalang.data.DataFragment2
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 
 class MainActivity : AppCompatActivity() {
@@ -178,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_data -> {
                     jumlahProdukTerpilih = 0
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.frameLayout, DataFragment()).commit()
+                        .replace(R.id.frameLayout, DataFragment2()).commit()
                     toolbar.title = resources.getString(R.string.title_data)
                     return@setOnItemSelectedListener true
                 }

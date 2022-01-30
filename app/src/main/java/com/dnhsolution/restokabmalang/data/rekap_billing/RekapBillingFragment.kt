@@ -159,7 +159,7 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
                 val spinThnAdapter = context?.let {
                     RekapBulananThnSpinAdapter(
                         it,
-                        android.R.layout.simple_spinner_dropdown_item,
+                        R.layout.item_spi_bulan,
                         spinThnArray
                     )
                 }
@@ -175,7 +175,7 @@ class RekapBillingFragment : Fragment(), RekapBulananOnTask {
 
                 recyclerView.adapter = adapterList
                 recyclerView.layoutManager = (LinearLayoutManager(context))
-
+                recyclerView.scheduleLayoutAnimation()
                 binding.ivIconDataKosong.visibility = View.GONE
             } else {
 //                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

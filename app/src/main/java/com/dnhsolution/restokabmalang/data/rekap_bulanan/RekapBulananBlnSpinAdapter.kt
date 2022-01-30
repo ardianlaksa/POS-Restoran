@@ -46,7 +46,7 @@ class RekapBulananBlnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
             retView = convertView
         }
 
-        val offerData = list.get(position)
+        val offerData = list[position]
 
         holder.mId?.text = offerData.idItem
         holder.tvItem?.text = offerData.nama

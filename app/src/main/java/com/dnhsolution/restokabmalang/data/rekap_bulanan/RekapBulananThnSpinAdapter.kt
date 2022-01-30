@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.LayoutRes
+import com.dnhsolution.restokabmalang.R
 
 class RekapBulananThnSpinAdapter(context: Context, @LayoutRes resource: Int, list: ArrayList<String>)
     : ArrayAdapter<String>(context, resource, list){
@@ -38,7 +39,9 @@ class RekapBulananThnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
             holder = ViewHolder()
 
             if (retView != null) {
-                holder.tvItem = retView.findViewById(android.R.id.text1) as TextView
+//                holder.tvItem = retView.findViewById(android.R.id.text1) as TextView
+                holder.mId = retView.findViewById(R.id.mId)
+                holder.tvItem = retView.findViewById(R.id.tvItem)
                 retView.tag = holder
             }
 
@@ -47,14 +50,17 @@ class RekapBulananThnSpinAdapter(context: Context, @LayoutRes resource: Int, lis
             retView = convertView
         }
 
-        val offerData = list.get(position)
+        val offerData = list[position]
 
-        holder.tvItem?.setText(offerData)
+        val idInt = position+1
+        holder.mId?.text = idInt.toString()
+        holder.tvItem?.text = offerData
 
         return retView!!
     }
 
     internal class ViewHolder {
+        var mId: TextView? = null
         var tvItem: TextView? = null
     }
 

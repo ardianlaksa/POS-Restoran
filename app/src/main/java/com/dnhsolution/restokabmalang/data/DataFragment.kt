@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.data.rekap_harian.RekapHarianListElement
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.fragment_data.*
 
 class DataFragment : Fragment() {
 

@@ -143,8 +143,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     it
                 )
             }
-            recyclerView.adapter = adapterList
 
+            recyclerView.adapter = adapterList
+            recyclerView.scheduleLayoutAnimation()
             btnReset.visibility = View.VISIBLE
         }
 
@@ -178,6 +179,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 )
             }
             recyclerView.adapter = adapterList
+            recyclerView.scheduleLayoutAnimation()
             btnReset.visibility = View.GONE
         }
 
@@ -283,7 +285,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                     val spinThnAdapter = context?.let {
                         RekapBulananThnSpinAdapter(
                             it,
-                            android.R.layout.simple_spinner_dropdown_item,
+                            R.layout.item_spi_bulan,
                             spinThnArray
                         )
                     }
@@ -327,8 +329,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                         )
                     }
 
-                    recyclerView.adapter = adapterList
-                    recyclerView.layoutManager = (LinearLayoutManager(context))
+                recyclerView.adapter = adapterList
+                recyclerView.layoutManager = (LinearLayoutManager(context))
+                recyclerView.scheduleLayoutAnimation()
 //                }
 
                 binding.ivIconDataKosong.visibility = View.GONE

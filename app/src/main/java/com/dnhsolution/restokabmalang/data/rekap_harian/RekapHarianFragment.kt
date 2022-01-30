@@ -147,7 +147,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
             updateLabel()
         }
 
-        ivDate.setOnClickListener(View.OnClickListener {
+        ivDate.setOnClickListener({
             // TODO Auto-generated method stub
             DatePickerDialog(
                 requireContext(), date, myCalendar
@@ -196,7 +196,8 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // There are no request codes
-//            val data: Intent? = result.data
+            val data: Intent? = result.data
+            val a = data?.extras
 //            Toast.makeText(requireContext(), "OK",Toast.LENGTH_SHORT).show()
             updateLabel()
         }
@@ -302,11 +303,12 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                     val disc_rp = rArray.getJSONObject(i).getInt("DISC_RP")
                     val omzet = rArray.getJSONObject(i).getInt("OMZET")
                     val tglTrx = rArray.getJSONObject(i).getString("TANGGAL_TRX")
+                    val namaUserTrx = rArray.getJSONObject(i).getString("NAME")
                     val concatProduk = rArray.getJSONObject(i).getString("CONCATPRODUK")
 
                     itemsHarian?.add(
                         RekapHarianListElement(
-                            idTrx,"", 0, 0, disc_rp, omzet, tglTrx, concatProduk)
+                            idTrx,namaUserTrx, 0, 0, disc_rp, omzet, tglTrx, concatProduk)
                     )
                 }
 
@@ -335,6 +337,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
             }
             recyclerView.adapter = adapterList
             recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.scheduleLayoutAnimation()
         } catch (e: JSONException) {
             e.printStackTrace()
         }

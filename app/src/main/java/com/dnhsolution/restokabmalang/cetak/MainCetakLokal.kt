@@ -23,6 +23,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.util.DisplayMetrics
 import android.util.Log
@@ -36,6 +37,8 @@ import com.dnhsolution.restokabmalang.cetak.PrinterCommands
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.dantsu.escposprinter.EscPosPrinter
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
@@ -50,7 +53,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterface {
+class MainCetakLokal : AppCompatActivity() {
     private lateinit var rvData: RecyclerView
     var itemProduk: MutableList<ItemProduk>? = null
     var linearLayout: LinearLayout? = null
@@ -76,17 +79,19 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
     private lateinit var binding: ActivityMainCetakBinding
     private var requestCode = 0
     private var nmPetugas = ""
+    private var mBluetoothAdapter: BluetoothAdapter? = null
+    private val permissionBluetooth: Int = 100
 
-    var resultLauncher = registerForActivityResult(
+    private var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // There are no request codes
             val data: Intent? = result.data
             when (requestCode) {
-                MainCetak.RC_ENABLE_BLUETOOTH -> if (result.resultCode == RESULT_OK) {
+                RC_ENABLE_BLUETOOTH -> if (result.resultCode == RESULT_OK) {
                     Log.i(_tag, "onActivityResult: bluetooth aktif")
                 } else Log.i(_tag, "onActivityResult: bluetooth harus aktif untuk menggunakan fitur ini")
-                MainCetak.RC_CONNECT_DEVICE -> if (result.resultCode == RESULT_OK) {
+                RC_CONNECT_DEVICE -> if (result.resultCode == RESULT_OK) {
                     val address = data!!.extras!!.getString(DeviceActivity.EXTRA_DEVICE_ADDRESS)
                     val mDevice = mService?.getDevByMac(address)
                     mService?.connect(mDevice)
@@ -101,6 +106,7 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
+        val btDevice = sharedPreferences.getString(Url.SESSION_PRINTER_BT, "")
         nmPetugas = MainActivity.namaUser ?: ""
         databaseHandler = DatabaseHandler(this@MainCetakLokal)
         when {
@@ -154,10 +160,23 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
         //recyclerView.addItemDecoration(dividerItemDecoration);
         rvData.setAdapter(adapter)
         if (tipeStruk.equals("2", ignoreCase = true)) llPajak.visibility = View.GONE
-        btnKembali.setOnClickListener(View.OnClickListener { v: View? ->
+
+        // Check to see if the Bluetooth classic feature is available.
+        packageManager.takeIf { it.missingSystemFeature(PackageManager.FEATURE_BLUETOOTH) }?.also {
+            Toast.makeText(this, R.string.bluetooth_tidak_didukung, Toast.LENGTH_SHORT).show()
+            finish()
+        }
+        // Check to see if the BLE feature is available.
+        packageManager.takeIf { it.missingSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) }?.also {
+            Toast.makeText(this, R.string.ble_tidak_didukung, Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+        btnKembali.setOnClickListener { v: View? ->
             setResult(RESULT_OK)
             finish()
-        })
+        }
+
         binding.bBatalTrx.setOnClickListener { v: View? ->
             Log.d(_tag, "")
             databaseHandler!!.delete_by_id_trx(idTrx!!.toInt())
@@ -178,46 +197,50 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
                 }
             }
         }
-        if (!intent.getStringExtra("idTrx")!!.isEmpty()) {
+        if (intent.getStringExtra("idTrx")!!.isNotEmpty()) {
             idTrx = intent.getStringExtra("idTrx")
-            data
+            getData
         }
 
-        setupBluetooth()
-        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-        val bt_device = sharedPreferences.getString(Url.SESSION_PRINTER_BT, "")
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val mBluetoothAdapter = bluetoothManager.adapter
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-        } else if (!mBluetoothAdapter.isEnabled) {
-            // Bluetooth is not enabled :)
-        } else {
-            if (!bt_device.equals("", ignoreCase = true)) {
-                val mDevice = mService!!.getDevByMac(bt_device)
-                mService!!.connect(mDevice)
-                Log.d("BT_DEVICE", bt_device!!)
-            }
-        }
-
+        mBluetoothAdapter = bluetoothManager.adapter
+        cekKeberadaanBluetooth(btDevice)
         btnCetak?.setOnClickListener {
-            printText()
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH), permissionBluetooth)
+            } else {
+                if(cekKeberadaanBluetooth(btDevice))
+                    printText()
+            }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
-        supportActionBar!!.title = label
-    }// Passing values
+    private fun cekKeberadaanBluetooth(btDevice: String?) : Boolean {
+        mBluetoothAdapter?.let {
+            if (mBluetoothAdapter == null) {
+                // Device does not support Bluetooth
+                isPrinterReady = false
+                tv_status?.text = resources.getString(R.string.bluetooth_perangkat_tidak_cocok)
+            } else if (!it.isEnabled) {
+                // Bluetooth is not enabled :)
+                isPrinterReady = false
+                tv_status?.text = resources.getString(R.string.bluetooth_tidak_aktif)
+            } else {
+                if (!btDevice.equals("", ignoreCase = true)) {
+                    isPrinterReady = true
+                    tv_status?.text = resources.getString(R.string.terhubung_dengan_perangkat)
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
-    // Do something Here with values
-    //data transaksi
-    private val data: Unit
-        //detail transaksi
+    private fun PackageManager.missingSystemFeature(name: String): Boolean = !hasSystemFeature(name)
+
+    private val getData: Unit
         get() {
             itemProduk!!.clear()
-            adapter!!.notifyDataSetChanged()
             val db = databaseHandler!!.readableDatabase
 
             //data transaksi
@@ -247,7 +270,7 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
                 var no = 1
                 do {
                     // Passing values
-                    val total_harga =
+                    val totalharga =
                         cDetailTrx.getString(1).toInt() * cDetailTrx.getString(2).toInt()
                     val id = ItemProduk()
                     id.setNo(no)
@@ -255,7 +278,7 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
                     id.setQty(cDetailTrx.getString(1))
                     id.setHarga(currencyFormatter(cDetailTrx.getString(2)))
                     id.isPajak = cDetailTrx.getString(3)
-                    id.setTotal_harga(currencyFormatter(total_harga.toString()))
+                    id.setTotal_harga(currencyFormatter(totalharga.toString()))
                     itemProduk!!.add(id)
                     no++
                     // Do something Here with values
@@ -263,47 +286,8 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
             }
             cDetailTrx.close()
             db.close()
-            adapter!!.notifyDataSetChanged()
+            adapter?.notifyDataSetChanged()
         }
-
-    @AfterPermissionGranted(RC_BLUETOOTH)
-    private fun setupBluetooth() {
-        val params = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN)
-        if (!EasyPermissions.hasPermissions(this, *params)) {
-            EasyPermissions.requestPermissions(
-                this, "You need bluetooth permission",
-                RC_BLUETOOTH, *params
-            )
-            return
-        }
-        mService = BluetoothService(this, BluetoothHandler(this))
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        // TODO: 10/11/17 do something
-    }
-
-    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        // TODO: 10/11/17 do something
-    }
-
-    override fun onDeviceConnected() {
-        isPrinterReady = true
-        tv_status!!.text = resources.getString(R.string.terhubung_dengan_perangkat)
-    }
-
-    override fun onDeviceConnecting() {
-        tv_status!!.text = resources.getString(R.string.sedang_menghubungkan)
-    }
-
-    override fun onDeviceConnectionLost() {
-        isPrinterReady = false
-        tv_status!!.text = resources.getString(R.string.koneksi_terputus)
-    }
-
-    override fun onDeviceUnableToConnect() {
-        tv_status!!.text = resources.getString(R.string.tidak_terhubung_ke_perangkat)
-    }
 
     private fun printText() {
         mService.let {
@@ -364,9 +348,7 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
     }
 
     private fun gantiKetitik(value: String): String {
-        var value = value
-        value = value.replace(",", ".")
-        return value
+        return value.replace(",", ".")
     }
 
     private fun requestBluetooth() {
@@ -388,80 +370,10 @@ class MainCetakLokal : AppCompatActivity(), PermissionCallbacks, HandlerInterfac
             return dateFormat.format(date)
         }
 
-    private fun writePrint(align: ByteArray?, msg: String) {
-        var msg = msg
-        mService!!.write(align)
-        val space = StringBuilder("   ")
-        val l = msg.length
-        if (l < 31) {
-            for (x in 31 - l downTo 0) {
-                space.append(" ")
-            }
-        }
-        msg = msg.replace(" : ", space.toString())
-        mService!!.write(msg.toByteArray())
-    }
-
-    fun currencyFormatter(num: String): String {
+    private fun currencyFormatter(num: String): String {
         val m = num.toDouble()
         val formatter = DecimalFormat("###,###,###")
         return formatter.format(m)
-    }
-
-    protected fun printConfig(bill: String, size: Int, style: Int, align: Int) {
-        //size 1 = large, size 2 = medium, size 3 = small
-        //style 1 = Regular, style 2 = Bold
-        //align 0 = left, align 1 = center, align 2 = right
-        try {
-            val format = byteArrayOf(27, 33, 0)
-            val change = byteArrayOf(27, 33, 0)
-            mService!!.write(format)
-
-            //different sizes, same style Regular
-            if (size == 1 && style == 1) //large
-            {
-                change[2] = 0x10.toByte() //large
-                mService!!.write(change)
-            } else if (size == 2 && style == 1) //medium
-            {
-                //nothing to change, uses the default settings
-            } else if (size == 3 && style == 1) //small
-            {
-                change[2] = 0x3.toByte() //small
-                mService!!.write(change)
-            }
-
-            //different sizes, same style Bold
-            if (size == 1 && style == 2) //large
-            {
-                change[2] = (0x10 or 0x8).toByte() //large
-                mService!!.write(change)
-            } else if (size == 2 && style == 2) //medium
-            {
-                change[2] = 0x8.toByte()
-                mService!!.write(change)
-            } else if (size == 3 && style == 2) //small
-            {
-                change[2] = (0x3 or 0x8).toByte() //small
-                mService!!.write(change)
-            }
-            when (align) {
-                0 ->                     //left align
-                    mService!!.write(PrinterCommands.ESC_ALIGN_LEFT)
-                1 ->                     //center align
-                    mService!!.write(PrinterCommands.ESC_ALIGN_CENTER)
-                2 ->                     //right align
-                    mService!!.write(PrinterCommands.ESC_ALIGN_RIGHT)
-            }
-            mService!!.write(bill.toByteArray())
-            mService!!.write(byteArrayOf(PrinterCommands.LF))
-        } catch (ex: Exception) {
-            Log.e("error", ex.toString())
-        }
-    }
-
-    protected fun printNewLine() {
-        mService!!.write(PrinterCommands.FEED_LINE)
     }
 
     companion object {

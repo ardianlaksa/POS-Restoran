@@ -1,14 +1,17 @@
 package com.dnhsolution.restokabmalang.cetak;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
 
 import java.util.List;
+
 public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.Myholder> {
     List<ItemProduk> itemProduks;
     Context context;
@@ -18,7 +21,7 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.Myholder> 
         this.context=context;
     }
 
-    class Myholder extends RecyclerView.ViewHolder{
+    static class Myholder extends RecyclerView.ViewHolder{
         TextView no,nama_item,qty, harga;
 
         public Myholder(View itemView) {
@@ -32,11 +35,11 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.Myholder> 
     }
 
 
+    @NonNull
     @Override
     public Myholder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_produk_cetak,null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_produk_cetak,parent,false);
         return new Myholder(view);
-
     }
 
     @Override
@@ -57,6 +60,5 @@ public class AdapterProduk extends RecyclerView.Adapter<AdapterProduk.Myholder> 
     public int getItemCount() {
         return itemProduks.size();
     }
-
 
 }
