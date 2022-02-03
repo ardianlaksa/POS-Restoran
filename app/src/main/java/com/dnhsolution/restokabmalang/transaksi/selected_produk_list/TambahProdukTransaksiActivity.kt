@@ -16,12 +16,12 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.databinding.ActivityTambahhProdukTransaksiBinding
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.activity_main.*
 
 class TambahProdukTransaksiActivity : AppCompatActivity() {
 
@@ -46,14 +46,17 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         var idTmpUsaha: String? = null
     }
 
+    lateinit var binding: ActivityTambahhProdukTransaksiBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
-        setContentView(R.layout.activity_tambahh_produk_transaksi)
-        setSupportActionBar(toolbar)
+        binding = ActivityTambahhProdukTransaksiBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         argTab = MainActivity.argTab
 
@@ -66,10 +69,12 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         Log.i(_tag,"onResume $valueArgsFromKeranjang")
         jumlahProdukTerpilih = valueArgsFromKeranjang?.size ?: 0
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        viewpager = findViewById<ViewPager2>(R.id.viewpager_main)
-        tabMain = findViewById<TabLayout>(R.id.tabs_main)
-        loadingLayout = findViewById<RelativeLayout>(R.id.loadingLayout)
+        val toolbar = binding.toolbar
+        viewpager = binding.viewpagerMain
+        tabMain = binding.tabsMain
+        loadingLayout = binding.loadingLayout
+
+        setSupportActionBar(toolbar)
 
         val fragmentAdapter = ScreenSlidePagerAdapter(this)
         viewpager.adapter = fragmentAdapter
@@ -165,6 +170,7 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = titles.size
-        override fun createFragment(position: Int): Fragment = TambahProdukListFragment.newInstance((argTab[position]),valueArgsFromKeranjang)
+        override fun createFragment(position: Int): Fragment =
+            TambahProdukListFragment.newInstance((argTab[position]),valueArgsFromKeranjang)
     }
 }

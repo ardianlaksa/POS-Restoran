@@ -20,13 +20,6 @@ import android.content.pm.PackageManager
 import android.content.Intent
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionRequestErrorListener
-import com.karumi.dexter.listener.DexterError
 import android.content.ActivityNotFoundException
 import android.app.AlertDialog
 import android.net.Uri
@@ -39,10 +32,8 @@ import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
-import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakListElement
 import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukListElement
-import com.karumi.dexter.listener.PermissionRequest
 import java.io.*
 import java.lang.NumberFormatException
 import java.text.DecimalFormat
@@ -147,7 +138,7 @@ class DetailProduk() : AppCompatActivity() {
         id = intent.getStringExtra("id_barang")
         harga = intent.getStringExtra("harga")
         ket = intent.getStringExtra("ket")
-        requestMultiplePermissions()
+//        requestMultiplePermissions()
         var originalString = harga
         val longval: Long
         if (originalString!!.contains(".")) {
@@ -351,47 +342,47 @@ class DetailProduk() : AppCompatActivity() {
         }
     }
 
-    private fun requestMultiplePermissions() {
-        Dexter.withActivity(this)
-            .withPermissions(
-                Manifest.permission.CAMERA,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                    if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
-                        //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
-                    }
-                    if (report.isAnyPermissionPermanentlyDenied) { // check for permanent denial of any permission
-                        // show alert dialog navigating to Settings
-                        showSettingsDialog()
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest>,
-                    token: PermissionToken
-                ) {
-                    token.continuePermissionRequest()
-                }
-
-                fun onPermissionDenied(response: PermissionDeniedResponse) {
-                    // check for permanent denial of permission
-                    if (response.isPermanentlyDenied) {
-                        showSettingsDialog()
-                    }
-                } //                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                //                        token.continuePermissionRequest();
-                //                    }
-            }).withErrorListener(object : PermissionRequestErrorListener {
-                override fun onError(error: DexterError) {
-                    Toast.makeText(applicationContext, "Some Error! ", Toast.LENGTH_SHORT).show()
-                }
-            })
-            .onSameThread()
-            .check()
-    }
+//    private fun requestMultiplePermissions() {
+//        Dexter.withActivity(this)
+//            .withPermissions(
+//                Manifest.permission.CAMERA,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                Manifest.permission.READ_EXTERNAL_STORAGE
+//            )
+//            .withListener(object : MultiplePermissionsListener {
+//                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+//                    if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
+//                        //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
+//                    }
+//                    if (report.isAnyPermissionPermanentlyDenied) { // check for permanent denial of any permission
+//                        // show alert dialog navigating to Settings
+//                        showSettingsDialog()
+//                    }
+//                }
+//
+//                override fun onPermissionRationaleShouldBeShown(
+//                    permissions: List<PermissionRequest>,
+//                    token: PermissionToken
+//                ) {
+//                    token.continuePermissionRequest()
+//                }
+//
+//                fun onPermissionDenied(response: PermissionDeniedResponse) {
+//                    // check for permanent denial of permission
+//                    if (response.isPermanentlyDenied) {
+//                        showSettingsDialog()
+//                    }
+//                } //                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+//                //                        token.continuePermissionRequest();
+//                //                    }
+//            }).withErrorListener(object : PermissionRequestErrorListener {
+//                override fun onError(error: DexterError) {
+//                    Toast.makeText(applicationContext, "Some Error! ", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//            .onSameThread()
+//            .check()
+//    }
 
     private fun showSettingsDialog() {
         val builder = AlertDialog.Builder(this@DetailProduk)

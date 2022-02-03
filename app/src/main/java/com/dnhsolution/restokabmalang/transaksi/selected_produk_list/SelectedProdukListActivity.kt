@@ -25,11 +25,11 @@ import com.dnhsolution.restokabmalang.cetak.MainCetakLokal
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.database.ItemDetailTransaksi
 import com.dnhsolution.restokabmalang.database.ItemTransaksi
+import com.dnhsolution.restokabmalang.databinding.ActivityKeranjangBinding
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.utilities.*
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
-import kotlinx.android.synthetic.main.activity_keranjang.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -141,9 +141,13 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
     }
 
+    private lateinit var binding : ActivityKeranjangBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_keranjang)
+        binding = ActivityKeranjangBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
@@ -151,16 +155,16 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
 
-        if(tipeStruk == "2") llPajak.visibility = View.GONE
+        if(tipeStruk == "2") binding.llPajak.visibility = View.GONE
 
         databaseHandler = DatabaseHandler(this)
-        bProses.setOnClickListener(this)
+        binding.bProses.setOnClickListener(this)
 
-        bBantuan.setOnClickListener{
+        binding.bBantuan.setOnClickListener{
             tampilAlertDialogTutorial()
         }
 
-        bTambah.setOnClickListener{
+        binding.bTambah.setOnClickListener{
             val favoritedProdukNames = ArrayList<ProdukSerializable>()
             for (Produk in obyek!!) {
                 favoritedProdukNames.add(Produk)
@@ -168,37 +172,13 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
             val i = Intent(this, TambahProdukTransaksiActivity::class.java)
             i.putExtra("ARRAYLIST", favoritedProdukNames)
-//            startActivity(i)
             resultLauncherTambah.launch(i)
 
         }
 
-//        etDiskon.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-//                etDiskon.requestFocus()
-//
-//            }
-//
-//            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-//
-//            }
-//
-//            override fun afterTextChanged(editable: Editable) {
-//
-//                valueDiskon = if (etDiskon.text.toString().isEmpty()) {
-//                    0
-//                } else {
-//                    editable.toString().toInt()
-//                }
-//
-//                setTotal()
-//
-//            }
-//        })
-
-        etRupiahDiskon.addTextChangedListener(object : TextWatcher {
+        binding.etRupiahDiskon.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                etRupiahDiskon.requestFocus()
+                binding.etRupiahDiskon.requestFocus()
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -206,7 +186,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
             override fun afterTextChanged(editable: Editable) {
 
-                etRupiahDiskon.removeTextChangedListener(this)
+                binding.etRupiahDiskon.removeTextChangedListener(this)
 
                 var totalPrice = 0
                 var totalPajak = 0
@@ -230,14 +210,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     val formattedString = formatter.format(longval)
 
                     //setting text after format to EditText
-                    etRupiahDiskon.setText(formattedString.replace(",", "."))
-                    etRupiahDiskon.setSelection(etRupiahDiskon.text.toString().length)
+                    binding.etRupiahDiskon.setText(formattedString.replace(",", "."))
+                    binding.etRupiahDiskon.setSelection(binding.etRupiahDiskon.text.toString().length)
                 } catch (nfe: NumberFormatException) {
                     nfe.printStackTrace()
                 }
 
-                etRupiahDiskon.addTextChangedListener(this)
-                valueDiskonRupiah = if (etRupiahDiskon.text.toString().isEmpty()) {
+                binding.etRupiahDiskon.addTextChangedListener(this)
+                valueDiskonRupiah = if (binding.etRupiahDiskon.text.toString().isEmpty()) {
                     0
                 } else {
                     editable.toString().replace(".", "").toInt()
@@ -285,32 +265,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         setTotal()
 
-//        etRupiahDiskon.addTextChangedListener(object : TextWatcher {
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//            }
-//
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//
-//            private var current = ""
-//
-//            override fun afterTextChanged(s: Editable?) {
-//
-//                Toast.makeText(this@SelectedProdukListActivity, s.toString(), Toast.LENGTH_SHORT).show()
-////                if (s.toString() == "") return
-////                if (s.toString() != current)
-////                    etRupiahDiskon.removeTextChangedListener(this)
-////
-////                if(s.toString() == ""){
-////                    valueDiskonRupiah = 0
-////                }else{
-////                    valueDiskonRupiah = s.toString().toInt()
-////                }
-////                setTotalRupiah()
-//
-//                etRupiahDiskon.addTextChangedListener(this)
-//            }
-//        })
-
     }
 
     private fun tampilAlertDialogTutorial() {
@@ -334,14 +288,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     }
 
     private fun setUpRecyclerView(mAdapter: SelectedProdukListAdapter) {
-        recyclerView.adapter = mAdapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = mAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
         val itemTouchHelper = ItemTouchHelper(
             SwipeToDeleteCallback(
                 mAdapter
             )
         )
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
     }
 
     override fun keranjangProdukItemOnTask(position:Int, totalPrice: Int, qty: Int) {
@@ -367,26 +321,26 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             if(valueTotal.isPajak == "1") totalPajak += nilai
             totalPrice += nilai
         }
-        tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
+        binding.tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
         this.valueTotalPrice = totalPrice
 
         if(tipeStruk == "1")
             pajakRp = totalPajak.toFloat()*10/100
 
-        tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+        binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
         valueTotalPrice +=pajakRp.toInt()
 
         val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-        tvDiskonTotal.text = rupiahValue
+        binding.tvDiskonTotal.text = rupiahValue
     }
 
     private fun setDiskonDanTotalRupiah (ttlPjk: Int, totalPrice: Int) {
         var totalPajak = ttlPjk
-        tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
+        binding.tvSubtotal.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
 
         val diskonRupiah: Int
-        if (etRupiahDiskon.text.toString().isNotEmpty()) {
+        if (binding.etRupiahDiskon.text.toString().isNotEmpty()) {
             when {
                 valueDiskonRupiah <= totalPajak -> {
                     diskonRupiah = valueDiskonRupiah
@@ -396,27 +350,22 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     if(tipeStruk == "1")
                         pajakRp = totalPajak.toFloat()*10/100
 
-                    tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+                    binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
                     valueTotalPrice +=pajakRp.toInt()
 
                     valueDR = ((diskonRupiah*100)/totalPrice).toDouble()
                     val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-                    tvDiskonTotal.text = rupiahValue
+                    binding.tvDiskonTotal.text = rupiahValue
                 }
                 else -> {
                     diskonRupiah = valueDiskonRupiah
                     this.valueTotalPrice = totalPrice-diskonRupiah
                     val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble()).replace(",","-")
-                    tvDiskonTotal.text = rupiahValue
+                    binding.tvDiskonTotal.text = rupiahValue
                     pajakRp = 0F
-                    tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
+                    binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
                 }
-//                else -> {
-//                    val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(totalPrice.toDouble())
-//                    tvDiskonTotal.text = rupiahValue
-//                    tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
-//                }
             }
         }else{
             this.valueTotalPrice = totalPrice
@@ -424,14 +373,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             if(tipeStruk == "1")
                 pajakRp = totalPajak.toFloat()*10/100
 
-            tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
+            binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
             valueTotalPrice +=pajakRp.toInt()
 
             valueDR = 0.0
 
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
-            tvDiskonTotal.text = rupiahValue
+            binding.tvDiskonTotal.text = rupiahValue
         }
         isDiskonValid = totalPrice >= valueDiskonRupiah
     }
@@ -573,7 +522,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         rootObject.put("user",idPengguna)
         rootObject.put("disc_rp",valueDiskonRupiah)
         rootObject.put("pajakRp",pajakRp.toInt())
-        if(etRupiahDiskon.text.toString().isNotEmpty()){
+        if(binding.etRupiahDiskon.text.toString().isNotEmpty()){
         rootObject.put("disc",valueDR)
         } else{
             rootObject.put("disc",valueDiskon)
@@ -607,7 +556,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         var omzet = ""
         var id_trx = 0
 
-        if(etRupiahDiskon.text.toString().isNotEmpty()){
+        if(binding.etRupiahDiskon.text.toString().isNotEmpty()){
             disc = valueDR.toString()
         }
 //        else{

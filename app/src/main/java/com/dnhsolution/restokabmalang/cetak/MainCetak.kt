@@ -43,7 +43,6 @@ import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.gson.GsonBuilder
 import org.json.JSONException
 import org.json.JSONObject
-import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -415,7 +414,7 @@ open class MainCetak : AppCompatActivity() {
                  "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
             }
 
-             text += "[C]--------------------------------\n"+
+            text += "[C]--------------------------------\n"+
              "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
              "[L]Disc[R]${tvJmlDisc?.text}\n"
 

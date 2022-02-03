@@ -24,7 +24,7 @@ class DataFragment2 : Fragment() {
     private var titles = arrayOf("Harian", "Bulanan", "Billing")
     private lateinit var binding : FragmentDataLamaBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentDataLamaBinding.inflate(layoutInflater)
         val view = binding.root
 //        val view =  inflater.inflate(R.layout.fragment_data, container, false)
@@ -74,6 +74,7 @@ class DataFragment2 : Fragment() {
                     return RekapBillingFragment.newInstance("2")
                 }
             }
+//            return Fragment()
         }
     }
 }

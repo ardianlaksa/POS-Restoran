@@ -50,14 +50,6 @@ import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity;
 import com.dnhsolution.restokabmalang.utilities.Url;
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard;
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.DexterError;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.PermissionRequestErrorListener;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,7 +96,6 @@ public class DashFragment extends Fragment {
     Handler mHandler;
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        requestMultiplePermissions();
         databaseHandler = new DatabaseHandler(getContext());
         sharedPreferences = getContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE);
 
@@ -123,7 +114,7 @@ public class DashFragment extends Fragment {
         db = databaseHandler.getReadableDatabase();
         batasSinkron();
 
-        ivInfo.setOnClickListener(view1 -> openDialog());
+        ivInfo.setOnClickListener(view1 -> tampilAlertDialogTutorial());
 
         if(MainActivity.Companion.getAdDashboard() == 1) return;
         MainActivity.Companion.setAdDashboard(1);
@@ -148,26 +139,6 @@ public class DashFragment extends Fragment {
     }
 
     private void tampilAlertDialogTutorial(){
-//        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-//        alertDialog.setMessage("" +
-//                "1. Transaksi tersimpan : Transaksi\n" +
-//                "    yang dilakukan saat tidak ada\n" +
-//                "    koneksi.\n" +
-//                "2. Batas Waktu Sinkron : Batasan\n" +
-//                "   waktu maksimal untuk upload\n" +
-//                "   transaksi saat tidak ada koneksi\n" +
-//                "   internet.");
-//        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//        alertDialog.show();
-        openDialog();
-    }
-
-    private void openDialog(){
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
         final View rowList = getLayoutInflater().inflate(R.layout.dialog_tutorial, null);
         ListView listView = rowList.findViewById(R.id.listView);
@@ -211,52 +182,6 @@ public class DashFragment extends Fragment {
         dateInString = sdf.format(resultdate);
 
         return dateInString;
-    }
-
-    private void requestMultiplePermissions() {
-        Dexter.withActivity(getActivity())
-                .withPermissions(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
-                            //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        if (report.isAnyPermissionPermanentlyDenied()) { // check for permanent denial of any permission
-                            // show alert dialog navigating to Settings
-                            showSettingsDialog();
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        // check for permanent denial of permission
-                        if (response.isPermanentlyDenied()) {
-                            showSettingsDialog();
-                        }
-                    }
-
-//                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-//                        token.continuePermissionRequest();
-//                    }
-                }).
-                withErrorListener(new PermissionRequestErrorListener() {
-                    @Override
-                    public void onError(DexterError error) {
-                        Toast.makeText(getContext(), "Some Error! ", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .onSameThread()
-                .check();
     }
 
     private void showSettingsDialog() {

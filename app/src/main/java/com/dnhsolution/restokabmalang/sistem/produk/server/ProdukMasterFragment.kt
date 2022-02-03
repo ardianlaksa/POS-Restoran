@@ -57,6 +57,8 @@ import kotlin.collections.ArrayList
 import retrofit2.Call
 import android.widget.Toast
 import com.dnhsolution.restokabmalang.MainActivity
+import com.dnhsolution.restokabmalang.databinding.FragmentProdukListBinding
+import com.dnhsolution.restokabmalang.databinding.FragmentServerBinding
 import com.dnhsolution.restokabmalang.utilities.DefaultPojo
 import com.dnhsolution.restokabmalang.utilities.HapusProdukMasterOnTask
 import retrofit2.Callback
@@ -64,13 +66,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.fragment_produk_list.*
-import okhttp3.RequestBody
-
-import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 import retrofit2.http.POST
-import retrofit2.http.Multipart
 
     interface DeleteServices {
         @FormUrlEncoded
@@ -93,14 +89,6 @@ import retrofit2.http.Multipart
     }
 
 class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        parent: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_server, parent, false)
-    }
 
     private var uuid: String? = null
     private var idPengguna: String? = null
@@ -174,6 +162,13 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
         }
     }
 
+    private lateinit var binding : FragmentServerBinding
+
+    override fun onCreateView( inflater: LayoutInflater, parent: ViewGroup?, savedInstanceState: Bundle? ): View? {
+        binding = FragmentServerBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
@@ -188,7 +183,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
         rvProduk!!.itemAnimator = DefaultItemAnimator()
         produkAdapter = AdapterProduk(itemProduks, itemProduksNotFiltered, requireContext(),this)
         rvProduk!!.adapter = produkAdapter
-        if (CheckNetwork().checkingNetwork((context)!!)) {
+        if (CheckNetwork().checkingNetwork(requireContext())) {
             startShimmering(true)
             ambilData
             tvKet!!.visibility = View.GONE
@@ -234,11 +229,11 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
     private fun startShimmering(arg: Boolean){
         if(arg) {
             rvProduk?.visibility = View.GONE
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
+            binding.shimmerViewContainer.visibility = View.VISIBLE
+            binding.shimmerViewContainer.startShimmerAnimation()
         } else {
-            shimmer_view_container.stopShimmerAnimation()
-            shimmer_view_container.visibility = View.GONE
+            binding.shimmerViewContainer.stopShimmerAnimation()
+            binding.shimmerViewContainer.visibility = View.GONE
             rvProduk?.visibility = View.VISIBLE
         }
     }
@@ -455,15 +450,14 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                 }
             }
         }
-        var originalString = harga
-        val longval: Long
-        if (originalString.contains(".")) {
-            originalString = originalString.replace(".", "")
+        var originalHargaString = harga
+        if (originalHargaString.contains(".")) {
+            originalHargaString = originalHargaString.replace(".", "")
         }
-        longval = originalString.toLong()
+        val longHarga = originalHargaString.toLong()
         val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
         formatter.applyPattern("#,###,###,###")
-        val formattedString = formatter.format(longval)
+        val formattedString = formatter.format(longHarga)
 
         //setting text after format to EditText
         etHarga.setText(formattedString.replace(",", "."))
@@ -505,7 +499,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
             }
         })
 
-        if (CheckNetwork().checkingNetwork((context)!!)) {
+        if (CheckNetwork().checkingNetwork(requireContext())) {
             Glide.with(ivGambarLama.context).load(Url.serverFoto + url_image)
                 .placeholder(R.mipmap.ic_foto)
                 .centerCrop()
@@ -573,29 +567,17 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
             builder.setMessage("Pilihan Tambah Foto")
                 .setPositiveButton("Galeri"
                 ) { dialog, id ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if ((requireActivity().checkSelfPermission(Manifest.permission.CAMERA)
-                                    != PackageManager.PERMISSION_GRANTED)
-                        ) {
-                            requestPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                ),
-                                MY_CAMERA_PERMISSION_CODE
-                            )
+                    if ((requireActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                                != PackageManager.PERMISSION_GRANTED)
+                    ) {
+                        requestPermissions(
+                            arrayOf(
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            MY_CAMERA_PERMISSION_CODE
+                        )
 
-                        } else {
-                            wallpaperDirectory = File(
-                                Environment.getExternalStorageDirectory()
-                                    .toString() + IMAGE_DIRECTORY
-                            )
-                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                                wallpaperDirectory!!.mkdirs()
-                            }
-                            showFileChooser()
-                            status = "e"
-                        }
                     } else {
                         wallpaperDirectory = File(
                             Environment.getExternalStorageDirectory()
@@ -610,41 +592,17 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                 }
                 .setNegativeButton("Kamera", object : DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface, id: Int) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)
-                                        != PackageManager.PERMISSION_GRANTED)
-                            ) {
-                                requestPermissions(
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                    ),
-                                    MY_CAMERA_PERMISSION_CODE
-                                )
-                                //showFileChooser();
-                            } else {
-                                wallpaperDirectory = File(
-                                    Environment.getExternalStorageDirectory()
-                                        .toString() + IMAGE_DIRECTORY
-                                )
-                                if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-                                    wallpaperDirectory!!.mkdirs()
-                                }
-                                val cal = Calendar.getInstance()
-                                val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-                                tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                val f = File(wallpaperDirectory, tempNameFile)
-                                val photoURI = FileProvider.getUriForFile(
-                                    (context)!!,
-                                    BuildConfig.APPLICATION_ID + ".provider",
-                                    f
-                                )
-                                //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                                startActivityForResult(cameraIntent, CAMERA_REQUEST)
-                                status = "e"
-                            }
+                        if ((activity!!.checkSelfPermission(Manifest.permission.CAMERA)
+                                    != PackageManager.PERMISSION_GRANTED)
+                        ) {
+                            requestPermissions(
+                                arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ),
+                                MY_CAMERA_PERMISSION_CODE
+                            )
+                            //showFileChooser();
                         } else {
                             wallpaperDirectory = File(
                                 Environment.getExternalStorageDirectory()
@@ -656,10 +614,16 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                             val cal = Calendar.getInstance()
                             val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
                             tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             val f = File(wallpaperDirectory, tempNameFile)
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
-                            startActivityForResult(intent, CAMERA_REQUEST)
+                            val photoURI = FileProvider.getUriForFile(
+                                requireContext(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                f
+                            )
+                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                            startActivityForResult(cameraIntent, CAMERA_REQUEST)
                             status = "e"
                         }
                     }
@@ -798,8 +762,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                         })
                         .into((ivGambar)!!)
                     ivGambar!!.visibility = View.VISIBLE
-                    if (t_nama_file.equals("", ignoreCase = true)) {
-                    } else {
+                    if (!t_nama_file.equals("", ignoreCase = true)) {
                         val fl = File(t_nama_file)
                         val deleted = fl.delete()
                     }
@@ -809,7 +772,6 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
         } else if (requestCode == CAMERA_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 println("CAMERA_REQUEST1")
-                //                        Bitmap photo = (Bitmap) data.getExtras().get("data");
                 var f = File(wallpaperDirectory.toString())
                 Log.d("File", f.toString())
                 for (temp: File in f.listFiles()) {
@@ -819,8 +781,6 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                         //pic = photo;
                         val file_size = (filePhoto.length() / 1024).toString().toInt()
                         Log.d("PirangMB", file_size.toString())
-                        //tvFileName.setVisibility(View.VISIBLE);
-                        // ivBerkas.setVisibility(View.VISIBLE);
                         if (status.equals("e", ignoreCase = true)) {
                             Glide.with(ivGambarBaru!!.context).load(File(f.absolutePath).toString())
                                 .placeholder(R.mipmap.ic_foto)
@@ -885,8 +845,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                                 })
                                 .into((ivGambar)!!)
                             ivGambar!!.visibility = View.VISIBLE
-                            if (t_nama_file.equals("", ignoreCase = true)) {
-                            } else {
+                            if (!t_nama_file.equals("", ignoreCase = true)) {
                                 val fl = File(t_nama_file)
                                 val deleted = fl.delete()
                             }
@@ -1052,15 +1011,6 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
 
     fun gantiIconWifi(value: Boolean) {
         println("gantiIconWifi2 : $menuTemp")
-//        if (value) {
-//            menuTemp?.getItem(3)?.icon =
-//                ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_wifi_24_green)
-//            statusJaringan = 1
-//        } else {
-//            menuTemp?.getItem(3)?.icon =
-//                ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_wifi_24_gray)
-//            statusJaringan = 0
-//        }
     }
 
     private fun tampilAlertDialogTutorial() {
@@ -1180,112 +1130,68 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
         }
 
         ivTambahFoto.setOnClickListener {
-//            wallpaperDirectory =
-//                File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
-
             wallpaperDirectory = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 File("${context?.getExternalFilesDir(null)}$IMAGE_DIRECTORY")
             } else {
                 File("${Environment.getExternalStorageDirectory().absolutePath}$IMAGE_DIRECTORY")
             }
 
-            if (!wallpaperDirectory!!.exists()) {
-                wallpaperDirectory?.mkdirs()
+            wallpaperDirectory?.let {
+                if (!it.exists()) {
+                    it.mkdirs()
+                }
             }
 
             val builder = AlertDialog.Builder(requireContext())
             builder.setMessage("Pilihan Tambah Foto")
                 .setPositiveButton("Galeri") { dialog, id ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            requestPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                ),
-                                MY_CAMERA_PERMISSION_CODE
-                            )
-                            //showFileChooser();
-                        } else {
-//                            wallpaperDirectory = File(
-//                                Environment.getExternalStorageDirectory()
-//                                    .toString() + IMAGE_DIRECTORY
-//                            )
-//                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                                wallpaperDirectory!!.mkdirs()
-//                            }
-                            showFileChooser()
-                            status = "t"
-                        }
+                    if (ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        requestPermissions(
+                            arrayOf(
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            MY_CAMERA_PERMISSION_CODE
+                        )
                     } else {
-//                        wallpaperDirectory = File(
-//                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
-//                        )
-//                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                            wallpaperDirectory!!.mkdirs()
-//                        }
                         showFileChooser()
                         status = "t"
                     }
                 }
                 .setNegativeButton("Kamera") { dialog, id ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            requestPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                ),
-                                MY_CAMERA_PERMISSION_CODE
-                            )
-                            //showFileChooser();
-                        } else {
-//                            wallpaperDirectory = File(
-//                                Environment.getExternalStorageDirectory()
-//                                    .toString() + IMAGE_DIRECTORY
-//                            )
-//                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                                wallpaperDirectory!!.mkdirs()
-//                            }
-                            val cal = Calendar.getInstance()
-                            val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-                            tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            val f = File(wallpaperDirectory, tempNameFile)
-                            val photoURI = FileProvider.getUriForFile(
-                                requireContext(),
-                                BuildConfig.APPLICATION_ID + ".provider",
-                                f
-                            )
-                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                            startActivityForResult(cameraIntent, CAMERA_REQUEST)
-                            status = "t"
-                        }
+                    if (ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        requestPermissions(
+                            arrayOf(
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            MY_CAMERA_PERMISSION_CODE
+                        )
                     } else {
-//                        wallpaperDirectory = File(
-//                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
-//                        )
-//                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                            wallpaperDirectory!!.mkdirs()
-//                        }
                         val cal = Calendar.getInstance()
                         val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
                         tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         val f = File(wallpaperDirectory, tempNameFile)
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
-                        startActivityForResult(intent, CAMERA_REQUEST)
+                        val photoURI = FileProvider.getUriForFile(
+                            requireContext(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            f
+                        )
+                        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        startActivityForResult(cameraIntent, CAMERA_REQUEST)
                         status = "t"
                     }
                 }
             val alert = builder.create()
             alert.show()
         }
+
         etHarga.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
@@ -1339,11 +1245,6 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                 Log.d("HASIL", s!!)
                 when {
                     s.equals("sukses", ignoreCase = true) -> {
-//                        databaseHandler!!.insert_produk(
-//                            com.dnhsolution.restokabmalang.database.ItemProduk(
-//                                0, idTmpUsaha, e_nama, e_harga, e_ket, t_nama_file, "1",slctdIspajak,slctdTipeProduk
-//                            )
-//                        )
                         if (progressdialog!!.isShowing) progressdialog!!.dismiss()
                         Toast.makeText(
                             requireContext(),
@@ -1366,11 +1267,6 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
             }
 
             override fun doInBackground(vararg p0: Void?): String? {
-//                if (databaseHandler == null) {
-//                    Log.d("DATABASE_INSERT", "gagal")
-//                } else {
-//                    Log.d("DATABASE_INSERT", "berhasil")
-//                }
                 val u = UploadData()
                 var msg: String? = null
                 //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
@@ -1384,7 +1280,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
     }
 
     override fun hapusProdukMasterOnTask(tipe: String,posisi: Int) {
-        if (!CheckNetwork().checkingNetwork((context)!!)) return
+        if (!CheckNetwork().checkingNetwork(requireContext())) return
 
         val idBarang = itemProduks[posisi].id_barang
             if(tipe == "1") {

@@ -2,8 +2,6 @@ package com.dnhsolution.restokabmalang.cetak
 
 import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
-import pub.devrel.easypermissions.EasyPermissions.PermissionCallbacks
-import com.dnhsolution.restokabmalang.cetak.BluetoothHandler.HandlerInterface
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,27 +14,16 @@ import android.os.Bundle
 import com.dnhsolution.restokabmalang.R
 import android.app.Activity
 import android.content.Intent
-import com.dnhsolution.restokabmalang.cetak.DeviceActivity
-import com.dnhsolution.restokabmalang.cetak.MainCetakLokal
-import butterknife.ButterKnife
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
-import android.database.sqlite.SQLiteDatabase
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
-import com.dnhsolution.restokabmalang.cetak.BluetoothHandler
-import butterknife.OnClick
-import com.dnhsolution.restokabmalang.cetak.PrinterCommands
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dantsu.escposprinter.EscPosPrinter
@@ -290,60 +277,51 @@ class MainCetakLokal : AppCompatActivity() {
         }
 
     private fun printText() {
-        mService.let {
-            if (it != null) {
-                if (!it.isAvailable) {
-                    Log.i(_tag, "printText: perangkat tidak support bluetooth")
-                    return
-                }
+        val connection: BluetoothConnection? =
+            BluetoothPrintersConnections.selectFirstPaired()
+        val printer = EscPosPrinter(connection, 203, 48f, 32)
 
-                val connection: BluetoothConnection? =
-                    BluetoothPrintersConnections.selectFirstPaired()
-                val printer = EscPosPrinter(connection, 203, 48f, 32)
+        if (isPrinterReady) {
+            val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+            val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+            val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+            val tanggal = dateTime
+            var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                    DisplayMetrics.DENSITY_LOW, theme
+                )) + "</img>\n" +
+                    "[L]\n"+
+                    "[C]<b>$nmTmpUsaha</b>\n"+
+                    "[C]$alamat\n"+
+                    "[L]\n"+
+                    "[L]No. Trx : $idTrx\n"+
+                    "[L]Tanggal : $tanggal\n"+
+                    "[L]Kasir   : $nmPetugas\n"+
+                    "[C]--------------------------------\n"
 
-                if (isPrinterReady) {
-                    val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-                    val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
-                    val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
-                    val tanggal = dateTime
-                    var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-                        applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                            DisplayMetrics.DENSITY_LOW, theme
-                        )) + "</img>\n" +
-                            "[L]\n"+
-                            "[C]<b>$nmTmpUsaha</b>\n"+
-                            "[C]$alamat\n"+
-                            "[L]\n"+
-                            "[L]No. Trx : $idTrx\n"+
-                            "[L]Tanggal : $tanggal\n"+
-                            "[L]Kasir   : $nmPetugas\n"+
-                            "[C]--------------------------------\n"
-
-                    for (i in itemProduk!!.indices) {
-                        val nmProduk = itemProduk!![i].getNama_produk()
-                        val qty = itemProduk!![i].getQty()
-                        val harga = itemProduk!![i].getHarga()
-                        val totalHarga = itemProduk!![i].getTotal_harga()
-                        text += "[L]$nmProduk\n" +
-                                "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
-                    }
-//                    val subTotal = tvSubtotal?.text.toString().replace(".", "")
-
-                    text += "[C]--------------------------------\n"+
-                            "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                            "[L]Disc[R]${tvJmlDisc?.text}\n"+
-                            "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"+
-                            "[C]--------------------------------\n"+
-                            "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
-                            "[L]\n"+
-                            "[C]- Terima Kasih -"
-                    printer.printFormattedText(text)
-                } else {
-                    Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
-                        .show()
-                    if (!it.isBTopen) requestBluetooth()
-                }
+            for (i in itemProduk!!.indices) {
+                val nmProduk = itemProduk!![i].getNama_produk()
+                val qty = itemProduk!![i].getQty()
+                val harga = itemProduk!![i].getHarga()
+                val totalHarga = itemProduk!![i].getTotal_harga()
+                text += "[L]$nmProduk\n" +
+                        "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
             }
+            text += "[C]--------------------------------\n"+
+                    "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                    "[L]Disc[R]${tvJmlDisc?.text}\n"
+
+            if (tipeStruk.equals("1", ignoreCase = true)) {
+                text += "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"
+            }
+            text += "[C]--------------------------------\n"+
+                    "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                    "[L]\n"+
+                    "[C]- Terima Kasih -"
+            printer.printFormattedText(text)
+        } else {
+            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 

@@ -42,17 +42,12 @@ import com.dnhsolution.restokabmalang.sistem.MainMaster
 import com.dnhsolution.restokabmalang.sistem.produk.server.*
 import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.ManagePermissions
 import com.dnhsolution.restokabmalang.utilities.PilihanAttachmentFragmentDialog
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
 import com.google.android.material.tabs.TabLayout
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.coroutines.launch
 import java.io.*
 import java.text.DecimalFormat
@@ -85,6 +80,8 @@ class ProdukMasterActivity : AppCompatActivity() {
     private val requestPermissionRequestStorageCode = 2
     private val requestCaptureImage:Int = 100
     private val requestPickImage = 1046
+    private val PermissionsRequestCode = 123
+    private lateinit var managePermissions: ManagePermissions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +113,17 @@ class ProdukMasterActivity : AppCompatActivity() {
         viewPager.adapter = sectionsPagerAdapter
         val tabs = findViewById<TabLayout>(R.id.tabs)
         tabs.setupWithViewPager(viewPager)
-        requestMultiplePermissions()
+//        requestMultiplePermissions()
+        val list = listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+        // Initialize a new instance of ManagePermissions class
+        val managePermissions = ManagePermissions(this,list,PermissionsRequestCode)
+        managePermissions.checkPermissions()
+
         if (adMasterProduk == 1) return
         adMasterProduk = 1
     }
@@ -263,103 +270,6 @@ class ProdukMasterActivity : AppCompatActivity() {
 
         ivTambahFoto.setOnClickListener {
             requestPermissions("storage")
-//            wallpaperDirectory =
-//                File(Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY)
-//            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                wallpaperDirectory!!.mkdirs()
-//            }
-//            val builder = AlertDialog.Builder(this@ProdukMasterActivity)
-//            builder.setMessage("Pilihan Tambah Foto")
-//                .setPositiveButton("Galeri") { dialog, id ->
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                        if (checkSelfPermission(Manifest.permission.CAMERA)
-//                            != PackageManager.PERMISSION_GRANTED
-//                        ) {
-//                            requestPermissions(
-//                                arrayOf(
-//                                    Manifest.permission.CAMERA,
-//                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-//                                ),
-//                                MY_CAMERA_PERMISSION_CODE
-//                            )
-//                            //showFileChooser();
-//                        } else {
-//                            wallpaperDirectory = File(
-//                                Environment.getExternalStorageDirectory()
-//                                    .toString() + IMAGE_DIRECTORY
-//                            )
-//                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                                wallpaperDirectory!!.mkdirs()
-//                            }
-//                            showFileChooser()
-//                            status = "t"
-//                        }
-//                    } else {
-//                        wallpaperDirectory = File(
-//                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
-//                        )
-//                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                            wallpaperDirectory!!.mkdirs()
-//                        }
-//                        showFileChooser()
-//                        status = "t"
-//                    }
-//                }
-//                .setNegativeButton("Kamera") { dialog, id ->
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                        if (checkSelfPermission(Manifest.permission.CAMERA)
-//                            != PackageManager.PERMISSION_GRANTED
-//                        ) {
-//                            requestPermissions(
-//                                arrayOf(
-//                                    Manifest.permission.CAMERA,
-//                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-//                                ),
-//                                MY_CAMERA_PERMISSION_CODE
-//                            )
-//                            //showFileChooser();
-//                        } else {
-//                            wallpaperDirectory = File(
-//                                Environment.getExternalStorageDirectory()
-//                                    .toString() + IMAGE_DIRECTORY
-//                            )
-//                            if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                                wallpaperDirectory!!.mkdirs()
-//                            }
-//                            val cal = Calendar.getInstance()
-//                            val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-//                            tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-//                            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//                            val f = File(wallpaperDirectory, tempNameFile)
-//                            val photoURI = FileProvider.getUriForFile(
-//                                applicationContext,
-//                                BuildConfig.APPLICATION_ID + ".provider",
-//                                f
-//                            )
-//                            //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-//                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-//                            startActivityForResult(cameraIntent, CAMERA_REQUEST)
-//                            status = "t"
-//                        }
-//                    } else {
-//                        wallpaperDirectory = File(
-//                            Environment.getExternalStorageDirectory().toString() + IMAGE_DIRECTORY
-//                        )
-//                        if (!wallpaperDirectory!!.exists()) {  // have the object build the directory structure, if needed.
-//                            wallpaperDirectory!!.mkdirs()
-//                        }
-//                        val cal = Calendar.getInstance()
-//                        val sdf = SimpleDateFormat("ddMMyyHHmmss", Locale.getDefault())
-//                        tempNameFile = "Cam_" + sdf.format(cal.time) + ".jpg"
-//                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//                        val f = File(wallpaperDirectory, tempNameFile)
-//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f))
-//                        startActivityForResult(intent, CAMERA_REQUEST)
-//                        status = "t"
-//                    }
-//                }
-//            val alert = builder.create()
-//            alert.show()
         }
 
         etHarga.addTextChangedListener(object : TextWatcher {
@@ -576,49 +486,49 @@ class ProdukMasterActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestMultiplePermissions() {
-        Dexter.withActivity(this)
-            .withPermissions(
-                Manifest.permission.CAMERA,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                    if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
-                        //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
-                    }
-                    if (report.isAnyPermissionPermanentlyDenied) { // check for permanent denial of any permission
-                        // show alert dialog navigating to Settings
-                        showSettingsDialog()
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest>,
-                    token: PermissionToken
-                ) {
-                    token.continuePermissionRequest()
-                }
-
-                fun onPermissionDenied(response: PermissionDeniedResponse) {
-                    // check for permanent denial of permission
-                    if (response.isPermanentlyDenied) {
-                        showSettingsDialog()
-                    }
-                } //                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                //                        token.continuePermissionRequest();
-                //                    }
-            }).withErrorListener {
-                Toast.makeText(
-                    applicationContext,
-                    "Some Error! ",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            .onSameThread()
-            .check()
-    }
+//    private fun requestMultiplePermissions() {
+//        Dexter.withActivity(this)
+//            .withPermissions(
+//                Manifest.permission.CAMERA,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                Manifest.permission.READ_EXTERNAL_STORAGE
+//            )
+//            .withListener(object : MultiplePermissionsListener {
+//                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+//                    if (report.areAllPermissionsGranted()) {  // check if all permissions are granted
+//                        //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
+//                    }
+//                    if (report.isAnyPermissionPermanentlyDenied) { // check for permanent denial of any permission
+//                        // show alert dialog navigating to Settings
+//                        showSettingsDialog()
+//                    }
+//                }
+//
+//                override fun onPermissionRationaleShouldBeShown(
+//                    permissions: List<PermissionRequest>,
+//                    token: PermissionToken
+//                ) {
+//                    token.continuePermissionRequest()
+//                }
+//
+//                fun onPermissionDenied(response: PermissionDeniedResponse) {
+//                    // check for permanent denial of permission
+//                    if (response.isPermanentlyDenied) {
+//                        showSettingsDialog()
+//                    }
+//                } //                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+//                //                        token.continuePermissionRequest();
+//                //                    }
+//            }).withErrorListener {
+//                Toast.makeText(
+//                    applicationContext,
+//                    "Some Error! ",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//            .onSameThread()
+//            .check()
+//    }
 
     private fun showSettingsDialog() {
         val builder = AlertDialog.Builder(this@ProdukMasterActivity)

@@ -2,8 +2,10 @@ package com.dnhsolution.restokabmalang.utilities
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.SystemClock
 import com.dnhsolution.restokabmalang.R
+
 
 object Utils {
     private var sTheme = 0
@@ -46,5 +48,21 @@ object Utils {
         }
         mLastClickTime = SystemClock.elapsedRealtime()
         return false
+    }
+
+    fun resizeBitmap(getBitmap: Bitmap, maxSize: Int): Bitmap? {
+        var width = getBitmap.width
+        var height = getBitmap.height
+        val x: Double
+        if (width >= height && width > maxSize) {
+            x = (width / height).toDouble()
+            width = maxSize
+            height = (maxSize / x).toInt()
+        } else if (height >= width && height > maxSize) {
+            x = (height / width).toDouble()
+            height = maxSize
+            width = (maxSize / x).toInt()
+        }
+        return Bitmap.createScaledBitmap(getBitmap, width, height, false)
     }
 }

@@ -4,6 +4,8 @@ package com.dnhsolution.restokabmalang.sistem.produk;
  * Created by KHAN on 08/04/2018.
  */
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import com.dnhsolution.restokabmalang.utilities.Url;
 
@@ -127,12 +129,12 @@ public class UploadData {
                 dos.writeBytes("1");
                 dos.writeBytes(lineEnd);
 
-                String pat = foto_baru;
-                File sourceFile = new File(pat);
+//                String pat = foto_baru;
+                File sourceFile = new File(foto_baru);
                 FileInputStream fileInputStream = new FileInputStream(sourceFile);
 
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"foto_baru\";filename=\""+ pat + "\"" + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"foto_baru\";filename=\""+ foto_baru + "\"" + lineEnd);
                 dos.writeBytes(lineEnd);
                 bytesAvailable = fileInputStream.available();
                 Log.i("Huzza", "Initial .available : " + bytesAvailable);
@@ -157,10 +159,8 @@ public class UploadData {
             dos.close();
                 //return conn.getResponseMessage();
 //            }
-        } catch (MalformedURLException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
-        } catch (Exception ec) {
-            ec.printStackTrace();
         }
 
         if (serverResponseCode == 200) {

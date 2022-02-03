@@ -16,13 +16,16 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.databinding.ActivityMasterSistemBinding
 import com.dnhsolution.restokabmalang.utilities.SistemMasterOnTask
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.DeleteFileOnTask
 import com.dnhsolution.restokabmalang.sistem.master.file_utilities.FileListAdapter
@@ -31,7 +34,6 @@ import com.dnhsolution.restokabmalang.utilities.AddingIDRCurrency
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.RealPathUtil
 import com.dnhsolution.restokabmalang.utilities.Url
-import kotlinx.android.synthetic.main.activity_master_sistem.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -45,6 +47,8 @@ import kotlin.collections.ArrayList
 class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
     SistemMasterOnTask {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var etHarga: EditText
     private var idTmpUsaha: String? = null
     private val folderName = "POS_Resto"
 
@@ -56,6 +60,7 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
     private var fileAdapter: FileListAdapter? = null
     private val _tag = javaClass.simpleName
     private var valueHarga: Double = 0.0
+    private lateinit var binding : ActivityMasterSistemBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,9 +88,15 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
                 this@SistemMasterActivity.setTheme(R.style.Theme_Sixth)
             }
         }
-        setContentView(R.layout.activity_master_sistem)
-        setSupportActionBar(toolbar)
+        binding = ActivityMasterSistemBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        setSupportActionBar(binding.toolbar)
         supportActionBar!!.title = label
+
+        etHarga = binding.etHarga
+        recyclerView = binding.recyclerView
+
 
         etHarga.addTextChangedListener(object : TextWatcher {
             private var current = ""
@@ -124,9 +135,9 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        bSimpan.setOnClickListener {
-            val nmBarang = etNmBarang.text.toString()
-            val keterangan = etDiskripsi.text.toString()
+        binding.bSimpan.setOnClickListener {
+            val nmBarang = binding.etNmBarang.text.toString()
+            val keterangan = binding.etDiskripsi.text.toString()
             if (nmBarang.isEmpty()) {
 
             } else if (valueHarga == 0.0) {
@@ -138,13 +149,13 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
             }
         }
 
-        ibCameraIntent.setOnClickListener {
+        binding.ibCameraIntent.setOnClickListener {
             val sizeFile = fileArray.size
             if (sizeFile < 3) {
                 setupPermissions(1)
             }
         }
-        ibTmbhBerkas.setOnClickListener {
+        binding.ibTmbhBerkas.setOnClickListener {
             val sizeFile = fileArray.size
             if (sizeFile < 3) {
                 setupPermissions(2)
@@ -297,6 +308,7 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(_tag, "onRequestPermissionsResult")
         when (requestCode) {
             cameraIntentCode -> {
@@ -324,7 +336,6 @@ class SistemMasterActivity:AppCompatActivity(),DeleteFileOnTask,
     }
 
     private fun cameraIntent() {
-
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if(intent.resolveActivity(packageManager) != null) {
             val photoFile: File?

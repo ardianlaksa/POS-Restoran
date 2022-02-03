@@ -11,15 +11,10 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.Settings
-import android.text.SpannableString
-import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -27,14 +22,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.cetak.DeviceActivity
 import com.dnhsolution.restokabmalang.cetak.MainCetak
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.DRekapHarianJsonTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
 import com.dnhsolution.restokabmalang.databinding.FragmentRekapHarianBinding
 import com.dnhsolution.restokabmalang.utilities.*
 import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
@@ -44,10 +37,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 interface UploadPdfService {
         @FormUrlEncoded
@@ -73,7 +64,7 @@ interface UploadPdfService {
     }
 
 class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, RekapHarianDetailOnTask,
-    PDFUtility.OnDocumentClose,RekapHarianDetailLongClick {
+    RekapHarianDetailLongClick {
 
     companion object {
         @JvmStatic
@@ -147,47 +138,26 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
             updateLabel()
         }
 
-        ivDate.setOnClickListener({
-            // TODO Auto-generated method stub
+        ivDate.setOnClickListener{
             DatePickerDialog(
                 requireContext(), date, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
-        })
+        }
 
         etDate.setText(getCurrentDate())
 
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            val uri: Uri = Uri.fromParts("package", requireContext().packageName, null)
-            intent.data = uri
-            startActivity(intent)
-        }
-
-//            val file: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                File("${context?.getExternalFilesDir(null)}$IMAGE_DIRECTORY")
-//            } else {
-//                File("${Environment.getExternalStorageDirectory().absolutePath}$IMAGE_DIRECTORY")
-//            }
-//
-//            if (!file.exists()) {
-//                file.mkdirs()
-//            }
-//
-//            val newFile = File(file, "sample.pdf")
-//
-//            try {
-//                PDFUtility.createPdf(requireContext(), this, tempItemsHarian, newFile.path, true)
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                Log.e(_tag, "Error Creating Pdf")
-//                Toast.makeText(context, "Error Creating Pdf", Toast.LENGTH_SHORT).show()
-//            }
+//        if (ContextCompat.checkSelfPermission(
+//                requireContext(),
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+//            val uri: Uri = Uri.fromParts("package", requireContext().packageName, null)
+//            intent.data = uri
+//            startActivity(intent)
+//        }
 
         return view
     }
@@ -434,10 +404,6 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
     override fun rekapHarianDetailOnTask(result: String?) {
         result?.let { dialogDetail(it) }
-    }
-
-    override fun onPDFDocumentClose(file: File?) {
-        Toast.makeText(context,"Sample Pdf Created",Toast.LENGTH_SHORT).show()
     }
 
     override fun rekapHarianDetailLongClick(result: String?) {

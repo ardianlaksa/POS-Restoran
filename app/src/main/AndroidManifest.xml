@@ -61,8 +61,7 @@
             android:required="false" />
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:name=".MainActivity" >
             <intent-filter>
 
                 <!-- <action android:name="android.intent.action.MAIN"/> -->
@@ -70,15 +69,12 @@
                 <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
             </intent-filter>
         </activity>
-        <activity android:name=".sistem.produk.DetailProduk" />
         <activity android:name=".sistem.produk.ProdukMasterActivity" />
         <activity
             android:name=".transaksi.selected_produk_list.SelectedProdukListActivity"
-            android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".sistem.SistemFragment"
-            android:label="@string/app_name" />
+            android:name=".sistem.SistemFragment" />
         <activity
             android:name=".auth.LoginActivity"
             android:windowSoftInputMode="adjustResize" />

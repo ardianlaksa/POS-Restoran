@@ -11,13 +11,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.dnhsolution.restokabmalang.MainActivity
-import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.databinding.FragmentDataBinding
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.reflect.Array
 
 class TransaksiFragment : Fragment() {
 
@@ -60,7 +57,7 @@ class TransaksiFragment : Fragment() {
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
                 Log.e("onPageScrolled", position.toString())
-                (activity as MainActivity).toolbar.collapseActionView()
+                (activity as MainActivity).binding.toolbar.collapseActionView()
             }
 
             override fun onPageScrollStateChanged(state: Int) {

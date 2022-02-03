@@ -27,6 +27,7 @@ import com.android.volley.toolbox.Volley
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.databinding.FragmentProdukListBinding
 import com.dnhsolution.restokabmalang.sistem.produk.ItemProduk
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListAdapter
@@ -37,8 +38,6 @@ import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_produk_list.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -92,14 +91,15 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         transaksiFragment = (activity as TambahProdukTransaksiActivity)
     }
 
+    private lateinit var binding: FragmentProdukListBinding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_produk_list,container,false)
+        binding = FragmentProdukListBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-//        val sharedPreferences = context?.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = TambahProdukTransaksiActivity.idTmpUsaha
         idPengguna = TambahProdukTransaksiActivity.idPengguna
         uuid = TambahProdukTransaksiActivity.uuid
@@ -126,10 +126,10 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 getDataLokal()
             }
         else {
-            gvMainActivity.adapter = produkAdapter
+            binding.gvMainActivity.adapter = produkAdapter
         }
 
-        gvMainActivity.setOnItemClickListener { _, _, position, _ ->
+        binding.gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
             transaksiFragment?.tambahDataApsList(argumenValue,produk)
             val isFavorit = produk.toggleFavorite()
@@ -146,13 +146,14 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
     private fun startShimmering(arg: Boolean){
         if(arg) {
-            gvMainActivity.visibility = View.GONE
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
+            binding.gvMainActivity.visibility = View.GONE
+            binding.shimmerViewContainer.visibility = View.VISIBLE
+            binding.shimmerViewContainer.startShimmerAnimation()
         } else {
-            shimmer_view_container.stopShimmerAnimation()
-            shimmer_view_container.visibility = View.GONE
-            gvMainActivity.visibility = View.VISIBLE
+            binding.shimmerViewContainer.stopShimmerAnimation()
+            binding.shimmerViewContainer.visibility = View.GONE
+            binding.gvMainActivity.visibility = View.VISIBLE
+            binding.gvMainActivity.visibility = View.VISIBLE
         }
     }
 
@@ -207,8 +208,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 else produkAdapter =
                     ProdukListAdapter(requireContext(), produks)
 
-                if (gvMainActivity == null) return
-                gvMainActivity.adapter = produkAdapter
+                binding.gvMainActivity.adapter = produkAdapter
 
                 if (argumenValue2 != null) {
                     for (favoriteId in argumenValue2!! as ArrayList<ProdukSerializable>) {
@@ -253,14 +253,24 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 ProdukListElement(
                     idBarang,nmBarang, harga, foto, keterangan, "lokal",e.isPajak,e.jenisProduk)
             )
+
+            if (argumenValue2 != null) {
+                for (favoriteId in argumenValue2!! as ArrayList<ProdukSerializable>) {
+                    for (Produk in produks) {
+                        if (Produk.idItem == favoriteId.idItem) {
+                            Produk.isFavorite = true
+                            break
+                        }
+                    }
+                }
+            }
         }
 
         if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
         else produkAdapter =
             ProdukListAdapter(requireContext(), produks)
 
-        if (gvMainActivity == null) return
-        gvMainActivity.adapter = produkAdapter
+        binding.gvMainActivity.adapter = produkAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -273,7 +283,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         val flCustomTambahBadge = actionView.findViewById(R.id.flCustomTambahBadge) as FrameLayout
         tvBadgeMenuLanjut = actionView.findViewById(R.id.cart_badge) as TextView
         flCustomTambahBadge.setOnClickListener {
-            (activity as TambahProdukTransaksiActivity).toolbar.collapseActionView()
+            (activity as TambahProdukTransaksiActivity).binding.toolbar.collapseActionView()
             menuLanjutHandler()
         }
 
@@ -319,7 +329,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_menu_lanjut -> {
-                (activity as TambahProdukTransaksiActivity).toolbar.collapseActionView()
+                (activity as TambahProdukTransaksiActivity).binding.toolbar.collapseActionView()
 //                println("tambah : ${transaksiFragment?.apsMakanan?.size} " +
 //                        "${transaksiFragment?.apsMinuman?.size} ${transaksiFragment?.apsDll?.size}")
                 menuLanjutHandler()

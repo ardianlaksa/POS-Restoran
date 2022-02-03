@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.databinding.FragmentProdukListBinding
 import com.dnhsolution.restokabmalang.sistem.produk.ItemProduk
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
@@ -38,8 +39,6 @@ import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_produk_list.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -94,14 +93,17 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         }
     }
 
+    private lateinit var binding : FragmentProdukListBinding
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentProdukListBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
     override fun onResume() {
         super.onResume()
         val fm: FragmentManager = (context as MainActivity).supportFragmentManager
         transaksiFragment = fm.findFragmentById(R.id.frameLayout) as TransaksiFragment
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_produk_list,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,11 +114,6 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         uuid = MainActivity.uuid
         argumenValue = arguments?.get(keyParams).toString()
         databaseHandler = DatabaseHandler(requireContext())
-
-//        if (CheckNetwork().checkingNetwork(requireContext()))
-//            startShimmering(true)
-//        else
-//            startShimmering(false)
 
         if(produkAdapter == null) {
             if (CheckNetwork().checkingNetwork(requireContext())) {
@@ -132,10 +129,10 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             }
         }else {
             startShimmering(false)
-            gvMainActivity.adapter = produkAdapter
+            binding.gvMainActivity.adapter = produkAdapter
         }
 
-        gvMainActivity.setOnItemClickListener { _, _, position, _ ->
+        binding.gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
             transaksiFragment?.tambahDataApsList(argumenValue,produk)
             val isFavorit = produk.toggleFavorite()
@@ -152,13 +149,13 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
     private fun startShimmering(arg: Boolean){
         if(arg) {
-            gvMainActivity.visibility = View.GONE
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
+            binding.gvMainActivity.visibility = View.GONE
+            binding.shimmerViewContainer.visibility = View.VISIBLE
+            binding.shimmerViewContainer.startShimmerAnimation()
         } else {
-            shimmer_view_container.stopShimmerAnimation()
-            shimmer_view_container.visibility = View.GONE
-            gvMainActivity.visibility = View.VISIBLE
+            binding.shimmerViewContainer.stopShimmerAnimation()
+            binding.shimmerViewContainer.visibility = View.GONE
+            binding.gvMainActivity.visibility = View.VISIBLE
         }
     }
 
@@ -229,8 +226,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                         ProdukListAdapter(it, produks)
                     }
 
-                if (gvMainActivity == null) return
-                gvMainActivity.adapter = produkAdapter
+                binding.gvMainActivity.adapter = produkAdapter
                 startShimmering(false)
 
             } else {
@@ -272,8 +268,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         else produkAdapter =
             ProdukListAdapter(requireContext(), produks)
 
-        if (gvMainActivity == null) return
-        gvMainActivity.adapter = produkAdapter
+        binding.gvMainActivity.adapter = produkAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -286,7 +281,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         val flCustomTambahBadge = actionView.findViewById(R.id.flCustomTambahBadge) as FrameLayout
         tvBadgeMenuLanjut = actionView.findViewById(R.id.cart_badge) as TextView
         flCustomTambahBadge.setOnClickListener {
-            (activity as MainActivity).toolbar.collapseActionView()
+            (activity as MainActivity).binding.toolbar.collapseActionView()
             menuLanjutHandler()
         }
 

@@ -30,7 +30,6 @@ import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.DateFormat
@@ -39,6 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.fragment.app.FragmentManager
 import com.dnhsolution.restokabmalang.data.DataFragment2
+import com.dnhsolution.restokabmalang.databinding.ActivityMainBinding
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 
 class MainActivity : AppCompatActivity() {
@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
 
     var mHandler: Handler? = null
     var navView: BottomNavigationView? = null
+    lateinit var binding : ActivityMainBinding
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     { result ->
@@ -137,14 +138,11 @@ class MainActivity : AppCompatActivity() {
             DialogKelengkapan()
         }
 
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.title = label
-//        when (jenisPajak) {
-//            "01" -> supportActionBar?.title = "POS Hotel"
-//            "02" -> supportActionBar?.title = "POS Restoran"
-//            "03" -> supportActionBar?.title = "POS Hiburan"
-//        }
 
         Log.i("MAO", "$idPengguna, $idTempatUsaha");
 
@@ -172,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         builder.show()
                     }
-                    toolbar.title = resources.getString(R.string.app_name)
+                    binding.toolbar.title = resources.getString(R.string.title_transaksi)
                     return@setOnItemSelectedListener true
                 }
 
@@ -180,7 +178,7 @@ class MainActivity : AppCompatActivity() {
                     jumlahProdukTerpilih = 0
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.frameLayout, DataFragment2()).commit()
-                    toolbar.title = resources.getString(R.string.title_data)
+                    binding.toolbar.title = resources.getString(R.string.title_data)
                     return@setOnItemSelectedListener true
                 }
 
