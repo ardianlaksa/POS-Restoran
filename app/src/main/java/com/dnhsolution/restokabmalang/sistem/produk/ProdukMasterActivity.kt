@@ -8,13 +8,10 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
@@ -25,22 +22,26 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.viewpager.widget.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.dnhsolution.restokabmalang.BuildConfig
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.MainActivity.Companion.adMasterProduk
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
-import com.dnhsolution.restokabmalang.sistem.MainMaster
-import com.dnhsolution.restokabmalang.sistem.produk.server.*
-import com.dnhsolution.restokabmalang.sistem.produk.ui.main.SectionsPagerAdapter
+import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.*
+import com.dnhsolution.restokabmalang.transaksi.KategoriElement
+import com.dnhsolution.restokabmalang.transaksi.KategoriListViewModel
+import com.dnhsolution.restokabmalang.transaksi.KategoriListlement
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.ManagePermissions
 import com.dnhsolution.restokabmalang.utilities.PilihanAttachmentFragmentDialog
@@ -48,12 +49,13 @@ import com.dnhsolution.restokabmalang.utilities.Url
 import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.launch
+import com.google.android.material.tabs.TabLayoutMediator
 import java.io.*
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class ProdukMasterActivity : AppCompatActivity() {
 
@@ -81,7 +83,7 @@ class ProdukMasterActivity : AppCompatActivity() {
     private val requestCaptureImage:Int = 100
     private val requestPickImage = 1046
     private val PermissionsRequestCode = 123
-    private lateinit var managePermissions: ManagePermissions
+    private lateinit var kategoriListViewModel: KategoriListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,30 +92,85 @@ class ProdukMasterActivity : AppCompatActivity() {
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
-        if (tema.equals("0", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_First)
-        } else if (tema.equals("1", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Second)
-        } else if (tema.equals("2", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Third)
-        } else if (tema.equals("3", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Fourth)
-        } else if (tema.equals("4", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Fifth)
-        } else if (tema.equals("5", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Sixth)
+        when {
+            tema.equals("0", ignoreCase = true) -> {
+                this@ProdukMasterActivity.setTheme(R.style.Theme_First)
+            }
+            tema.equals("1", ignoreCase = true) -> {
+                this@ProdukMasterActivity.setTheme(R.style.Theme_Second)
+            }
+            tema.equals("2", ignoreCase = true) -> {
+                this@ProdukMasterActivity.setTheme(R.style.Theme_Third)
+            }
+            tema.equals("3", ignoreCase = true) -> {
+                this@ProdukMasterActivity.setTheme(R.style.Theme_Fourth)
+            }
+            tema.equals("4", ignoreCase = true) -> {
+                this@ProdukMasterActivity.setTheme(R.style.Theme_Fifth)
+            }
+            tema.equals("5", ignoreCase = true) -> {
+                this@ProdukMasterActivity.setTheme(R.style.Theme_Sixth)
+            }
         }
         databaseHandler = DatabaseHandler(this)
         setContentView(R.layout.activity_master_produk)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = label
-        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
-        val viewPager = findViewById<ViewPager>(R.id.view_pager)
-        viewPager.adapter = sectionsPagerAdapter
-        val tabs = findViewById<TabLayout>(R.id.tabs)
-        tabs.setupWithViewPager(viewPager)
-//        requestMultiplePermissions()
+
+        val viewPager = findViewById<ViewPager2>(R.id.view_pager)
+        val tabMain = findViewById<TabLayout>(R.id.tabs)
+
+        kategoriListViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[KategoriListViewModel::class.java]
+        argTab = MainActivity.argTab
+        val getAppDatabase = AppRoomDatabase.getAppDataBase(this)
+        val a= getAppDatabase?.tblProdukKategoriDao()?.getAll()
+        a?.observe(this) { it ->
+            if(kategoriList.size == 0)
+                for (b in it) {
+                    Log.d(_tag, a.toString())
+                    kategoriList.add(
+                        KategoriElement(
+                            b.id.toString(),
+                            b.nama,
+                            b.idTempatUsaha,
+                            b.idPengguna
+                        )
+                    )
+                }
+            kategoriListViewModel.items.value = KategoriListlement(kategoriList)
+            viewPager.adapter?.notifyDataSetChanged()
+        }
+
+        // Create the observer which updates the ui
+        val kategoriListObserver = Observer<KategoriListlement>{ arg ->
+            TabLayoutMediator(tabMain, viewPager) { tab, position ->
+                tab.text = arg.list1[position].value1
+            }.attach()
+        }
+
+        // Observe the live data, passing in this activity as the life cycle owner and the observer
+        kategoriListViewModel.items.observe(this,kategoriListObserver)
+
+        val fragmentAdapter = ViewPagerFragmentAdapter(this)
+        viewPager.adapter = fragmentAdapter
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                Log.e("onPageScrolled", position.toString())
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                Log.e("onPageScrollState", state.toString())
+            }
+        })
+
         val list = listOf(
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -128,185 +185,177 @@ class ProdukMasterActivity : AppCompatActivity() {
         adMasterProduk = 1
     }
 
+    private class ViewPagerFragmentAdapter(fragmentActivity: FragmentActivity) :
+        FragmentStateAdapter(fragmentActivity) {
+
+        override fun createFragment(position: Int): Fragment = ProdukMasterFragment.newInstance(
+            kategoriList[position].id)
+        override fun getItemCount(): Int = kategoriList.size
+    }
+
     override fun onResume() {
         super.onResume()
-        val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
-        supportActionBar!!.title = label
-        val tema = sharedPreferences.getString(Url.setTema, "0")
-        if (tema.equals("0", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_First)
-        } else if (tema.equals("1", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Second)
-        } else if (tema.equals("2", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Third)
-        } else if (tema.equals("3", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Fourth)
-        } else if (tema.equals("4", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Fifth)
-        } else if (tema.equals("5", ignoreCase = true)) {
-            this@ProdukMasterActivity.setTheme(R.style.Theme_Sixth)
-        }
     }
 
-    private fun openDialog() {
-        val alertDialog = AlertDialog.Builder(this@ProdukMasterActivity).create()
-        val rowList = layoutInflater.inflate(R.layout.dialog_tutorial, null)
-        val listView: ListView = rowList.findViewById(R.id.listView)
-        val tutorialArrayAdapter: AdapterWizard
-        val arrayList = ArrayList<ItemView>()
-        arrayList.add(
-            ItemView(
-                "1",
-                "Saat ada icon refresh warna kuning dimasing-masing daftar produk, menandakan jika produk diload dari peralatan lokal."
-            )
-        )
-        arrayList.add(
-            ItemView(
-                "2",
-                "Saat ada icon panah kanan kiri warna hijau dimasing-masing daftar produk, menandakan jika produk tersinkron dengan server."
-            )
-        )
-        arrayList.add(
-            ItemView(
-                "3",
-                "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."
-            )
-        )
-        tutorialArrayAdapter = AdapterWizard(this@ProdukMasterActivity, arrayList)
-        listView.adapter = tutorialArrayAdapter
-        alertDialog.setView(rowList)
-        alertDialog.show()
-    }
+//    private fun openDialog() {
+//        val alertDialog = AlertDialog.Builder(this@ProdukMasterActivity).create()
+//        val rowList = layoutInflater.inflate(R.layout.dialog_tutorial, null)
+//        val listView: ListView = rowList.findViewById(R.id.listView)
+//        val tutorialArrayAdapter: AdapterWizard
+//        val arrayList = ArrayList<ItemView>()
+//        arrayList.add(
+//            ItemView(
+//                "1",
+//                "Saat ada icon refresh warna kuning dimasing-masing daftar produk, menandakan jika produk diload dari peralatan lokal."
+//            )
+//        )
+//        arrayList.add(
+//            ItemView(
+//                "2",
+//                "Saat ada icon panah kanan kiri warna hijau dimasing-masing daftar produk, menandakan jika produk tersinkron dengan server."
+//            )
+//        )
+//        arrayList.add(
+//            ItemView(
+//                "3",
+//                "Tombol icon (+) samping icon [?] di kanan atas untuk mulai transaksi dengan produk yang dipilih."
+//            )
+//        )
+//        tutorialArrayAdapter = AdapterWizard(this@ProdukMasterActivity, arrayList)
+//        listView.adapter = tutorialArrayAdapter
+//        alertDialog.setView(rowList)
+//        alertDialog.show()
+//    }
 
-    private val isPajakList: ArrayList<IsPajakListElement>
-        get(){
-            val isPajak = ArrayList<IsPajakListElement>()
-            isPajak.add(IsPajakListElement("1","Pajak"))
-            isPajak.add(IsPajakListElement("2","Non Pajak"))
-            return isPajak
-        }
+//    private val isPajakList: ArrayList<IsPajakListElement>
+//        get(){
+//            val isPajak = ArrayList<IsPajakListElement>()
+//            isPajak.add(IsPajakListElement("1","Pajak"))
+//            isPajak.add(IsPajakListElement("2","Non Pajak"))
+//            return isPajak
+//        }
 
-    private val tipeProdukList: ArrayList<TipeProdukListElement>
-        get(){
-            val tipeProduk = ArrayList<TipeProdukListElement>()
-            tipeProduk.add(TipeProdukListElement("1","Beverage"))
-            tipeProduk.add(TipeProdukListElement("2","Food"))
-            tipeProduk.add(TipeProdukListElement("3","Dll"))
-            return tipeProduk
-        }
+//    private val tipeProdukList: ArrayList<TipeProdukListElement>
+//        get(){
+//            val tipeProduk = ArrayList<TipeProdukListElement>()
+//            tipeProduk.add(TipeProdukListElement("1","Beverage"))
+//            tipeProduk.add(TipeProdukListElement("2","Food"))
+//            tipeProduk.add(TipeProdukListElement("3","Dll"))
+//            return tipeProduk
+//        }
 
-    fun dialogTambah() {
-        val dialogBuilder = AlertDialog.Builder(this).create()
-        val inflater = this.layoutInflater
-        val dialogView = inflater.inflate(R.layout.dialog_tambah_produk, null)
-        val etNama: EditText
-        val etKeterangan: EditText
-        val etHarga: EditText
-        val btnSimpan: Button
-        val ivTambahFoto: ImageView
-        etNama = dialogView.findViewById<View>(R.id.etNama) as EditText
-        etKeterangan = dialogView.findViewById<View>(R.id.etKeterangan) as EditText
-        etHarga = dialogView.findViewById<View>(R.id.etHarga) as EditText
-        btnSimpan = dialogView.findViewById<View>(R.id.btnSimpan) as Button
-        ivGambar = dialogView.findViewById<View>(R.id.ivGambar) as ImageView
-        ivTambahFoto = dialogView.findViewById<View>(R.id.ivTambahFoto) as ImageView
-        val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
-        val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
-
-        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                slctdIspajak = isPajakList[position].idItem
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) { }
-        }
-
-        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                slctdJenisProduk = tipeProdukList[position].idItem
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) { }
-        }
-
-        val spinIsPajakAdapter = IsPajakSpinAdapter(
-                this,
-                R.layout.item_spi_ispajak,
-                isPajakList
-            )
-
-        spiIsPajak.adapter = spinIsPajakAdapter
-
-        val spinTipeProdukAdapter = TipeProdukSpinAdapter(
-                this,
-                R.layout.item_spi_tipe_produk,
-                tipeProdukList
-            )
-
-        spiTipeProduk.adapter = spinTipeProdukAdapter
-
-        btnSimpan.setOnClickListener {
-            t_nama = etNama.text.toString()
-            t_harga = etHarga.text.toString().replace(".", "")
-            t_ket = etKeterangan.text.toString()
-            if (t_nama!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                etNama.requestFocus()
-                etNama.error = "Silahkan isi form ini !"
-            } else if (t_harga!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                etHarga.requestFocus()
-                etHarga.error = "Silahkan isi form ini !"
-            } else if (t_ket!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                etKeterangan.requestFocus()
-                etKeterangan.error = "Silahkan isi form ini !"
-            } else if (t_nama_file.trim { it <= ' ' }.equals("", ignoreCase = true)) {
-                Toast.makeText(this@ProdukMasterActivity, "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                if (CheckNetwork().checkingNetwork(this@ProdukMasterActivity)) {
-                    TambahData()
-                }
-                dialogBuilder.dismiss()
-            }
-        }
-
-        ivTambahFoto.setOnClickListener {
-            requestPermissions("storage")
-        }
-
-        etHarga.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
-                // TODO Auto-generated method stub
-            }
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
-                // TODO Auto-generated method stub
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                etHarga.removeTextChangedListener(this)
-                try {
-                    var originalString = s.toString()
-                    if (originalString.contains(".")) {
-                        originalString = originalString.replace(".", "")
-                    }
-                    val longval = originalString.toLong()
-                    val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
-                    formatter.applyPattern("#,###,###,###")
-                    val formattedString = formatter.format(longval)
-
-                    //setting text after format to EditText
-                    etHarga.setText(formattedString.replace(",", "."))
-                    etHarga.setSelection(etHarga.text.length)
-                } catch (nfe: NumberFormatException) {
-                    nfe.printStackTrace()
-                }
-                etHarga.addTextChangedListener(this)
-            }
-        })
-        dialogBuilder.setView(dialogView)
-        dialogBuilder.show()
-    }
+//    fun dialogTambah() {
+//        val dialogBuilder = AlertDialog.Builder(this).create()
+//        val inflater = this.layoutInflater
+//        val dialogView = inflater.inflate(R.layout.dialog_tambah_produk, null)
+//        val etNama: EditText
+//        val etKeterangan: EditText
+//        val etHarga: EditText
+//        val btnSimpan: Button
+//        val ivTambahFoto: ImageView
+//        etNama = dialogView.findViewById<View>(R.id.etNama) as EditText
+//        etKeterangan = dialogView.findViewById<View>(R.id.etKeterangan) as EditText
+//        etHarga = dialogView.findViewById<View>(R.id.etHarga) as EditText
+//        btnSimpan = dialogView.findViewById<View>(R.id.btnSimpan) as Button
+//        ivGambar = dialogView.findViewById<View>(R.id.ivGambar) as ImageView
+//        ivTambahFoto = dialogView.findViewById<View>(R.id.ivTambahFoto) as ImageView
+//        val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
+//        val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+//
+//        spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//                slctdIspajak = isPajakList[position].idItem
+//            }
+//            override fun onNothingSelected(parent: AdapterView<*>?) { }
+//        }
+//
+//        spiTipeProduk.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//                slctdJenisProduk = tipeProdukList[position].idItem
+//            }
+//            override fun onNothingSelected(parent: AdapterView<*>?) { }
+//        }
+//
+//        val spinIsPajakAdapter = IsPajakSpinAdapter(
+//                this,
+//                R.layout.item_spi_ispajak,
+//                isPajakList
+//            )
+//
+//        spiIsPajak.adapter = spinIsPajakAdapter
+//
+//        val spinTipeProdukAdapter = TipeProdukSpinAdapter(
+//                this,
+//                R.layout.item_spi_tipe_produk,
+//                kategoriList
+//            )
+//
+//        spiTipeProduk.adapter = spinTipeProdukAdapter
+//
+//        btnSimpan.setOnClickListener {
+//            t_nama = etNama.text.toString()
+//            t_harga = etHarga.text.toString().replace(".", "")
+//            t_ket = etKeterangan.text.toString()
+//            if (t_nama!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
+//                etNama.requestFocus()
+//                etNama.error = "Silahkan isi form ini !"
+//            } else if (t_harga!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
+//                etHarga.requestFocus()
+//                etHarga.error = "Silahkan isi form ini !"
+//            } else if (t_ket!!.trim { it <= ' ' }.equals("", ignoreCase = true)) {
+//                etKeterangan.requestFocus()
+//                etKeterangan.error = "Silahkan isi form ini !"
+//            } else if (t_nama_file.trim { it <= ' ' }.equals("", ignoreCase = true)) {
+//                Toast.makeText(this@ProdukMasterActivity, "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
+//                    .show()
+//            } else {
+//                if (CheckNetwork().checkingNetwork(this@ProdukMasterActivity)) {
+//                    TambahData()
+//                }
+//                dialogBuilder.dismiss()
+//            }
+//        }
+//
+//        ivTambahFoto.setOnClickListener {
+//            requestPermissions("storage")
+//        }
+//
+//        etHarga.addTextChangedListener(object : TextWatcher {
+//            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+//
+//                // TODO Auto-generated method stub
+//            }
+//
+//            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+//
+//                // TODO Auto-generated method stub
+//            }
+//
+//            override fun afterTextChanged(s: Editable) {
+//                etHarga.removeTextChangedListener(this)
+//                try {
+//                    var originalString = s.toString()
+//                    if (originalString.contains(".")) {
+//                        originalString = originalString.replace(".", "")
+//                    }
+//                    val longval = originalString.toLong()
+//                    val formatter = NumberFormat.getInstance(Locale.getDefault()) as DecimalFormat
+//                    formatter.applyPattern("#,###,###,###")
+//                    val formattedString = formatter.format(longval)
+//
+//                    //setting text after format to EditText
+//                    etHarga.setText(formattedString.replace(",", "."))
+//                    etHarga.setSelection(etHarga.text.length)
+//                } catch (nfe: NumberFormatException) {
+//                    nfe.printStackTrace()
+//                }
+//                etHarga.addTextChangedListener(this)
+//            }
+//        })
+//        dialogBuilder.setView(dialogView)
+//        dialogBuilder.show()
+//    }
 
     private fun requestPermissions(text: String) {
         if(text == "storage") {
@@ -549,88 +598,88 @@ class ProdukMasterActivity : AppCompatActivity() {
         startActivityForResult(intent, 101)
     }
 
-    private fun showFileChooser() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "*/*"
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        try {
-            startActivityForResult(
-                Intent.createChooser(intent, "Select a File to Upload"),
-                FILE_SELECT_CODE
-            )
-        } catch (ex: ActivityNotFoundException) {
-            // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(
-                this, "Please install a File Manager.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
+//    private fun showFileChooser() {
+//        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//        intent.type = "*/*"
+//        intent.addCategory(Intent.CATEGORY_OPENABLE)
+//        try {
+//            startActivityForResult(
+//                Intent.createChooser(intent, "Select a File to Upload"),
+//                FILE_SELECT_CODE
+//            )
+//        } catch (ex: ActivityNotFoundException) {
+//            // Potentially direct the user to the Market with a Dialog
+//            Toast.makeText(
+//                this, "Please install a File Manager.",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+//    }
 
 
 
-    private fun TambahData() {
-        class TambahData : AsyncTask<Void?, Int?, String?>() {
-            //ProgressDialog uploading;
-            override fun onPreExecute() {
-                super.onPreExecute()
-                progressdialog = ProgressDialog(this@ProdukMasterActivity)
-                progressdialog!!.setCancelable(false)
-                progressdialog!!.setMessage("Upload data ke server ...")
-                progressdialog!!.show()
-                //uploading = ProgressDialog.show(SinkronActivity.this, "Mengirim data ke Server", "Mohon Tunggu...", false, false);
-            }
-
-            override fun onPostExecute(s: String?) {
-                super.onPostExecute(s)
-                // uploading.dismiss();
-                Log.d("HASIL", s!!)
-                //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
-                // tvStatus.setText(s);
-                //
-                if (s.equals("sukses", ignoreCase = true)) {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(
-                        this@ProdukMasterActivity,
-                        "Data berhasil ditambah !",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    startActivity(Intent(applicationContext, ProdukMasterActivity::class.java))
-                    finish()
-                } else if (s.equals("gagal", ignoreCase = true)) {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(this@ProdukMasterActivity, "Data gagal ditambah !", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
-                    Toast.makeText(this@ProdukMasterActivity, s, Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun doInBackground(vararg p0: Void?): String? {
-                val id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
-                databaseHandler!!.insert_produk(
-                    com.dnhsolution.restokabmalang.database.ItemProduk(
-                        0, id_tmp_usaha, t_nama, t_harga, t_ket, t_nama_file, "1",slctdIspajak,slctdJenisProduk
-                    )
-                )
-
-                if (databaseHandler == null) {
-                    Log.d("DATABASE_INSERT", "gagal")
-                } else {
-                    Log.d("DATABASE_INSERT", "berhasil")
-                }
-                val u = UploadData()
-                var msg: String? = null
-                //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(idPengguna,uuid,t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
-                return msg
-            }
-        }
-
-        val uv = TambahData()
-        uv.execute()
-    }
+//    private fun TambahData() {
+//        class TambahData : AsyncTask<Void?, Int?, String?>() {
+//            //ProgressDialog uploading;
+//            override fun onPreExecute() {
+//                super.onPreExecute()
+//                progressdialog = ProgressDialog(this@ProdukMasterActivity)
+//                progressdialog!!.setCancelable(false)
+//                progressdialog!!.setMessage("Upload data ke server ...")
+//                progressdialog!!.show()
+//                //uploading = ProgressDialog.show(SinkronActivity.this, "Mengirim data ke Server", "Mohon Tunggu...", false, false);
+//            }
+//
+//            override fun onPostExecute(s: String?) {
+//                super.onPostExecute(s)
+//                // uploading.dismiss();
+//                Log.d("HASIL", s!!)
+//                //Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
+//                // tvStatus.setText(s);
+//                //
+//                if (s.equals("sukses", ignoreCase = true)) {
+//                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+//                    Toast.makeText(
+//                        this@ProdukMasterActivity,
+//                        "Data berhasil ditambah !",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                    startActivity(Intent(applicationContext, ProdukMasterActivity::class.java))
+//                    finish()
+//                } else if (s.equals("gagal", ignoreCase = true)) {
+//                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+//                    Toast.makeText(this@ProdukMasterActivity, "Data gagal ditambah !", Toast.LENGTH_SHORT)
+//                        .show()
+//                } else {
+//                    if (progressdialog!!.isShowing) progressdialog!!.dismiss()
+//                    Toast.makeText(this@ProdukMasterActivity, s, Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//
+//            override fun doInBackground(vararg p0: Void?): String? {
+//                val id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
+//                databaseHandler!!.insert_produk(
+//                    com.dnhsolution.restokabmalang.database.ItemProduk(
+//                        0, id_tmp_usaha, t_nama, t_harga, t_ket, t_nama_file, "1",slctdIspajak,slctdJenisProduk
+//                    )
+//                )
+//
+//                if (databaseHandler == null) {
+//                    Log.d("DATABASE_INSERT", "gagal")
+//                } else {
+//                    Log.d("DATABASE_INSERT", "berhasil")
+//                }
+//                val u = UploadData()
+//                var msg: String? = null
+//                //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
+//                msg = u.uploadDataBaru(idPengguna,uuid,t_nama, t_ket, t_harga, t_nama_file, id_tmp_usaha,slctdIspajak,slctdJenisProduk)
+//                return msg
+//            }
+//        }
+//
+//        val uv = TambahData()
+//        uv.execute()
+//    }
 
     companion object {
         private const val CAMERA_REQUEST = 1888
@@ -639,5 +688,7 @@ class ProdukMasterActivity : AppCompatActivity() {
         private const val IMAGE_DIRECTORY = "/POSRestoran"
         var idPengguna: String? = null
         var uuid: String? = null
+        val kategoriList = ArrayList<KategoriElement>()
+        private var argTab = arrayOf("")
     }
 }

@@ -19,7 +19,6 @@ import android.widget.ImageView
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.target.Target
-import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
 import com.dnhsolution.restokabmalang.utilities.HapusProdukMasterOnTask
 import com.dnhsolution.restokabmalang.utilities.Utils
 import java.util.*

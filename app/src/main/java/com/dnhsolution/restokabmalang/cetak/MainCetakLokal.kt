@@ -94,7 +94,7 @@ class MainCetakLokal : AppCompatActivity() {
         val tema = sharedPreferences.getString(Url.setTema, "0")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
         val btDevice = sharedPreferences.getString(Url.SESSION_PRINTER_BT, "")
-        nmPetugas = MainActivity.namaUser ?: ""
+        nmPetugas = MainActivity.namaPetugas ?: ""
         databaseHandler = DatabaseHandler(this@MainCetakLokal)
         when {
             tema.equals("0", ignoreCase = true) -> {
@@ -197,7 +197,10 @@ class MainCetakLokal : AppCompatActivity() {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH), permissionBluetooth)
             } else {
                 if(cekKeberadaanBluetooth(btDevice))
-                    printText()
+                    if(MainActivity.jenisPajak == "02")
+                        printText()
+                    else
+                        printTextHotelHiburan()
             }
         }
     }
@@ -316,6 +319,54 @@ class MainCetakLokal : AppCompatActivity() {
             }
             text += "[C]--------------------------------\n"+
                     "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                    "[L]\n"+
+                    "[C]- Terima Kasih -"
+            printer.printFormattedText(text)
+        } else {
+            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun printTextHotelHiburan() {
+
+        val connection: BluetoothConnection? =
+            BluetoothPrintersConnections.selectFirstPaired()
+        val printer = EscPosPrinter(connection, 203, 48f, 32)
+
+        if (isPrinterReady) {
+            val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+            val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+            val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+            val tanggal = dateTime
+            var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                    DisplayMetrics.DENSITY_LOW, theme
+                )) + "</img>\n" +
+                    "[L]\n"+
+                    "[C]<b>$nmTmpUsaha</b>\n"+
+                    "[C]$alamat\n"+
+                    "[L]\n"+
+                    "[L]No. Trx : $idTrx\n"+
+                    "[L]Tanggal : $tanggal\n"+
+                    "[L]Kasir   : $nmPetugas\n"+
+                    "[C]--------------------------------\n"
+
+            for (i in itemProduk!!.indices) {
+                val nmProduk = itemProduk!![i].getNama_produk()
+                val qty = itemProduk!![i].getQty()
+                val harga = itemProduk!![i].getHarga()
+                val totalHarga = itemProduk!![i].getTotal_harga()
+                text += "[L]$nmProduk\n" +
+                        "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+            }
+
+            text += "[C]--------------------------------\n"+
+                    "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                    "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+
+                    "[C]--------------------------------\n"+
+                    "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
                     "[L]\n"+
                     "[C]- Terima Kasih -"
             printer.printFormattedText(text)

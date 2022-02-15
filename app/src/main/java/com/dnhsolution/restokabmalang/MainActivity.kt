@@ -22,9 +22,8 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.dnhsolution.restokabmalang.dashboard.DashFragment
-import com.dnhsolution.restokabmalang.data.DataFragment
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
-import com.dnhsolution.restokabmalang.sistem.MainMaster
+import com.dnhsolution.restokabmalang.sistem.MainSistem
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity
 import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
@@ -56,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         var argTab = arrayOf("1","2","3")
         var namaUser: String? = null
         var emailUser: String? = null
+        var namaPetugas: String? = null
+        var pajakPersen: Int = 0
     }
 
     private val _tag = javaClass.simpleName
@@ -91,6 +92,7 @@ class MainActivity : AppCompatActivity() {
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         jenisPajak = sharedPreferences.getString(Url.SESSION_JENIS_PAJAK, "00")
+        pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
 
         when {
             tema!!.equals("0", ignoreCase = true) -> {
@@ -121,22 +123,22 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
 
-        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "")
-        val email = sharedPreferences.getString(Url.SESSION_EMAIL, "")
-        val telp = sharedPreferences.getString(Url.SESSION_TELP, "")
-        val namausaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "")
+//        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "")
+//        val email = sharedPreferences.getString(Url.SESSION_EMAIL, "")
+//        val telp = sharedPreferences.getString(Url.SESSION_TELP, "")
+//        val namausaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "")
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         idTempatUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "0")
         status_batas = sharedPreferences.getString(Url.SESSION_STATUS_BATAS, "nonaktif").toString()
         namaUser = sharedPreferences.getString(Url.SESSION_NAME, "")
         emailUser = sharedPreferences.getString(Url.SESSION_EMAIL, "")
+        namaPetugas = sharedPreferences.getString(Url.SESSION_NAMA_PETUGAS, "")
 
-
-        if(alamat!!.equals("", ignoreCase = true) || email!!.equals("", ignoreCase = true) ||
-            telp!!.equals("", ignoreCase = true) || namausaha!!.equals("", ignoreCase = true)){
-            DialogKelengkapan()
-        }
+//        if(alamat!!.equals("", ignoreCase = true) || email!!.equals("", ignoreCase = true) ||
+//            telp!!.equals("", ignoreCase = true) || namausaha!!.equals("", ignoreCase = true)){
+//            DialogKelengkapan()
+//        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -189,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.navigation_master -> {
-                    startActivity(Intent(this, MainMaster::class.java))
+                    startActivity(Intent(this, MainSistem::class.java))
                     return@setOnItemSelectedListener false
                 }
             }

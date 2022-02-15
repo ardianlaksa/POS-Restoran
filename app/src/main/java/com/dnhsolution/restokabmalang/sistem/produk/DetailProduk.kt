@@ -32,8 +32,8 @@ import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
-import com.dnhsolution.restokabmalang.sistem.produk.server.IsPajakListElement
-import com.dnhsolution.restokabmalang.sistem.produk.server.TipeProdukListElement
+import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.IsPajakListElement
+import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.TipeProdukListElement
 import java.io.*
 import java.lang.NumberFormatException
 import java.text.DecimalFormat

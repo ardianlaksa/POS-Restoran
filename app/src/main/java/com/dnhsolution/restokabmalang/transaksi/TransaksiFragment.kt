@@ -6,14 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.tabs.TabLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.dnhsolution.restokabmalang.MainActivity
+import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.databinding.FragmentDataBinding
-import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListElement
-import com.dnhsolution.restokabmalang.transaksi.produk_list.ProdukListFragment
+import com.dnhsolution.restokabmalang.sistem.produk.ProdukMasterActivity
+import com.dnhsolution.restokabmalang.transaksi.tab_fragment.ProdukListElement
+import com.dnhsolution.restokabmalang.transaksi.tab_fragment.ProdukListFragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class TransaksiFragment : Fragment() {
@@ -24,10 +28,12 @@ class TransaksiFragment : Fragment() {
     var apsDua = ArrayList<ProdukListElement>()
     var apsTiga = ArrayList<ProdukListElement>()
     var apsEmpat = ArrayList<ProdukListElement>()
+    val kategoriList = ArrayList<KategoriElement>()
+    private val _tag = javaClass.simpleName
 
-    private var titles = arrayOf("Makanan", "Minuman", "DLL")
     private var argTab = arrayOf("")
     private lateinit var binding : FragmentDataBinding
+    private lateinit var kategoriListViewModel: KategoriListViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentDataBinding.inflate(layoutInflater)
@@ -36,18 +42,41 @@ class TransaksiFragment : Fragment() {
         viewpager = binding.viewpagerMain
         tabMain = binding.tabsMain
 
-        val fragmentAdapter = ScreenSlidePagerAdapter(this)
-        viewpager.adapter = fragmentAdapter
-
         argTab = MainActivity.argTab
+        kategoriListViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[KategoriListViewModel::class.java]
 
-        if(MainActivity.jenisPajak == "01") {
-            titles = arrayOf("Fasilitas", "DLL")
+        val getAppDatabase = AppRoomDatabase.getAppDataBase(requireContext())
+        val a= getAppDatabase?.tblProdukKategoriDao()?.getAll()
+        a?.observe(requireActivity()) { it ->
+            if(ProdukMasterActivity.kategoriList.size == 0) {
+                for (b in it) {
+                    Log.d(_tag, a.toString())
+                    kategoriList.add(
+                        KategoriElement(
+                            b.id.toString(),
+                            b.nama,
+                            b.idTempatUsaha,
+                            b.idPengguna
+                        )
+                    )
+                }
+                kategoriListViewModel.items.value = KategoriListlement(kategoriList)
+            }
+            viewpager.adapter?.notifyDataSetChanged()
         }
 
-        TabLayoutMediator(tabMain, viewpager) { tab, position ->
-            tab.text = titles[position]
-        }.attach()
+        // Create the observer which updates the ui
+        val kategoriListObserver = Observer<KategoriListlement>{ arg ->
+            TabLayoutMediator(tabMain, viewpager) { tab, position ->
+                tab.text = arg.list1[position].value1
+            }.attach()
+        }
+
+        // Observe the live data, passing in this activity as the life cycle owner and the observer
+        kategoriListViewModel.items.observe(requireActivity(),kategoriListObserver)
+
+        val fragmentAdapter = ScreenSlidePagerAdapter(this)
+        viewpager.adapter = fragmentAdapter
 
         viewpager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageScrolled(
@@ -107,7 +136,8 @@ class TransaksiFragment : Fragment() {
     }
 
     private inner class ScreenSlidePagerAdapter(fa: Fragment) : FragmentStateAdapter(fa) {
-        override fun getItemCount(): Int = titles.size
-        override fun createFragment(position: Int): Fragment = ProdukListFragment.newInstance(argTab[position])
+        override fun getItemCount(): Int = kategoriList.size
+        override fun createFragment(position: Int): Fragment = ProdukListFragment.newInstance(
+            ProdukMasterActivity.kategoriList[position].id)
     }
 }

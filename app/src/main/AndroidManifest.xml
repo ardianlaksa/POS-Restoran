@@ -71,15 +71,14 @@
         </activity>
         <activity android:name=".sistem.produk.ProdukMasterActivity" />
         <activity
-            android:name=".transaksi.selected_produk_list.SelectedProdukListActivity"
+            android:name=".transaksi.keranjang.SelectedProdukListActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".sistem.SistemFragment" />
+            android:name=".sistem.theme.ThemeFragment" />
         <activity
             android:name=".auth.LoginActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".sistem.master.SistemMasterActivity" />
-        <activity android:name=".auth.SplashActivity">
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -89,8 +88,8 @@
         <activity android:name=".cetak.DeviceActivity" />
         <activity android:name=".cetak.MainCetak" />
         <activity android:name=".cetak.MainCetakLokal" />
-        <activity android:name=".transaksi.selected_produk_list.TambahProdukTransaksiActivity" />
-        <activity android:name=".sistem.MainMaster" />
+        <activity android:name=".transaksi.keranjang.tambah.TambahProdukTransaksiActivity" />
+        <activity android:name=".sistem.MainSistem" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

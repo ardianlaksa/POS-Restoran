@@ -18,6 +18,7 @@ object Url {
     const val SESSION_NAMA_TEMPAT_USAHA = "nama_tempat_usaha"
     const val SESSION_NAME = "pos"
     const val SESSION_PRINTER_BT = "printer_bt"
+    const val SESSION_PAJAK_PERSEN = "pajakPersen"
     const val SESSION_STATUS_BATAS = "status_batas"
     const val SESSION_STS_LOGIN = "status"
     const val SESSION_TEMP_TEMA = "temp_tema"
@@ -25,6 +26,7 @@ object Url {
     const val SESSION_TIPE_STRUK = "tipeStruk"
     const val SESSION_UUID = "UUID"
     const val SESSION_USERNAME = "username"
+    const val SESSION_NAMA_PETUGAS = "namaPetugas"
 
     const val setLabel = "label"
     const val setTema = "tema"
