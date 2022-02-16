@@ -3,6 +3,7 @@ package com.dnhsolution.restokabmalang.transaksi.keranjang
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.database.SQLException
 import android.os.Build
 import android.os.Bundle
@@ -60,6 +61,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
     }
 
+    private lateinit var sharedPreferences: SharedPreferences
     private var isDiskonValid: Boolean = true
     private var omzetRp: Int = 0
     private var tipeStruk: String? = null
@@ -151,7 +153,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         val view = binding.root
         setContentView(view)
 
-        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
@@ -526,11 +528,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         rootObject.put("disc_rp",valueDiskonRupiah)
         rootObject.put("pajakRp",pajakRp.toInt())
         if(binding.etRupiahDiskon.text.toString().isNotEmpty()){
-        rootObject.put("disc",valueDR)
+            rootObject.put("disc",valueDR)
         } else{
             rootObject.put("disc",valueDiskon)
         }
         rootObject.put("omzet",valueTotalPrice)
+
+        val pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
+        rootObject.put("pajakPersen",pajakPersen.toString())
 
         val jsonArr = JSONArray()
 
@@ -562,9 +567,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         if(binding.etRupiahDiskon.text.toString().isNotEmpty()){
             disc = valueDR.toString()
         }
-//        else{
-//            disc = valueDiskon.toString()
-//        }
+
         omzet = valueTotalPrice.toString()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

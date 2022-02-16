@@ -8,7 +8,7 @@ android {
         applicationId "com.dnhsolution.restokabmalang"
         minSdkVersion 24
         versionCode 1
-        versionName "31"
+        versionName "32"
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

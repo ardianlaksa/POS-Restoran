@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
@@ -75,6 +76,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         }
     }
 
+    private var namaPetugas: String = ""
     private var idPengguna: String? = null
     private var idTmpUsaha: String? = null
     private lateinit var recyclerView: RecyclerView
@@ -108,6 +110,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 //        val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
         binding = FragmentRekapHarianBinding.inflate(layoutInflater)
+        namaPetugas = MainActivity.namaPetugas ?: ""
         val view = binding.root
         setHasOptionsMenu(true)
         spiTgl = binding.spinTgl
@@ -278,7 +281,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 
                     itemsHarian?.add(
                         RekapHarianListElement(
-                            idTrx,namaUserTrx, 0, 0, disc_rp, omzet, tglTrx, concatProduk)
+                            idTrx,namaPetugas, 0, 0, disc_rp, omzet, tglTrx, concatProduk)
                     )
                 }
 

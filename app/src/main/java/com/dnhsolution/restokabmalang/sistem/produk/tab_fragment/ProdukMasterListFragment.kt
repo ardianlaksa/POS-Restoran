@@ -380,6 +380,42 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
         val ivTambahGambar: ImageView = dialogView.findViewById<View>(R.id.ivTambahGambar) as ImageView
         val spiIsPajak = dialogView.findViewById<View>(R.id.spiIsPajak) as Spinner
         val spiTipeProduk = dialogView.findViewById<View>(R.id.spiTipeProduk) as Spinner
+        val kategoriListViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[KategoriListViewModel::class.java]
+
+        getAllKategoriProduk?.observe(requireActivity()) { it ->
+            if(kategoriList.size == 0) {
+                for (b in it) {
+                    Log.d(_tag, getAllKategoriProduk.toString())
+                    kategoriList.add(
+                        KategoriElement(
+                            b.id.toString(),
+                            b.nama,
+                            b.idTempatUsaha,
+                            b.idPengguna
+                        )
+                    )
+                }
+                kategoriListViewModel.items.value = KategoriListlement(kategoriList)
+            }
+        }
+
+        val spinTipeProdukAdapter = context?.let {
+            TipeProdukSpinAdapter(
+                it,
+                R.layout.item_spi_tipe_produk,
+                kategoriList
+            )
+        }
+
+        spiTipeProduk.adapter = spinTipeProdukAdapter
+
+        // Create the observer which updates the ui
+        val kategoriListObserver = Observer<KategoriListlement>{ arg ->
+            spinTipeProdukAdapter?.notifyDataSetChanged()
+        }
+
+        // Observe the live data, passing in this activity as the life cycle owner and the observer
+        kategoriListViewModel.items.observe(requireActivity(),kategoriListObserver)
 
         spiIsPajak.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -426,16 +462,6 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
 
         spiIsPajak.adapter = spinIsPajakAdapter
         spiIsPajak.isEnabled = false
-
-        val spinTipeProdukAdapter = context?.let {
-            TipeProdukSpinAdapter(
-                it,
-                R.layout.item_spi_tipe_produk,
-                kategoriList
-            )
-        }
-
-        spiTipeProduk.adapter = spinTipeProdukAdapter
 
         btnSimpan.setOnClickListener {
             e_nama = etNama.text.toString()

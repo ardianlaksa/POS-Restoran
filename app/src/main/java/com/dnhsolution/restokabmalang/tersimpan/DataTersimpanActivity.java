@@ -92,6 +92,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
     private String idPengguna;
     private String idTmptUsaha;
     private String uuid;
+    private int pajakPersen = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +102,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0");
         idTmptUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "");
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "");
+        pajakPersen = MainActivity.Companion.getPajakPersen();
 
         String tema = sharedPreferences.getString(Url.setTema, "0");
         if(tema.equalsIgnoreCase("0")){
@@ -299,6 +301,7 @@ public class DataTersimpanActivity extends AppCompatActivity implements OnDataFe
                         rootObject.put("disc",disc);
                         rootObject.put("omzet",f.getOmzet());
                         rootObject.put("pajakRp",f.getPajakRp());
+                        rootObject.put("pajakPersen",pajakPersen);
 
                         JSONArray jsonArr = new JSONArray();
 

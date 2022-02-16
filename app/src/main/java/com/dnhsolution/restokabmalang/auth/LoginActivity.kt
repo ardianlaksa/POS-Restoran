@@ -35,6 +35,7 @@ import com.google.android.material.textfield.TextInputEditText
 import java.util.*
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var sharedPreferences: SharedPreferences
     private var getAppDatabase: AppRoomDatabase? = null
     var etUsername: EditText? = null
     var etPassword: EditText? = null
@@ -52,11 +53,13 @@ class LoginActivity : AppCompatActivity() {
     private var uniqueID = ""
     private var versiApp = ""
     private var packageNameApp = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityLoginBinding.inflate(layoutInflater)
         val view: View = binding.root
         setContentView(view)
+        sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
         etPassword = binding.etPassword
         etUsername = binding.etUsername
         btnLogin = binding.btnLogin
@@ -81,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                if (et1!!.text.toString().length == 0) {
+                if (et1!!.text.toString().isEmpty()) {
                     et1!!.requestFocus()
                 } else {
                     et2!!.requestFocus()
@@ -95,7 +98,7 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                if (et2!!.text.toString().length == 0) {
+                if (et2!!.text.toString().isEmpty()) {
                     et1!!.requestFocus()
                 } else {
                     et3!!.requestFocus()
@@ -109,7 +112,7 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                if (et3!!.text.toString().length == 0) {
+                if (et3!!.text.toString().isEmpty()) {
                     et2!!.requestFocus()
                 } else {
                     et4!!.requestFocus()
@@ -189,16 +192,12 @@ class LoginActivity : AppCompatActivity() {
         //Toast.makeText(getApplicationContext(), "Coba", Toast.LENGTH_SHORT).show();
         if (bvisible) {
             etPassword!!.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bPassword!!.background = resources.getDrawable(R.drawable.ic_visibility_off, null)
-            } else bPassword!!.setBackgroundDrawable(resources.getDrawable(R.drawable.ic_visibility_off))
+            bPassword!!.background = resources.getDrawable(R.drawable.ic_visibility_off, null)
             bvisible = false
         } else {
             etPassword!!.inputType =
                 InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bPassword!!.background = resources.getDrawable(R.drawable.ic_visibility, null)
-            } else bPassword!!.setBackgroundDrawable(resources.getDrawable(R.drawable.ic_visibility))
+            bPassword!!.background = resources.getDrawable(R.drawable.ic_visibility, null)
             bvisible = true
         }
         etPassword!!.setSelection(etPassword!!.length())
@@ -306,7 +305,6 @@ class LoginActivity : AppCompatActivity() {
                         val namaUser = json.getString("NAME")
                         val namaPetugas = json.getString("NM_PETUGAS")
                         val idJenisPajak = json.getString("ID_JENISPAJAK")
-                        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
 
                         //membuat editor untuk menyimpan data ke shared preferences
                         val editor = sharedPreferences.edit()
