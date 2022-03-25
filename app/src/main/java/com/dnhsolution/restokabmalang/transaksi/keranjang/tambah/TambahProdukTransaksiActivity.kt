@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.databinding.ActivityTambahhProdukTransaksiBinding
 import com.dnhsolution.restokabmalang.transaksi.KategoriElement
@@ -34,9 +33,6 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
     private lateinit var tabMain: TabLayout
     private lateinit var viewpager: ViewPager2
     var apsSatu = ArrayList<ProdukListElement>()
-//    var apsDua = ArrayList<ProdukListElement>()
-//    var apsTiga = ArrayList<ProdukListElement>()
-//    var apsEmpat = ArrayList<ProdukListElement>()
     private val _tag = javaClass.simpleName
     var valueArgsFromKeranjang: ArrayList<ProdukSerializable>? = null
 
@@ -61,10 +57,22 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val i = intent
-        valueArgsFromKeranjang = i.getParcelableArrayListExtra("ARRAYLIST")
+//        val i = intent
+        valueArgsFromKeranjang = intent.getParcelableArrayListExtra<ProdukSerializable>("ARRAYLIST")
         Log.i(_tag,"onResume $valueArgsFromKeranjang")
         jumlahProdukTerpilih = valueArgsFromKeranjang?.size ?: 0
+
+        val ad = valueArgsFromKeranjang ?: ArrayList()
+        ad.forEachIndexed { index, value ->
+            apsSatu.add(ProdukListElement(value.idItem,value.name!!
+                ,value.price!!,value.imgUrl!!,"","server"
+                ,"",""))
+            apsSatu[index].isFavorite = true
+        }
+//        idItem: Int, name: String, price: String, imgUrl: String, totalPrice: Int, qty: Int, status:String
+//
+//        ProdukListElement(val idItem: Int, val name: String, val price: String, val imageUrl: String
+//        , val description: String, val status: String,val isPajak: String,val jnsProduk: String)
 
         val toolbar = binding.toolbar
         viewpager = binding.viewpagerMain
@@ -81,7 +89,7 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
                     Log.d(_tag, a.toString())
                     kategoriList.add(
                         KategoriElement(
-                            b.id.toString(),
+                            b.idKategoriServer.toString(),
                             b.nama,
                             b.idTempatUsaha,
                             b.idPengguna
@@ -130,49 +138,39 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
     }
 
     fun tambahDataApsList(arg: String,produk: ProdukListElement){
-        loadingLayout?.visibility = View.VISIBLE
-        val milis = valueArgsFromKeranjang!!.size*10
-        handler.postDelayed({
-            if(!produk.isFavorite) {
-                var valueIndex = -1
-                valueArgsFromKeranjang!!.forEachIndexed { index, produkSerializable ->
-                    if (produk.idItem == produkSerializable.idItem) {
-                        valueIndex = index
-                    }
+//        loadingLayout?.visibility = View.VISIBLE
+//        val milis = apsSatu.size*10
+//        handler.postDelayed({
+//            if(!produk.isFavorite) {
+            var valueIndex = -1
+            apsSatu.forEachIndexed { index, produkSerializable ->
+                println("${produk.idItem} ${produkSerializable.idItem}")
+                if (produk.idItem == produkSerializable.idItem) {
+                    valueIndex = index
                 }
-                valueArgsFromKeranjang!!.removeAt(valueIndex)
             }
-            if(apsSatu.contains(produk)) apsSatu.remove(produk)
-            else apsSatu.add(produk)
-//            when(arg){
-//                "2" -> {
-//                    if(apsDua.contains(produk)) {
-//                        apsDua.remove(produk)
-//                    }else apsDua.add(produk)
-//                }
-//                "3" -> {
-//                    if(apsTiga.contains(produk)) {
-//                        apsTiga.remove(produk)
-//                    } else apsTiga.add(produk)
-//                }
-//                "4" -> {
-//                    if(apsEmpat.contains(produk)) apsEmpat.remove(produk)
-//                    else apsEmpat.add(produk)
-//                }
-//                else -> {
-//                    if(apsSatu.contains(produk)) {
-//                        apsSatu.remove(produk)
-//                    } else apsSatu.add(produk)
-//                }
 //            }
-            loadingLayout?.visibility = View.INVISIBLE
-        }, milis.toLong())
+//        Log.d(_tag,"a ${apsSatu[0].idItem}|${apsSatu[0].description}|${apsSatu[0].imageUrl}|" +
+//                "${apsSatu[0].isFavorite}|${apsSatu[0].isPajak}|${apsSatu[0].jnsProduk}|" +
+//                "${apsSatu[0].name}|${apsSatu[0].price}|${apsSatu[0].status}")
+//
+//        Log.d(_tag,"b ${produk.idItem}|${produk.description}|${produk.imageUrl}|" +
+//                "${produk.isFavorite}|${produk.isPajak}|${produk.jnsProduk}|${produk.name}|" +
+//                "${produk.price}|${produk.status}")
+
+//        if(apsSatu.contains(produk)) apsSatu.remove(produk)
+//        else apsSatu.add(produk)
+            if (valueIndex != -1) apsSatu.removeAt(valueIndex)
+            else apsSatu.add(produk)
+            Log.d(_tag, apsSatu.size.toString())
+//            loadingLayout?.visibility = View.GONE
+//        }, milis.toLong())
     }
 
-    fun tampilDataApsList(arg: String) : ArrayList<ProdukListElement>{
+    fun tampilDataApsList() : ArrayList<ProdukListElement>{
         val array = ArrayList<ProdukListElement>()
         for(i in apsSatu){
-            if(arg == i.jnsProduk) array.add(i)
+            array.add(i)
         }
         return array
     }
@@ -180,6 +178,6 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = kategoriList.size
         override fun createFragment(position: Int): Fragment =
-            TambahProdukListFragment.newInstance(kategoriList[position].id,valueArgsFromKeranjang)
+            TambahProdukTransaksiFragment.newInstance(kategoriList[position].id,valueArgsFromKeranjang)
     }
 }

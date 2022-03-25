@@ -107,7 +107,7 @@ public class DashFragment extends Fragment {
         String valueJudul = "";
         if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("01")) valueJudul = "POS Hotel";
         if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("02")) valueJudul = "POS Restoran";
-        if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("03")) valueJudul = "POS Hotel";
+        if(MainActivity.Companion.getJenisPajak().equalsIgnoreCase("03")) valueJudul = "POS Hiburan";
         tvJudul.setText(valueJudul);
 
         batasSinkronAngka = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "7");

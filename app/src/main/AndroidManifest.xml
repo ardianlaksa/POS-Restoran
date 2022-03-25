@@ -71,7 +71,7 @@
         </activity>
         <activity android:name=".sistem.produk.ProdukMasterActivity" />
         <activity
-            android:name=".transaksi.keranjang.SelectedProdukListActivity"
+            android:name=".transaksi.keranjang.KeranjangProdukListActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".sistem.theme.ThemeFragment" />

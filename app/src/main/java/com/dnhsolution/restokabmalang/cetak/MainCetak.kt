@@ -3,12 +3,10 @@ package com.dnhsolution.restokabmalang.cetak
 import android.Manifest
 import android.app.Activity
 import android.app.ProgressDialog
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -18,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,13 +29,12 @@ import com.android.volley.RetryPolicy
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.dantsu.escposprinter.EscPosPrinter
+import com.dantsu.escposprinter.connection.DeviceConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.cetak.BluetoothHandler.HandlerInterface
 import com.dnhsolution.restokabmalang.databinding.ActivityMainCetakBinding
 import com.dnhsolution.restokabmalang.utilities.DefaultPojo
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -55,8 +53,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 open class MainCetak : AppCompatActivity() {
-    private var mBluetoothAdapter: BluetoothAdapter? = null
-    private val permissionBluetooth: Int = 100
+
     private lateinit var sharedPreferences: SharedPreferences
     var rvData: RecyclerView? = null
     var itemProduk: MutableList<ItemProduk>? = null
@@ -82,6 +79,11 @@ open class MainCetak : AppCompatActivity() {
     private var nmPetugas = ""
     private var requestCode = 0
     private lateinit var binding: ActivityMainCetakBinding
+    private var selectedDevice: BluetoothConnection? = null
+    private val PERMISSION_BLUETOOTH = 100
+    private val PERMISSION_BLUETOOTH_ADMIN = 101
+    private val PERMISSION_BLUETOOTH_CONNECT = 102
+    private val PERMISSION_BLUETOOTH_SCAN = 103
 
     interface ValidasiTransaksiServices {
         @FormUrlEncoded
@@ -193,17 +195,6 @@ open class MainCetak : AppCompatActivity() {
 
         if (tipeStruk.equals("2", ignoreCase = true)) llPajak.visibility = View.GONE
 
-        // Check to see if the Bluetooth classic feature is available.
-        packageManager.takeIf { it.missingSystemFeature(PackageManager.FEATURE_BLUETOOTH) }?.also {
-            Toast.makeText(this, R.string.bluetooth_tidak_didukung, Toast.LENGTH_SHORT).show()
-            finish()
-        }
-        // Check to see if the BLE feature is available.
-        packageManager.takeIf { it.missingSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) }?.also {
-            Toast.makeText(this, R.string.ble_tidak_didukung, Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
         binding.bBatalTrx.setOnClickListener {
             Log.d(_tag,"$idPengguna, $uuid, $idTrx")
             validasiTransaksiFungsi(idPengguna.toString(),uuid.toString(),idTrx.toString())
@@ -217,50 +208,130 @@ open class MainCetak : AppCompatActivity() {
         }
 
         btnPilih?.setOnClickListener { v: View? ->
-            resultLauncher.launch(Intent(this@MainCetak, DeviceActivity::class.java))
-            requestCode = RC_CONNECT_DEVICE
+//            resultLauncher.launch(Intent(this@MainCetak, DeviceActivity::class.java))
+//            requestCode = RC_CONNECT_DEVICE
+            browseBluetoothDevice();
         }
 
         getData
 
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        mBluetoothAdapter = bluetoothManager.adapter
-        cekKeberadaanBluetooth(btDevice)
+//        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+//        mBluetoothAdapter = bluetoothManager.adapter
+//        cekKeberadaanBluetooth(btDevice)
         btnCetak?.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH), permissionBluetooth)
-            } else {
-                if(cekKeberadaanBluetooth(btDevice))
-                    if(MainActivity.jenisPajak == "02")
-                        printText()
-                    else
-                        printTextHotelHiburan()
-            }
+            printBluetooth()
         }
     }
 
-    private fun cekKeberadaanBluetooth(btDevice: String?) : Boolean {
-        mBluetoothAdapter?.let {
-            if (mBluetoothAdapter == null) {
-                // Device does not support Bluetooth
-                isPrinterReady = false
-                tv_status?.text = resources.getString(R.string.bluetooth_perangkat_tidak_cocok)
-            } else if (!it.isEnabled) {
-                // Bluetooth is not enabled :)
-                isPrinterReady = false
-                tv_status?.text = resources.getString(R.string.bluetooth_tidak_aktif)
-            } else {
-                if (!btDevice.equals("", ignoreCase = true)) {
-                    isPrinterReady = true
-                    tv_status?.text = resources.getString(R.string.terhubung_dengan_perangkat)
-                    return true
+    open fun browseBluetoothDevice() {
+        val bluetoothDevicesList = BluetoothPrintersConnections().list
+        if (bluetoothDevicesList != null) {
+            val items = arrayOfNulls<String>(bluetoothDevicesList.size + 1)
+            items[0] = "Default printer"
+            for ((i, device) in bluetoothDevicesList.withIndex()) {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
                 }
+                items[i + 1] = device.device.name
             }
+            val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
+            alertDialog.setTitle("Bluetooth printer selection")
+            alertDialog.setItems(items) { dialogInterface, i ->
+                val index = i - 1
+                selectedDevice = if (index == -1) {
+                    null
+                } else {
+                    bluetoothDevicesList[index]
+                }
+//                val button = findViewById<View>(R.id.button_bluetooth_browse) as Button
+                tv_status?.text = items[i]
+            }
+            val alert: AlertDialog = alertDialog.create()
+            alert.setCanceledOnTouchOutside(false)
+            alert.show()
         }
-        return false
     }
 
-    private fun PackageManager.missingSystemFeature(name: String): Boolean = !hasSystemFeature(name)
+    open fun printBluetooth() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH),
+                PERMISSION_BLUETOOTH
+            )
+        } else if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_ADMIN),
+                PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+            AsyncBluetoothEscPosPrint(
+                this,
+                object : AsyncEscPosPrint.OnPrintFinished() {
+                    override fun onError(
+                        asyncEscPosPrinter: AsyncEscPosPrinter?,
+                        codeException: Int
+                    ) {
+                        Log.e(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : An error occurred !"
+                        )
+                    }
+
+                    override fun onSuccess(asyncEscPosPrinter: AsyncEscPosPrinter?) {
+                        Log.i(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
+                        )
+                    }
+                }
+            ).execute(
+                if(MainActivity.jenisPajak == "02")
+                    printText(selectedDevice)
+                else
+                    printTextHotelHiburan(selectedDevice))
+        }
+    }
 
     private fun validasiTransaksiFungsi(value : String,value1 : String,value2 : String){
         val postServices = ValidasiTransaksiResultFeedback.create()
@@ -384,64 +455,54 @@ open class MainCetak : AppCompatActivity() {
             queue.add(stringRequest)
         }
 
-    private fun printText() {
+    private fun printText(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
+//        val printer = EscPosPrinter(connection, 203, 48f, 32)
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
 
-        val connection: BluetoothConnection? =
-            BluetoothPrintersConnections.selectFirstPaired()
-        val printer = EscPosPrinter(connection, 203, 48f, 32)
+        Log.d(_tag,"ready")
+        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+        val tanggal = dateTime
+        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, theme
+            )) + "</img>\n" +
+         "[L]\n"+
+         "[C]<b>$nmTmpUsaha</b>\n"+
+         "[C]$alamat\n"+
+         "[L]\n"+
+         "[L]No. Trx : $idTrx\n"+
+         "[L]Tanggal : $tanggal\n"+
+         "[L]Kasir   : $nmPetugas\n"+
+         "[C]--------------------------------\n"
 
-        if (isPrinterReady) {
-            val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-            val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
-            val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
-            val tanggal = dateTime
-            var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                    DisplayMetrics.DENSITY_LOW, theme
-                )) + "</img>\n" +
-             "[L]\n"+
-             "[C]<b>$nmTmpUsaha</b>\n"+
-             "[C]$alamat\n"+
-             "[L]\n"+
-             "[L]No. Trx : $idTrx\n"+
-             "[L]Tanggal : $tanggal\n"+
-             "[L]Kasir   : $nmPetugas\n"+
-             "[C]--------------------------------\n"
-
-            for (i in itemProduk!!.indices) {
-                val nmProduk = itemProduk!![i].getNama_produk()
-                val qty = itemProduk!![i].getQty()
-                val harga = itemProduk!![i].getHarga()
-                val totalHarga = itemProduk!![i].getTotal_harga()
-                 text += "[L]$nmProduk\n" +
-                 "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
-            }
-
-            text += "[C]--------------------------------\n"+
-             "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-             "[L]Disc[R]${tvJmlDisc?.text}\n"
-
-            if (tipeStruk.equals("1", ignoreCase = true)) {
-                text += "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"
-            }
-            text += "[C]--------------------------------\n"+
-             "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
-             "[L]\n"+
-             "[C]- Terima Kasih -"
-            printer.printFormattedText(text)
-        } else {
-            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
-                .show()
+        for (i in itemProduk!!.indices) {
+            val nmProduk = itemProduk!![i].getNama_produk()
+            val qty = itemProduk!![i].getQty()
+            val harga = itemProduk!![i].getHarga()
+            val totalHarga = itemProduk!![i].getTotal_harga()
+             text += "[L]$nmProduk\n" +
+             "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
         }
+
+        text += "[C]--------------------------------\n"+
+         "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+         "[L]Disc[R]${tvJmlDisc?.text}\n"
+
+        if (tipeStruk.equals("1", ignoreCase = true)) {
+            text += "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"
+        }
+        text += "[C]--------------------------------\n"+
+         "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+         "[L]\n"+
+         "[C]- Terima Kasih -"
+        return printer.addTextToPrint(text)
     }
 
-    private fun printTextHotelHiburan() {
+    private fun printTextHotelHiburan(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
 
-        val connection: BluetoothConnection? =
-            BluetoothPrintersConnections.selectFirstPaired()
-        val printer = EscPosPrinter(connection, 203, 48f, 32)
-
-        if (isPrinterReady) {
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
             val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
             val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
             val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
@@ -469,6 +530,7 @@ open class MainCetak : AppCompatActivity() {
             }
 
             text += "[C]--------------------------------\n"+
+                    "[L]Disc[R]${tvJmlDisc?.text}\n" +
                     "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
                     "[L]Pajak[R]${tvJmlPajak?.text}\n" +
 
@@ -476,11 +538,7 @@ open class MainCetak : AppCompatActivity() {
                     "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
                     "[L]\n"+
                     "[C]- Terima Kasih -"
-            printer.printFormattedText(text)
-        } else {
-            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
-                .show()
-        }
+            return printer.addTextToPrint(text)
     }
 
     private fun gantiKetitik(value: String): String {

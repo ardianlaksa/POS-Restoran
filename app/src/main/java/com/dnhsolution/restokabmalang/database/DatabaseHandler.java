@@ -42,6 +42,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final String col_id_pengguna="id_pengguna";
     public final String col_disc_rp="disc_rp";
     public final String col_pajak_rp="pajak_rp";
+    public final String col_bayar="bayar";
 
 
     //kolom detail_transaksi
@@ -66,7 +67,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_TABEL_TRANSAKSI = "CREATE TABLE " + TABLE_TRANSAKSI + "("
                 + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_tanggal_trx + " TEXT," + col_disc + " TEXT,"+
                 col_omzet + " TEXT,"+ col_id_pengguna + " TEXT,"+ col_id_tempat_usaha + " TEXT,"
-                + col_disc_rp + " TEXT,"+ col_pajak_rp + " TEXT,"+ col_status + " TEXT"+")";
+                + col_disc_rp + " TEXT,"+ col_pajak_rp + " TEXT,"+ col_status + " TEXT,"+col_bayar + " TEXT"+")";
 
         String CREATE_TABEL_DETAIL_TRANSAKSI = "CREATE TABLE " + TABLE_DETAIL_TRANSAKSI + "("
                 + col_id + " INTEGER PRIMARY KEY AUTOINCREMENT," + col_id_trx + " TEXT," + col_id_produk + " TEXT,"+
@@ -122,6 +123,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(col_disc_rp, it.getDisc_rp());
         values.put(col_status, it.getStatus());
         values.put(col_pajak_rp, it.getPajakRp());
+        values.put(col_bayar, it.getBayar());
 
         // memasukkan data
         db.insert(TABLE_TRANSAKSI, null, values);
@@ -249,7 +251,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //GET DATA
     public ArrayList getDataTersimpan() {
         ArrayList list = new ArrayList();
-
 
         String selectQuery = "SELECT "+col_id+","+col_tanggal_trx+","+col_disc+
                 ","+col_omzet+","+col_disc_rp+","+col_status+","+col_pajak_rp+" FROM " + TABLE_TRANSAKSI +

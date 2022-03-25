@@ -125,7 +125,8 @@ class MainSistem : AppCompatActivity() {
             editor.clear()
             editor.apply()
             Thread {
-                getAppDatabase?.tblProdukKategoriDao()?.deleteAll()
+                getAppDatabase!!.tblProdukKategoriDao().deleteAll()
+//                getAppDatabase?.tblProdukKategoriDao()?.deleteAll()
                 databaseHandler!!.deleteAllTable()
                 startActivity(Intent(applicationContext, SplashActivity::class.java))
                 finishAffinity()

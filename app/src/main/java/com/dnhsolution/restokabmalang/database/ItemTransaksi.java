@@ -10,12 +10,14 @@ public class ItemTransaksi {
     String disc_rp;
     String status;
     String pajakRp;
+    String bayar;
 
     public ItemTransaksi() {
     }
 
     public ItemTransaksi(int id, String tanggal_trx, String disc, String omzet
-            , String id_pengguna, String id_tempat_usaha, String disc_rp, String status,String pajakRp) {
+            , String id_pengguna, String id_tempat_usaha, String disc_rp, String status,String pajakRp
+                         ,String bayar) {
         this.id = id;
         this.tanggal_trx = tanggal_trx;
         this.disc = disc;
@@ -25,6 +27,7 @@ public class ItemTransaksi {
         this.disc_rp = disc_rp;
         this.status = status;
         this.pajakRp = pajakRp;
+        this.bayar = bayar;
     }
 
     public int getId() {
@@ -97,5 +100,13 @@ public class ItemTransaksi {
 
     public void setPajakRp(String value) {
         this.pajakRp = value;
+    }
+
+    public String getBayar() {
+        return bayar;
+    }
+
+    public void setBayar(String value) {
+        this.bayar = value;
     }
 }

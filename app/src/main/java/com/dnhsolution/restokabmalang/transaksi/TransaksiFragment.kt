@@ -62,7 +62,7 @@ class TransaksiFragment : Fragment() {
                     Log.d(_tag, a.toString())
                     kategoriList.add(
                         KategoriElement(
-                            b.id.toString(),
+                            b.idKategoriServer.toString(),
                             b.nama,
                             b.idTempatUsaha,
                             b.idPengguna
@@ -128,10 +128,11 @@ class TransaksiFragment : Fragment() {
 //        }
     }
 
-    fun tampilDataApsList(arg: String) : ArrayList<ProdukListElement> {
+    fun tampilDataApsList() : ArrayList<ProdukListElement> {
         val array = ArrayList<ProdukListElement>()
         for(i in apsSatu){
-            if(arg == i.jnsProduk) array.add(i)
+//            if(arg == i.jnsProduk) array.add(i)
+            array.add(i)
         }
         return array
 //        return when(arg){

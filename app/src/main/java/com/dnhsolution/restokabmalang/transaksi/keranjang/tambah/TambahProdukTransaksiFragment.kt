@@ -45,7 +45,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.min
 
-class TambahProdukListFragment:Fragment(), ProdukOnTask {
+class TambahProdukTransaksiFragment:Fragment(), ProdukOnTask {
 
     private lateinit var tvBadgeMenuLanjut: TextView
     private var argumenValue2: ArrayList<*>? = null
@@ -78,7 +78,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
     companion object {
         @JvmStatic
-        fun newInstance(params: String, params2: ArrayList<ProdukSerializable>?) = TambahProdukListFragment().apply {
+        fun newInstance(params: String, params2: ArrayList<ProdukSerializable>?) = TambahProdukTransaksiFragment().apply {
             arguments = Bundle().apply {
                 putString(keyParams,params)
                 putParcelableArrayList(keyParams2,params2)
@@ -131,6 +131,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
 
         binding.gvMainActivity.setOnItemClickListener { _, _, position, _ ->
             val produk = produks[position]
+//            argumenValue = produk.jnsProduk
             transaksiFragment?.tambahDataApsList(argumenValue,produk)
             val isFavorit = produk.toggleFavorite()
             if(isFavorit) TambahProdukTransaksiActivity.jumlahProdukTerpilih++
@@ -215,6 +216,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                         for (Produk in produks) {
                             if (Produk.idItem == favoriteId.idItem) {
                                 Produk.isFavorite = true
+//                                transaksiFragment?.tambahDataApsList(argumenValue,Produk)
                                 break
                             }
                         }
@@ -259,6 +261,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                     for (Produk in produks) {
                         if (Produk.idItem == favoriteId.idItem) {
                             Produk.isFavorite = true
+//                            transaksiFragment?.tambahDataApsList(argumenValue,Produk)
                             break
                         }
                     }
@@ -347,27 +350,39 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
         val handler = Handler(Looper.getMainLooper())
         val arrayProdukSerialization = ArrayList<ProdukSerializable>()
 
-        for(valueTab in argTab){
-            if(valueTab != argumenValue) {
-                val dataList = transaksiFragment?.tampilDataApsList(valueTab)
-                dataList?.let {
-                    for (value in it) {
-                        if (value.isFavorite) {
-                            arrayProdukSerialization.add(
-                                ProdukSerializable(
-                                    value.idItem, value.name, value.price
-                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
+//        for(valueTab in argTab){
+//            if(valueTab != argumenValue) {
+//                val dataList = transaksiFragment?.tampilDataApsList(valueTab)
+//                dataList?.let {
+//                    for (value in it) {
+//                        if (value.isFavorite) {
+//                            arrayProdukSerialization.add(
+//                                ProdukSerializable(
+//                                    value.idItem, value.name, value.price
+//                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
+//                                )
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         handler.postDelayed({
-            for (value in produks) {
-                if (value.isFavorite) {
+//            for (value in produks) {
+//                if (value.isFavorite) {
+//                    arrayProdukSerialization.add(
+//                        ProdukSerializable(
+//                            value.idItem, value.name, value.price
+//                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
+//                        )
+//                    )
+//                }
+//            }
+
+            val dataList = transaksiFragment?.tampilDataApsList()
+            dataList?.let {
+                for (value in it) {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
@@ -377,18 +392,18 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 }
             }
 
-            val  valueArgsFromKeranjangActivity = (activity as TambahProdukTransaksiActivity).valueArgsFromKeranjang
-
-            for(value in valueArgsFromKeranjangActivity!!) {
-                var found = false
-                for(value2 in arrayProdukSerialization){
-                    if(value.idItem == value2.idItem) {
-                        found = true
-                        break
-                    }
-                }
-                if (!found) arrayProdukSerialization.add(value)
-            }
+//            val  valueArgsFromKeranjangActivity = (activity as TambahProdukTransaksiActivity).valueArgsFromKeranjang
+//
+//            for(value in valueArgsFromKeranjangActivity!!) {
+//                var found = false
+//                for(value2 in arrayProdukSerialization){
+//                    if(value.idItem == value2.idItem) {
+//                        found = true
+//                        break
+//                    }
+//                }
+//                if (!found) arrayProdukSerialization.add(value)
+//            }
 
             if (arrayProdukSerialization.size > 0) {
                 val intent = Intent()
@@ -400,7 +415,7 @@ class TambahProdukListFragment:Fragment(), ProdukOnTask {
                 (context as TambahProdukTransaksiActivity).finish()
             } else
                 Toast.makeText(requireContext(), R.string.silakan_cek_input_data, Toast.LENGTH_SHORT).show()
-        }, 500)
+        }, 1000)
     }
 
     fun dialogKelengkapan() {

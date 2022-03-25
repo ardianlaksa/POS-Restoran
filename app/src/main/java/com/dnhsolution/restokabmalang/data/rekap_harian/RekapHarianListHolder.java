@@ -20,23 +20,26 @@ import com.dnhsolution.restokabmalang.utilities.Utils;
 class RekapHarianListHolder extends RecyclerView.ViewHolder {
     private final TextView numItem,mId,nama,Harga,qty,total;
     private final TextView kasir;
+    private final TextView titleharga;
 
     static RekapHarianListHolder newInstance(View parent, Context context
             , RekapHarianDetailOnTask onTask, RekapHarianDetailLongClick onClick) {
         TextView tvMid = parent.findViewById(R.id.mId);
         TextView tvNumItem = parent.findViewById(R.id.tvNumItem);
         TextView tvNama = parent.findViewById(R.id.tvNama);
+        TextView tvTitleHarga = parent.findViewById(R.id.tvTitleHarga);
         TextView tvPrice = parent.findViewById(R.id.tvHarga);
         TextView tvQty = parent.findViewById(R.id.tvQty);
         TextView tvKasir = parent.findViewById(R.id.tvKasir);
         TextView tvTotal = parent.findViewById(R.id.tvTotal);
         return new RekapHarianListHolder(parent, context, tvMid, tvNumItem, tvNama, tvPrice, tvQty, tvKasir
-                , tvTotal,onTask,onClick);
+                , tvTotal,onTask,onClick,tvTitleHarga);
     }
 
     private RekapHarianListHolder(final View parent, final Context context, TextView id
             , final TextView tvNumItem, final TextView tvNama, final TextView tvPrice, final TextView tvQty
-            ,final TextView tvKasir, final TextView tvTotal, final RekapHarianDetailOnTask onTask, final RekapHarianDetailLongClick onClick) {
+            ,final TextView tvKasir, final TextView tvTotal, final RekapHarianDetailOnTask onTask
+            , final RekapHarianDetailLongClick onClick, final TextView tvTitleHarga) {
         super(parent);
 //        this.context = context;
         mId = id;
@@ -47,6 +50,7 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         total = tvTotal;
         kasir = tvKasir;
 //        view = parent;
+        titleharga = tvTitleHarga;
 
         parent.setOnClickListener(v -> {
             if(Utils.isOpenRecently()) return;
@@ -67,6 +71,11 @@ class RekapHarianListHolder extends RecyclerView.ViewHolder {
         nama.setText(String.valueOf(itemText.getIdItem()));
         qty.setText(itemText.getTgl());
         kasir.setText(itemText.getName());
+//        String jenisPajak = MainActivity.Companion.getJenisPajak();
+//        if(!jenisPajak.equalsIgnoreCase("02")) {
+//            titleharga.setVisibility(View.GONE);
+//            Harga.setVisibility(View.GONE);
+//        }
         String disc_rp = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getDisc());
         Harga.setText(disc_rp);
         String omzet = new AddingIDRCurrency().formatIdrCurrencyNonKoma(itemText.getTotal());

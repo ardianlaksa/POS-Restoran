@@ -3,19 +3,15 @@ package com.dnhsolution.restokabmalang.sistem.produk
 import android.Manifest
 import android.app.AlertDialog
 import android.app.ProgressDialog
-import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -42,17 +38,13 @@ import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.*
 import com.dnhsolution.restokabmalang.transaksi.KategoriElement
 import com.dnhsolution.restokabmalang.transaksi.KategoriListViewModel
 import com.dnhsolution.restokabmalang.transaksi.KategoriListlement
-import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.transaksi.tab_fragment.ProdukListFragment
 import com.dnhsolution.restokabmalang.utilities.ManagePermissions
 import com.dnhsolution.restokabmalang.utilities.PilihanAttachmentFragmentDialog
 import com.dnhsolution.restokabmalang.utilities.Url
-import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
-import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import java.io.*
-import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -84,6 +76,7 @@ class ProdukMasterActivity : AppCompatActivity() {
     private val requestPickImage = 1046
     private val PermissionsRequestCode = 123
     private lateinit var kategoriListViewModel: KategoriListViewModel
+    val kategoriList = ArrayList<KategoriElement>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,7 +124,7 @@ class ProdukMasterActivity : AppCompatActivity() {
                     Log.d(_tag, a.toString())
                     kategoriList.add(
                         KategoriElement(
-                            b.id.toString(),
+                            b.idKategoriServer.toString(),
                             b.nama,
                             b.idTempatUsaha,
                             b.idPengguna
@@ -144,6 +137,8 @@ class ProdukMasterActivity : AppCompatActivity() {
 
         // Create the observer which updates the ui
         val kategoriListObserver = Observer<KategoriListlement>{ arg ->
+            val fragmentAdapter = ScreenSlidePagerAdapter(this)
+            viewPager.adapter = fragmentAdapter
             TabLayoutMediator(tabMain, viewPager) { tab, position ->
                 tab.text = arg.list1[position].value1
             }.attach()
@@ -151,9 +146,6 @@ class ProdukMasterActivity : AppCompatActivity() {
 
         // Observe the live data, passing in this activity as the life cycle owner and the observer
         kategoriListViewModel.items.observe(this,kategoriListObserver)
-
-        val fragmentAdapter = ViewPagerFragmentAdapter(this)
-        viewPager.adapter = fragmentAdapter
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrolled(
@@ -185,13 +177,18 @@ class ProdukMasterActivity : AppCompatActivity() {
         adMasterProduk = 1
     }
 
-    private class ViewPagerFragmentAdapter(fragmentActivity: FragmentActivity) :
-        FragmentStateAdapter(fragmentActivity) {
-
-        override fun createFragment(position: Int): Fragment = ProdukMasterFragment.newInstance(
-            kategoriList[position].id)
+    private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = kategoriList.size
+        override fun createFragment(position: Int): Fragment = ProdukMasterListFragment.newInstance(
+            kategoriList[position].id)
     }
+//    private class ViewPagerFragmentAdapter(fragmentActivity: FragmentActivity) :
+//        FragmentStateAdapter(fragmentActivity) {
+//
+//        override fun createFragment(position: Int): Fragment = ProdukMasterListFragment.newInstance(
+//            kategoriList[position].id)
+//        override fun getItemCount(): Int = kategoriList.size
+//    }
 
     override fun onResume() {
         super.onResume()
@@ -688,7 +685,6 @@ class ProdukMasterActivity : AppCompatActivity() {
         private const val IMAGE_DIRECTORY = "/POSRestoran"
         var idPengguna: String? = null
         var uuid: String? = null
-        val kategoriList = ArrayList<KategoriElement>()
         private var argTab = arrayOf("")
     }
 }

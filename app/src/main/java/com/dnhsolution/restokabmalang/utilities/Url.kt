@@ -1,10 +1,10 @@
 package com.dnhsolution.restokabmalang.utilities
 
 object Url {
-//    const val serverBase = "http://sipanji.id:8080/"
-    const val serverBase = "http://36.89.91.155:8080/"
-    const val serverPos = "http://36.89.91.155:8080/pdrd/Android/AndroidJsonPOS/"
-    const val serverFoto = "http://36.89.91.155:8080/pdrd/"
+//    const val serverBase = "http://36.89.91.155:8080/"
+    const val serverBase = "http://sipanji.id:8080/"
+    const val serverPos = "${serverBase}pdrd/Android/AndroidJsonPOS_Dev2/"
+    const val serverFoto = "http://sipanji.id:8080/pdrd/"
 
     const val SESSION_ALAMAT = "alamat"
     const val SESSION_BATAS_WAKTU = "batas_waktu"

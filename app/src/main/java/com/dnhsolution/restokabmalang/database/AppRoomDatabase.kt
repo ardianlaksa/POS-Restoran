@@ -24,7 +24,7 @@ import androidx.room.TypeConverters
 import com.dnhsolution.restokabmalang.utilities.DataTypeConverterRoom
 import com.dnhsolution.restokabmalang.utilities.TblProdukKategoriDao
 
-@Database(entities = [TblProdukKategori::class], version = 1)
+@Database(entities = [TblProdukKategori::class], version = 2)
 @TypeConverters(DataTypeConverterRoom::class)
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun tblProdukKategoriDao(): TblProdukKategoriDao

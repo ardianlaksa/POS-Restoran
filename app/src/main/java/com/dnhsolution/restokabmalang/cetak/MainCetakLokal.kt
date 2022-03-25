@@ -18,15 +18,18 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dantsu.escposprinter.EscPosPrinter
+import com.dantsu.escposprinter.connection.DeviceConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
@@ -66,8 +69,11 @@ class MainCetakLokal : AppCompatActivity() {
     private lateinit var binding: ActivityMainCetakBinding
     private var requestCode = 0
     private var nmPetugas = ""
-    private var mBluetoothAdapter: BluetoothAdapter? = null
-    private val permissionBluetooth: Int = 100
+    private var selectedDevice: BluetoothConnection? = null
+    private val PERMISSION_BLUETOOTH = 100
+    private val PERMISSION_BLUETOOTH_ADMIN = 101
+    private val PERMISSION_BLUETOOTH_CONNECT = 102
+    private val PERMISSION_BLUETOOTH_SCAN = 103
 
     private var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
@@ -148,17 +154,6 @@ class MainCetakLokal : AppCompatActivity() {
         rvData.setAdapter(adapter)
         if (tipeStruk.equals("2", ignoreCase = true)) llPajak.visibility = View.GONE
 
-        // Check to see if the Bluetooth classic feature is available.
-        packageManager.takeIf { it.missingSystemFeature(PackageManager.FEATURE_BLUETOOTH) }?.also {
-            Toast.makeText(this, R.string.bluetooth_tidak_didukung, Toast.LENGTH_SHORT).show()
-            finish()
-        }
-        // Check to see if the BLE feature is available.
-        packageManager.takeIf { it.missingSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) }?.also {
-            Toast.makeText(this, R.string.ble_tidak_didukung, Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
         btnKembali.setOnClickListener { v: View? ->
             setResult(RESULT_OK)
             finish()
@@ -171,62 +166,128 @@ class MainCetakLokal : AppCompatActivity() {
             finish()
         }
         btnPilih.setOnClickListener { v: View? ->
-            mService.let {
-                if(it != null) {
-                    if (!it.isAvailable) {
-                        Log.i(_tag, "printText: perangkat tidal support bluetooth")
-                        return@setOnClickListener
-                    }
-                    if (it.isBTopen) {
-                        resultLauncher.launch(Intent(this@MainCetakLokal, DeviceActivity::class.java))
-                        requestCode = MainCetak.RC_CONNECT_DEVICE
-                    } else requestBluetooth()
-                }
-            }
+            browseBluetoothDevice()
         }
+
         if (intent.getStringExtra("idTrx")!!.isNotEmpty()) {
             idTrx = intent.getStringExtra("idTrx")
             getData
         }
 
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        mBluetoothAdapter = bluetoothManager.adapter
-        cekKeberadaanBluetooth(btDevice)
         btnCetak?.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH), permissionBluetooth)
-            } else {
-                if(cekKeberadaanBluetooth(btDevice))
-                    if(MainActivity.jenisPajak == "02")
-                        printText()
-                    else
-                        printTextHotelHiburan()
-            }
+            printBluetooth()
         }
     }
 
-    private fun cekKeberadaanBluetooth(btDevice: String?) : Boolean {
-        mBluetoothAdapter?.let {
-            if (mBluetoothAdapter == null) {
-                // Device does not support Bluetooth
-                isPrinterReady = false
-                tv_status?.text = resources.getString(R.string.bluetooth_perangkat_tidak_cocok)
-            } else if (!it.isEnabled) {
-                // Bluetooth is not enabled :)
-                isPrinterReady = false
-                tv_status?.text = resources.getString(R.string.bluetooth_tidak_aktif)
-            } else {
-                if (!btDevice.equals("", ignoreCase = true)) {
-                    isPrinterReady = true
-                    tv_status?.text = resources.getString(R.string.terhubung_dengan_perangkat)
-                    return true
+    private fun browseBluetoothDevice() {
+        val bluetoothDevicesList = BluetoothPrintersConnections().list
+        if (bluetoothDevicesList != null) {
+            val items = arrayOfNulls<String>(bluetoothDevicesList.size + 1)
+            items[0] = "Default printer"
+            for ((i, device) in bluetoothDevicesList.withIndex()) {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
                 }
+                items[i + 1] = device.device.name
             }
+            val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
+            alertDialog.setTitle("Bluetooth printer selection")
+            alertDialog.setItems(items) { dialogInterface, i ->
+                val index = i - 1
+                selectedDevice = if (index == -1) {
+                    null
+                } else {
+                    bluetoothDevicesList[index]
+                }
+//                val button = findViewById<View>(R.id.button_bluetooth_browse) as Button
+                tv_status?.text = items[i]
+            }
+            val alert: AlertDialog = alertDialog.create()
+            alert.setCanceledOnTouchOutside(false)
+            alert.show()
         }
-        return false
     }
 
-    private fun PackageManager.missingSystemFeature(name: String): Boolean = !hasSystemFeature(name)
+    private fun printBluetooth() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH),
+                PERMISSION_BLUETOOTH
+            )
+        } else if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_ADMIN),
+                PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+            AsyncBluetoothEscPosPrint(
+                this,
+                object : AsyncEscPosPrint.OnPrintFinished() {
+                    override fun onError(
+                        asyncEscPosPrinter: AsyncEscPosPrinter?,
+                        codeException: Int
+                    ) {
+                        Log.e(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : An error occurred !"
+                        )
+                    }
+
+                    override fun onSuccess(asyncEscPosPrinter: AsyncEscPosPrinter?) {
+                        Log.i(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
+                        )
+                    }
+                }
+            ).execute(
+                if(MainActivity.jenisPajak == "02")
+                    printText(selectedDevice)
+                else
+                    printTextHotelHiburan(selectedDevice))
+        }
+    }
 
     private val getData: Unit
         get() {
@@ -279,12 +340,8 @@ class MainCetakLokal : AppCompatActivity() {
             adapter?.notifyDataSetChanged()
         }
 
-    private fun printText() {
-        val connection: BluetoothConnection? =
-            BluetoothPrintersConnections.selectFirstPaired()
-        val printer = EscPosPrinter(connection, 203, 48f, 32)
-
-        if (isPrinterReady) {
+    private fun printText(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
             val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
             val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
             val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
@@ -321,20 +378,11 @@ class MainCetakLokal : AppCompatActivity() {
                     "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
                     "[L]\n"+
                     "[C]- Terima Kasih -"
-            printer.printFormattedText(text)
-        } else {
-            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
-                .show()
-        }
+            return printer.addTextToPrint(text)
     }
 
-    private fun printTextHotelHiburan() {
-
-        val connection: BluetoothConnection? =
-            BluetoothPrintersConnections.selectFirstPaired()
-        val printer = EscPosPrinter(connection, 203, 48f, 32)
-
-        if (isPrinterReady) {
+    private fun printTextHotelHiburan(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
             val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
             val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
             val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
@@ -362,6 +410,7 @@ class MainCetakLokal : AppCompatActivity() {
             }
 
             text += "[C]--------------------------------\n"+
+                    "[L]Disc[R]${tvJmlDisc?.text}\n" +
                     "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
                     "[L]Pajak[R]${tvJmlPajak?.text}\n" +
 
@@ -369,26 +418,11 @@ class MainCetakLokal : AppCompatActivity() {
                     "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
                     "[L]\n"+
                     "[C]- Terima Kasih -"
-            printer.printFormattedText(text)
-        } else {
-            Toast.makeText(this, "Tidak terhubung printer manapun !", Toast.LENGTH_SHORT)
-                .show()
-        }
+            return printer.addTextToPrint(text)
     }
 
     private fun gantiKetitik(value: String): String {
         return value.replace(",", ".")
-    }
-
-    private fun requestBluetooth() {
-        mService.let {
-            if (it != null) {
-                if (!it.isBTopen) {
-                    resultLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-                    requestCode = MainCetak.RC_ENABLE_BLUETOOTH
-                }
-            }
-        }
     }
 
     private val dateTime: String

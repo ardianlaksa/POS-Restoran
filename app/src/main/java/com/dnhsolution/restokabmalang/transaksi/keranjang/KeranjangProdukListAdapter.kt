@@ -12,8 +12,8 @@ import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.google.android.material.snackbar.Snackbar
 
-class SelectedProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private val activity: Activity
-                                , private val onTask: KeranjangProdukItemOnTask
+class KeranjangProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private val activity: Activity
+                                 , private val onTask: KeranjangProdukItemOnTask
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -32,11 +32,11 @@ class SelectedProdukListAdapter(itemList: ArrayList<ProdukSerializable>, private
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_keranjang_produk, parent, false)
-        return SelectedProdukListHolder.newInstance(view, activity)
+        return KeranjangProdukListHolder.newInstance(view, activity)
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
-        val holder = viewHolder as SelectedProdukListHolder
+        val holder = viewHolder as KeranjangProdukListHolder
         val itemText = mItemList!![position]
         holder.setValues(onTask,itemText,position)
     }

@@ -305,6 +305,7 @@ class LoginActivity : AppCompatActivity() {
                         val namaUser = json.getString("NAME")
                         val namaPetugas = json.getString("NM_PETUGAS")
                         val idJenisPajak = json.getString("ID_JENISPAJAK")
+                        val persenPajak = json.getInt("PERSEN_PAJAK")
 
                         //membuat editor untuk menyimpan data ke shared preferences
                         val editor = sharedPreferences.edit()
@@ -325,16 +326,16 @@ class LoginActivity : AppCompatActivity() {
                         editor.putString(Url.SESSION_UUID, uniqueID)
                         editor.putString(Url.SESSION_NAME, namaUser)
                         editor.putString(Url.SESSION_NAMA_PETUGAS, namaPetugas)
-                        var pajakPersen = 0
-                        when {
-                            idJenisPajak.equals("02", ignoreCase = true) -> pajakPersen =
-                                10
-                            idJenisPajak.equals("01", ignoreCase = true) -> pajakPersen =
-                                35
-                            idJenisPajak.equals("03", ignoreCase = true) -> pajakPersen =
-                                35
-                        }
-                        editor.putInt(Url.SESSION_PAJAK_PERSEN, pajakPersen)
+//                        var pajakPersen = 0
+//                        when {
+//                            idJenisPajak.equals("02", ignoreCase = true) -> pajakPersen =
+//                                10
+//                            idJenisPajak.equals("01", ignoreCase = true) -> pajakPersen =
+//                                35
+//                            idJenisPajak.equals("03", ignoreCase = true) -> pajakPersen =
+//                                35
+//                        }
+                        editor.putInt(Url.SESSION_PAJAK_PERSEN, persenPajak)
                         editor.putString(Url.SESSION_JENIS_PAJAK, idJenisPajak)
 
                         //menyimpan data ke editor
@@ -390,35 +391,35 @@ class LoginActivity : AppCompatActivity() {
             when (jenisPajak) {
                 "01" -> {
                     a?.insert(
-                        TblProdukKategori(6, "Kamar", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "Kamar", "idTempatUsaha", "idPengguna",6)
                     )
                     a?.insert(
-                        TblProdukKategori(7, "Service", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "Service", "idTempatUsaha", "idPengguna",7)
                     )
                     a?.insert(
-                        TblProdukKategori(3, "DLL", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "DLL", "idTempatUsaha", "idPengguna",3)
                     )
                 }
                 "02" -> {
                     a?.insert(
-                        TblProdukKategori(1, "Makanan", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "Makanan", "idTempatUsaha", "idPengguna",1)
                     )
                     a?.insert(
-                        TblProdukKategori(2, "Minuman", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "Minuman", "idTempatUsaha", "idPengguna",2)
                     )
                     a?.insert(
-                        TblProdukKategori(3, "DLL", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "DLL", "idTempatUsaha", "idPengguna",3)
                     )
                 }
                 else -> {
                     a?.insert(
-                        TblProdukKategori(4, "Pelayanan 1", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "Pelayanan 1", "idTempatUsaha", "idPengguna",4)
                     )
                     a?.insert(
-                        TblProdukKategori(5, "Pelayanan 2", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "Pelayanan 2", "idTempatUsaha", "idPengguna",5)
                     )
                     a?.insert(
-                        TblProdukKategori(3, "DLL", "idTempatUsaha", "idPengguna")
+                        TblProdukKategori(0, "DLL", "idTempatUsaha", "idPengguna",3)
                     )
                 }
             }

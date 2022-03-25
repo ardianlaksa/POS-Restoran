@@ -45,7 +45,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
+class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     ,View.OnClickListener, KeranjangTransaksiOnTask {
 
     override fun onClick(v: View?) {
@@ -66,7 +66,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var omzetRp: Int = 0
     private var tipeStruk: String? = null
     private var pajakRp: Float = 0F
-    private var produkAdapter: SelectedProdukListAdapter? = null
+    private var produkAdapter: KeranjangProdukListAdapter? = null
     private val _tag: String = javaClass.simpleName
     private var idPengguna: String? = null
     private var uuid: String? = null
@@ -74,6 +74,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var valueDiskon: Int = 0
     private var valueDiskonRupiah: Int = 0
     private var valueDR: Double = 0.0
+    private var valueBayar: Int = 0
     private var valueTotalPrice: Int = 0
     private var obyek:ArrayList<ProdukSerializable>? = null
     var databaseHandler: DatabaseHandler? = null
@@ -133,7 +134,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             }
 
             if (produkAdapter == null) {
-                produkAdapter = SelectedProdukListAdapter(
+                produkAdapter = KeranjangProdukListAdapter(
                     obyek!!,
                     this,
                     this
@@ -160,7 +161,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
 
         if(tipeStruk == "2") binding.llPajak.visibility = View.GONE
-        if(MainActivity.jenisPajak != "02") binding.llDisc.visibility = View.GONE
+//        if(MainActivity.jenisPajak != "02") binding.llDisc.visibility = View.GONE
 
         databaseHandler = DatabaseHandler(this)
         binding.bProses.setOnClickListener(this)
@@ -230,6 +231,53 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
                 setDiskonDanTotalRupiah(totalPajak,totalPrice)
 
+                val valueKembalianUang = AddingIDRCurrency().formatIdrCurrencyNonKoma((valueBayar-valueTotalPrice).toDouble())
+                binding.tvValueKembalianUang.text = valueKembalianUang
+            }
+        })
+
+        binding.etBayar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                binding.etBayar.requestFocus()
+            }
+
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+
+                binding.etBayar.removeTextChangedListener(this)
+
+                try {
+                    var originalString = editable.toString()
+
+                    val longval: Long?
+                    if (originalString.contains(".")) {
+                        originalString = originalString.replace(".", "")
+                    }
+                    longval = java.lang.Long.parseLong(originalString)
+
+                    val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
+                    formatter.applyPattern("#,###,###,###")
+                    val formattedString = formatter.format(longval)
+
+                    //setting text after format to EditText
+                    binding.etBayar.setText(formattedString.replace(",", "."))
+                    binding.etBayar.setSelection(binding.etBayar.text.toString().length)
+                } catch (nfe: NumberFormatException) {
+                    nfe.printStackTrace()
+                }
+
+                binding.etBayar.addTextChangedListener(this)
+                valueBayar = if (binding.etBayar.text.toString().isEmpty()) {
+                    0
+                } else {
+                    editable.toString().replace(".", "").toInt()
+                }
+
+                val valueKembalianUang = AddingIDRCurrency().formatIdrCurrencyNonKoma((valueBayar-valueTotalPrice).toDouble())
+                binding.tvValueKembalianUang.text = valueKembalianUang
+
             }
         })
 
@@ -258,7 +306,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
 
         if (produkAdapter == null) {
-            produkAdapter = SelectedProdukListAdapter(
+            produkAdapter = KeranjangProdukListAdapter(
                 obyek!!,
                 this,
                 this
@@ -292,7 +340,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         setIntent(intent)
     }
 
-    private fun setUpRecyclerView(mAdapter: SelectedProdukListAdapter) {
+    private fun setUpRecyclerView(mAdapter: KeranjangProdukListAdapter) {
         binding.recyclerView.adapter = mAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         val itemTouchHelper = ItemTouchHelper(
@@ -429,12 +477,11 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 if(CheckNetwork().checkingNetwork(this)) {
                     val params = HashMap<String, String>()
                     params["paramsArray"] = createJson()
-                    SelectedProdukListJsonTask(
+                    println("$_tag $params")
+                    KeranjangProdukListJsonTask(
                         this,
                         params
                     ).execute(Url.setKeranjangTransaksi)
-
-                    showDialogBerhasil("Selamat","Transaksi Anda Berhasil di proses !")
 
                 } else {
                     val idTrx : String = saveLokal()
@@ -469,7 +516,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             //                println(createJson())
 //            startActivity()
             resultLauncher.launch(
-                Intent(this@SelectedProdukListActivity, MainCetak::class.java).putExtra("getIdItem", "0"))
+                Intent(this@KeranjangProdukListActivity, MainCetak::class.java).putExtra("getIdItem", "0"))
         }
 
         builder.setNegativeButton("Batal"){_, _ ->
@@ -497,7 +544,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         // Display a message on alert dialog
         builder.setMessage(message)
         builder.setPositiveButton("Cetak"){_, _ ->
-            val i = Intent(Intent(this@SelectedProdukListActivity, MainCetakLokal::class.java))
+            val i = Intent(Intent(this@KeranjangProdukListActivity, MainCetakLokal::class.java))
             i.putExtra("idTrx", idTrx)
 //            startActivity(i)
 //            finish()
@@ -536,6 +583,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         val pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
         rootObject.put("pajakPersen",pajakPersen.toString())
+        rootObject.put("bayar",valueBayar)
 
         val jsonArr = JSONArray()
 
@@ -554,7 +602,6 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
         rootObject.put("produk",jsonArr)
 
-
         return rootObject.toString()
     }
 
@@ -563,9 +610,14 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         var disc = ""
         var omzet = ""
         var id_trx = 0
+        var bayar = ""
 
         if(binding.etRupiahDiskon.text.toString().isNotEmpty()){
             disc = valueDR.toString()
+        }
+
+        if(binding.etBayar.text.toString().isNotEmpty()){
+            bayar = valueBayar.toString()
         }
 
         omzet = valueTotalPrice.toString()
@@ -584,7 +636,7 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             databaseHandler!!.insert_transaksi(
                 ItemTransaksi(
                     0, tglTrx, disc, omzet, idPengguna, idTmpUsaha, valueDiskonRupiah.toString()
-                    , "0",pajakRp.toInt().toString()
+                    , "0",pajakRp.toInt().toString(),bayar
                 )
             )
 
@@ -619,9 +671,12 @@ class SelectedProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             val jsonObj = JSONObject(result)
             val success = jsonObj.getInt("success")
             val message = jsonObj.getString("message")
-            if (success == 1)
+            if (success == 1) {
                 //Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 Log.d("MESSAGE", message)
+
+                showDialogBerhasil("Selamat","Transaksi Anda Berhasil di proses !")
+            }
         } catch (ex : JSONException) {
             ex.printStackTrace()
             Toast.makeText(this, getString(R.string.error_data), Toast.LENGTH_SHORT).show()

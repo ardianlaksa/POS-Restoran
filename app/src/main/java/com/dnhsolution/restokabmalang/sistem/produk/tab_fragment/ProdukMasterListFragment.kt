@@ -94,7 +94,7 @@ interface DeleteServices {
         }
     }
 
-class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
+class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
 
     private var getAllKategoriProduk: LiveData<List<TblProdukKategori>>? = null
     private var uuid: String? = null
@@ -162,7 +162,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
         private val IMAGE_DIRECTORY = "/POSRestoran"
 
         @JvmStatic
-        fun newInstance(params: String) = ProdukMasterFragment().apply {
+        fun newInstance(params: String) = ProdukMasterListFragment().apply {
             arguments = Bundle().apply {
                 putString(keyParams,params)
             }
@@ -388,7 +388,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                     Log.d(_tag, getAllKategoriProduk.toString())
                     kategoriList.add(
                         KategoriElement(
-                            b.id.toString(),
+                            b.idKategoriServer.toString(),
                             b.nama,
                             b.idTempatUsaha,
                             b.idPengguna
@@ -1101,7 +1101,7 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
                     Log.d(_tag, getAllKategoriProduk.toString())
                     kategoriList.add(
                         KategoriElement(
-                            b.id.toString(),
+                            b.idKategoriServer.toString(),
                             b.nama,
                             b.idTempatUsaha,
                             b.idPengguna
@@ -1327,10 +1327,8 @@ class ProdukMasterFragment() : Fragment(), HapusProdukMasterOnTask {
 
             override fun doInBackground(vararg p0: Void?): String? {
                 val u = UploadData()
-                var msg: String? = null
-                //                String id_tmp_usaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA,"");
-                msg = u.uploadDataBaru(idPengguna,uuid,e_nama, e_ket, e_harga, t_nama_file, idTmpUsaha,slctdIspajak,slctdTipeProduk)
-                return msg
+                return u.uploadDataBaru(idPengguna,uuid,e_nama, e_ket, e_harga, t_nama_file
+                    , idTmpUsaha,slctdIspajak,slctdTipeProduk)
             }
         }
 

@@ -9,5 +9,6 @@ data class TblProdukKategori(
         val id: Int,
         val nama: String,
         val idTempatUsaha: String,
-        val idPengguna: String
+        val idPengguna: String,
+        val idKategoriServer: Int
         )

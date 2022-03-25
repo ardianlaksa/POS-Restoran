@@ -33,7 +33,7 @@ import com.dnhsolution.restokabmalang.databinding.FragmentProdukListBinding
 import com.dnhsolution.restokabmalang.sistem.produk.ItemProduk
 import com.dnhsolution.restokabmalang.transaksi.ProdukSerializable
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
-import com.dnhsolution.restokabmalang.transaksi.keranjang.SelectedProdukListActivity
+import com.dnhsolution.restokabmalang.transaksi.keranjang.KeranjangProdukListActivity
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.ProdukOnTask
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -341,27 +341,38 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         val handler = Handler(Looper.getMainLooper())
         val arrayProdukSerialization = ArrayList<ProdukSerializable>()
 
-        for(valueTab in argTab){
-            if(valueTab != argumenValue) {
-                val dataList = transaksiFragment?.tampilDataApsList(valueTab)
-                dataList?.let {
-                    for (value in it) {
-                        if (value.isFavorite) {
-                            arrayProdukSerialization.add(
-                                ProdukSerializable(
-                                    value.idItem, value.name, value.price
-                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
+//        for(valueTab in argTab){
+//            if(valueTab != argumenValue) {
+//                val dataList = transaksiFragment?.tampilDataApsList()
+//                dataList?.let {
+//                    for (value in it) {
+////                        if (value.isFavorite) {
+//                            arrayProdukSerialization.add(
+//                                ProdukSerializable(
+//                                    value.idItem, value.name, value.price
+//                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
+//                                )
+//                            )
+////                        }
+//                    }
+//                }
+//            }
+//        }
 
         handler.postDelayed({
-            for (value in produks) {
-                if (value.isFavorite) {
+//            for (value in produks) {
+//                if (value.isFavorite) {
+//                    arrayProdukSerialization.add(
+//                        ProdukSerializable(
+//                            value.idItem, value.name, value.price
+//                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
+//                        )
+//                    )
+//                }
+//            }
+            val dataList = transaksiFragment?.tampilDataApsList()
+            dataList?.let {
+                for (value in it) {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
@@ -372,7 +383,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             }
 
             if (arrayProdukSerialization.size > 0) {
-                val intent = Intent(context, SelectedProdukListActivity::class.java)
+                val intent = Intent(context, KeranjangProdukListActivity::class.java)
                 val args = Bundle()
                 args.putSerializable("ARRAYLIST", arrayProdukSerialization)
                 intent.putExtra("BUNDLE", args)

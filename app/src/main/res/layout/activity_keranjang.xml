@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".transaksi.keranjang.SelectedProdukListActivity"
+    tools:context=".transaksi.keranjang.KeranjangProdukListActivity"
     android:background="@drawable/bg_dashboard2">
 
     <LinearLayout
@@ -61,8 +61,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/tvTitleDaftarProduk"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/clBottom"/>
@@ -274,6 +275,105 @@
                         android:gravity="right"
                         android:layout_weight="1"
                         android:id="@+id/tvDiskonTotal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_4"
+                        android:layout_marginStart="@dimen/_4"
+                        android:layout_marginEnd="@dimen/_8"
+                        android:layout_marginRight="@dimen/_8"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/etDiskon"
+                        app:layout_constraintBottom_toBottomOf="@id/etDiskon"
+                        android:text="@string/rp_0"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/nunitosansregular"
+                        android:textColor="@android:color/holo_red_light"
+                        android:textSize="@dimen/f_22"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llBayar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_gravity="center"
+                        android:layout_weight="0.2"
+                        android:id="@+id/tvTitleBayar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_8"
+                        android:layout_marginEnd="@dimen/_8"
+                        android:text="@string/title_bayar"
+                        android:fontFamily="@font/nunitosansregular"
+                        android:textColor="@color/colorPrimaryDark"/>
+
+                    <LinearLayout
+                        android:layout_weight="0.2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="right">
+
+                        <TextView
+                            android:gravity="right"
+                            android:id="@+id/tvBayar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_4"
+                            android:layout_marginStart="@dimen/_4"
+                            android:layout_marginEnd="@dimen/_8"
+                            android:layout_marginRight="@dimen/_8"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/etDiskon"
+                            app:layout_constraintBottom_toBottomOf="@id/etDiskon"
+                            android:text="Rp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/nunitosansregular"
+                            android:textColor="@android:color/holo_red_light"
+                            android:textSize="@dimen/f_22"/>
+
+                        <EditText
+                            android:layout_marginRight="5dp"
+                            android:id="@+id/etBayar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/f_22"
+                            android:inputType="number"
+                            android:gravity="right"
+                            android:autofillHints="@string/_0"
+                            android:hint="@string/_0"
+                            android:fontFamily="@font/nunitosansregular"
+                            android:ems="2" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_weight="0.3"
+                        android:id="@+id/tvKembalianUang"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_8"
+                        android:layout_marginEnd="@dimen/_8"
+                        app:layout_constraintTop_toTopOf="@id/etDiskon"
+                        app:layout_constraintRight_toLeftOf="@id/etDiskon"
+                        app:layout_constraintBottom_toBottomOf="@id/etDiskon"
+                        android:text="@string/title_kembalian"
+                        android:fontFamily="@font/nunitosansregular"
+                        android:textColor="@color/colorPrimaryDark"/>
+
+                    <TextView
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:id="@+id/tvValueKembalianUang"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_4"

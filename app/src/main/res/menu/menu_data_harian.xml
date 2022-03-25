@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+        <item android:id="@+id/action_menu_print"
+            app:showAsAction="always"
+            android:icon="@drawable/ic_baseline_print_24"
+            android:title="@string/print"/>
         <item android:id="@+id/action_menu_email"
             app:showAsAction="always"
             android:icon="@drawable/ic_baseline_email_24_white"

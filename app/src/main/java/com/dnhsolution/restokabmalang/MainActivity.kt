@@ -57,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         var emailUser: String? = null
         var namaPetugas: String? = null
         var pajakPersen: Int = 0
+        var namaTempatUsaha: String? = null
+        var alamatTempatUsaha: String? = null
     }
 
     private val _tag = javaClass.simpleName
@@ -93,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         val tema = sharedPreferences.getString(Url.setTema, "0")
         jenisPajak = sharedPreferences.getString(Url.SESSION_JENIS_PAJAK, "00")
         pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
+        namaTempatUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "")
+        alamatTempatUsaha = sharedPreferences.getString(Url.SESSION_ALAMAT, "")
 
         when {
             tema!!.equals("0", ignoreCase = true) -> {

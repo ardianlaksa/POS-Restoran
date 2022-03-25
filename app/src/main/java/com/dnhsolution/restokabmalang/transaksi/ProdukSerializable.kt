@@ -25,14 +25,14 @@ class ProdukSerializable : Parcelable {
 
     constructor()
 
-    constructor(idItem: Int, name: String, price: String, imgUrl: String, totalPrice: Int, qty: Int, status:String) {
+    constructor(idItem: Int, name: String, price: String, imgUrl: String, totalPrice: Int, qty: Int, isPajak:String) {
         this.idItem = idItem
         this.name = name
         this.price = price
         this.imgUrl = imgUrl
         this.totalPrice = totalPrice
         this.qty = qty
-        this.isPajak = status
+        this.isPajak = isPajak
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

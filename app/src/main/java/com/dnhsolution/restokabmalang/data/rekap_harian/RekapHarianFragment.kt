@@ -6,23 +6,30 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dantsu.escposprinter.connection.DeviceConnection
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
+import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.cetak.AsyncBluetoothEscPosPrint
+import com.dnhsolution.restokabmalang.cetak.AsyncEscPosPrint
+import com.dnhsolution.restokabmalang.cetak.AsyncEscPosPrinter
 import com.dnhsolution.restokabmalang.cetak.MainCetak
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.DRekapHarianJsonTask
 import com.dnhsolution.restokabmalang.data.rekap_harian.task.RekapHarianJsonTask
@@ -38,31 +45,56 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 interface UploadPdfService {
-        @FormUrlEncoded
-        @POST("pdrd/Android/AndroidJsonPOS/notifEmailPdf")
-        fun sendPosts(
-            @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
-            , @Field("tgl") tgl: String
-        ): Call<DefaultPojo>
-    }
+    @FormUrlEncoded
+    @POST("${Url.serverPos}notifEmailPdf")
+    fun sendPosts(
+        @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
+        , @Field("tgl") tgl: String
+    ): Call<DefaultPojo>
+}
 
-    object UploadPdfResultFeedback {
+interface CetakFullService {
+    @FormUrlEncoded
+    @POST("${Url.serverPos}cetakFull")
+    fun sendPosts(
+        @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
+        , @Field("tgl") tgl: String
+    ): Call<DefaultResultPojo>
+}
 
-        fun create(): UploadPdfService {
-            val gson = GsonBuilder()
-                .setLenient()
-                .create()
-            val retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .baseUrl(Url.serverBase)
-                .build()
-            return retrofit.create(UploadPdfService::class.java)
-        }
+object CetakFullResultFeedback {
+
+    fun create(): CetakFullService {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(Url.serverBase)
+            .build()
+        return retrofit.create(CetakFullService::class.java)
     }
+}
+
+object UploadPdfResultFeedback {
+
+    fun create(): UploadPdfService {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(Url.serverBase)
+            .build()
+        return retrofit.create(UploadPdfService::class.java)
+    }
+}
 
 class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, RekapHarianDetailOnTask,
     RekapHarianDetailLongClick {
@@ -77,6 +109,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     }
 
     private var namaPetugas: String = ""
+    private var namaTempatUsaha: String = ""
     private var idPengguna: String? = null
     private var idTmpUsaha: String? = null
     private lateinit var recyclerView: RecyclerView
@@ -86,9 +119,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     private lateinit var etDate: EditText
     private lateinit var ivDate: ImageView
     private lateinit var binding : FragmentRekapHarianBinding
-
     private val myCalendar = Calendar.getInstance()
-
     private var itemsHarian:ArrayList<RekapHarianListElement>? = null
     private var itemsDHarian:ArrayList<DRekapHarianListElement>? = null
     private val _tag = javaClass.simpleName
@@ -101,6 +132,11 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     private var adapterList:RekapHarianListAdapter? = null
     private var adapterListD:DRekapHarianListAdapter2? = null
     private val IMAGE_DIRECTORY = "/POSRestoran"
+    private var selectedDevice: BluetoothConnection? = null
+    private val PERMISSION_BLUETOOTH = 100
+    private val PERMISSION_BLUETOOTH_ADMIN = 101
+    private val PERMISSION_BLUETOOTH_CONNECT = 102
+    private val PERMISSION_BLUETOOTH_SCAN = 103
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -111,6 +147,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 //        val view = inflater.inflate(R.layout.fragment_rekap_harian, container, false)
         binding = FragmentRekapHarianBinding.inflate(layoutInflater)
         namaPetugas = MainActivity.namaPetugas ?: ""
+        namaTempatUsaha = MainActivity.namaTempatUsaha ?: ""
         val view = binding.root
         setHasOptionsMenu(true)
         spiTgl = binding.spinTgl
@@ -165,6 +202,131 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         return view
     }
 
+    fun printBluetooth(value: List<java.util.HashMap<String, String>>) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH),
+                PERMISSION_BLUETOOTH
+            )
+        } else if (ContextCompat.checkSelfPermission(
+                requireContext() as Activity,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH_ADMIN),
+                PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireContext() as Activity,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireContext() as Activity,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+
+//            value.forEach {
+//                val totalQty = it["totalQty"]
+//                val nmProduk = it["nmProduk"]
+//                println("$totalQty $nmProduk")
+//            }
+
+            AsyncBluetoothEscPosPrint(
+                requireContext(),
+                object : AsyncEscPosPrint.OnPrintFinished() {
+                    override fun onError(
+                        asyncEscPosPrinter: AsyncEscPosPrinter?,
+                        codeException: Int
+                    ) {
+                        Log.e(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : An error occurred !"
+                        )
+                    }
+
+                    override fun onSuccess(asyncEscPosPrinter: AsyncEscPosPrinter?) {
+                        Log.i(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
+                        )
+                    }
+                }
+            ).execute(printText(selectedDevice,value))
+        }
+    }
+
+    private fun printText(printerConnection: DeviceConnection?,value: List<HashMap<String,String>>) : AsyncEscPosPrinter  {
+//        val printer = EscPosPrinter(connection, 203, 48f, 32)
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
+
+//        Log.d(_tag,"ready")
+        val nmTmpUsaha = MainActivity.namaTempatUsaha
+        val alamat = MainActivity.alamatTempatUsaha
+//        val tgl = dateTime
+        val tgl = tanggal
+        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            requireActivity().resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, requireActivity().theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]Tanggal : $tgl\n"+
+                "[C]--------------------------------\n\n"
+
+        var dblTotalTotalharga = 0.0
+        value.forEach { it ->
+            val totalQty = it["totalQty"]
+            val nmProduk = it["nmProduk"]
+            it["totalHarga"]?.let { a ->
+                val dblTotalHarga = a.toDouble()
+                val formatTotalOmzet = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalHarga)
+//            println("$totalQty $nmProduk")
+                text += "[L]- $nmProduk\n" +
+                        "[L]  $totalQty [R]$formatTotalOmzet\n"
+                dblTotalTotalharga += dblTotalHarga
+            }
+        }
+
+//        for (i in itemProduk!!.indices) {
+//            val nmProduk = itemProduk!![i].getNama_produk()
+//            val qty = itemProduk!![i].getQty()
+//            val harga = itemProduk!![i].getHarga()
+//            val totalHarga = itemProduk!![i].getTotal_harga()
+//            text += "[L]$nmProduk\n" +
+//                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+//        }
+//
+//        text += "[C]--------------------------------\n"+
+//                "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+//                "[L]Disc[R]${tvJmlDisc?.text}\n"
+        val formatDblTotalTotalharga = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalTotalharga)
+        text += "[C]--------------------------------\n"+
+                "[L]Total[R]$formatDblTotalTotalharga"
+        return printer.addTextToPrint(text)
+    }
+
     var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -204,6 +366,38 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         })
     }
 
+    private fun cetakFull(idPengguna : String?, idTmpUsaha : String?){
+        val postServices = CetakFullResultFeedback.create()
+        postServices.sendPosts(idPengguna ?: ""
+            ,idTmpUsaha ?: "", tanggal
+        ).enqueue(object : Callback<DefaultResultPojo> {
+
+            override fun onFailure(call: Call<DefaultResultPojo>, error: Throwable) {
+                Log.e(_tag, "errornya ${error.message}")
+            }
+
+            override fun onResponse(
+                call: Call<DefaultResultPojo>,
+                response: retrofit2.Response<DefaultResultPojo>
+            ) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    data?.let {
+                        val feedback = it
+                        println("${feedback.success}, ${feedback.message}, ${feedback.result}")
+                        if(feedback.success == 1) {
+//                            Toast.makeText(context,feedback.message, Toast.LENGTH_SHORT).show()
+                            if(feedback.result.size > 0) printBluetooth(feedback.result)
+                            else Toast.makeText(context,R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                        }else {
+                            Toast.makeText(context,feedback.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        })
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -215,10 +409,15 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_menu_email -> {
+
+            R.id.action_menu_print -> {
+//                kirimEmail(idPengguna, idTmpUsaha)
+                cetakFull(idPengguna, idTmpUsaha)
+                true
+            } R.id.action_menu_email -> {
                 kirimEmail(idPengguna, idTmpUsaha)
                 true
-            } R.id.action_menu_bantuan -> {
+            }R.id.action_menu_bantuan -> {
 //                tampilAlertDialogTutorial()
                 true
             }else -> super.onOptionsItemSelected(item)
@@ -413,4 +612,12 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
         resultLauncher.launch(Intent(requireContext(), MainCetak::class.java).putExtra("getIdItem", result))
 //        requireContext().startActivity(Intent(context, MainCetak::class.java).putExtra("getIdItem", result))
     }
+
+    private val dateTime: String
+        get() {
+            val dateFormat: DateFormat =
+                SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+            val date = Date()
+            return dateFormat.format(date)
+        }
 }

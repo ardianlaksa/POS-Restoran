@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dnhsolution.restokabmalang.R;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
-    private SelectedProdukListAdapter mAdapter;
+    private KeranjangProdukListAdapter mAdapter;
     private Drawable icon;
     private final ColorDrawable background;
 
-    public SwipeToDeleteCallback(SelectedProdukListAdapter adapter) {
+    public SwipeToDeleteCallback(KeranjangProdukListAdapter adapter) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
 
