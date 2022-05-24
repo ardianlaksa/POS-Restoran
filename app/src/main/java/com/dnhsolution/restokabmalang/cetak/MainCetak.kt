@@ -37,6 +37,7 @@ import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.databinding.ActivityMainCetakBinding
 import com.dnhsolution.restokabmalang.utilities.DefaultPojo
+import com.dnhsolution.restokabmalang.utilities.TampilanBarcode
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.gson.GsonBuilder
 import org.json.JSONException
@@ -54,6 +55,12 @@ import java.util.*
 
 open class MainCetak : AppCompatActivity() {
 
+    private var idHiburanNomor: String = ""
+    private var nomorTerakhirKarcis: String = ""
+    private var iQty: Int = 0
+    private var idPengguna: String? = null
+    private var uuid: String? = null
+//    private var nomorKarcis: String = ""
     private lateinit var sharedPreferences: SharedPreferences
     var rvData: RecyclerView? = null
     var itemProduk: MutableList<ItemProduk>? = null
@@ -87,7 +94,7 @@ open class MainCetak : AppCompatActivity() {
 
     interface ValidasiTransaksiServices {
         @FormUrlEncoded
-        @POST("pdrd/Android/AndroidJsonPOS/setUpdateValidasiTransaksi")
+        @POST("${Url.serverPos}setUpdateValidasiTransaksi")
         fun getPosts(@Field("idPengguna") idPengguna: String
                      , @Field("UUID") uuid: String
                      , @Field("idTrx") idTrx: String): Call<DefaultPojo>
@@ -103,6 +110,29 @@ open class MainCetak : AppCompatActivity() {
                 .baseUrl(Url.serverBase)
                 .build()
             return retrofit.create(ValidasiTransaksiServices::class.java)
+        }
+    }
+
+    interface UpdateHiburanNomorServices {
+        @FormUrlEncoded
+        @POST("${Url.serverPos}setUpdateHiburanNomor")
+        fun getPosts(@Field("idPengguna") idPengguna: String
+            , @Field("UUID") uuid: String
+            , @Field("idTempatUsaha") idTempatUsaha: String
+            , @Field("nomorTerakhirKarcis") nomorTerakhirKarcis: String
+            , @Field("arrIdHiburanNomor") arrIdHiburanNomor: String): Call<DefaultPojo>
+    }
+
+    object UpdateHiburanNomorResultFeedback {
+        fun create(): UpdateHiburanNomorServices {
+            val gson = GsonBuilder()
+                .setLenient()
+                .create()
+            val retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .baseUrl(Url.serverBase)
+                .build()
+            return retrofit.create(UpdateHiburanNomorServices::class.java)
         }
     }
 
@@ -133,8 +163,8 @@ open class MainCetak : AppCompatActivity() {
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
-        val uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
-        val idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
+        uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
         val btDevice = sharedPreferences.getString(Url.SESSION_PRINTER_BT, "")
         supportActionBar?.title = label
 
@@ -220,6 +250,11 @@ open class MainCetak : AppCompatActivity() {
 //        cekKeberadaanBluetooth(btDevice)
         btnCetak?.setOnClickListener {
             printBluetooth()
+
+//            println("${MainActivity.idTempatUsaha} $idPengguna $uuid $idHiburanNomor $nomorTerakhirKarcis" )
+//            updateHiburanNomorFungsi(
+//                idPengguna.toString(),uuid.toString(), MainActivity.idTempatUsaha.toString(),idHiburanNomor
+//            )
         }
     }
 
@@ -323,13 +358,28 @@ open class MainCetak : AppCompatActivity() {
                             "Async.OnPrintFinished",
                             "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
                         )
+
+                        if(MainActivity.jenisPajak == "03"){
+//                            println("${MainActivity.idTempatUsaha} $idPengguna $uuid $idHiburanNomor $nomorTerakhirKarcis" )
+//                            updateHiburanNomorFungsi(MainActivity.idTempatUsaha.toString()
+//                                ,idPengguna.toString(),uuid.toString(), nomorTerakhirKarcis.toString()
+//                            )
+                            updateHiburanNomorFungsi(
+                                idPengguna.toString(),uuid.toString(), MainActivity.idTempatUsaha.toString()
+                                ,nomorTerakhirKarcis,idHiburanNomor
+                            )
+                        }
                     }
                 }
             ).execute(
-                if(MainActivity.jenisPajak == "02")
-                    printText(selectedDevice)
-                else
-                    printTextHotelHiburan(selectedDevice))
+                when (MainActivity.jenisPajak) {
+                    "01" -> printTextHotelHiburan(selectedDevice)
+                    "02" -> printText(selectedDevice)
+                    else -> {
+                        printTextHiburanKarcis(selectedDevice)
+                    }
+                }
+            )
         }
     }
 
@@ -355,6 +405,34 @@ open class MainCetak : AppCompatActivity() {
                     }
                 } else {
                     Log.e(_tag, response.isSuccessful.toString())
+                }
+            }
+        })
+    }
+
+    private fun updateHiburanNomorFungsi(value : String,value1 : String,value2 : String,value3 : String
+        ,value4 : String){
+        val postServices = UpdateHiburanNomorResultFeedback.create()
+        postServices.getPosts(value,value1,value2,value3,value4).enqueue(object : Callback<DefaultPojo> {
+
+            override fun onFailure(call: Call<DefaultPojo>, error: Throwable) {
+                Log.e(_tag, "errornya ${error.message}")
+            }
+
+            override fun onResponse(
+                call: Call<DefaultPojo>,
+                response: retrofit2.Response<DefaultPojo>
+            ) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    data?.let {
+                        val feedback = it
+                        println("${feedback.success}, ${feedback.message}")
+//                        setResult(RESULT_OK)
+//                        finish()
+                    }
+                } else {
+                    Log.e(_tag, "updateHiburanNomorFungsi ${response.isSuccessful}")
                 }
             }
         })
@@ -391,17 +469,22 @@ open class MainCetak : AppCompatActivity() {
                             tvJmlDisc?.text = json.getString("jml_disc")
                             tvJmlPajak?.text = json.getString("jml_pajak")
                             tvTotal?.text = json.getString("total")
+//                            nomorKarcis = json.getString("nomor_karcis")
                             var i = 1
                             while (i < jsonArray.length()) {
                                 try {
                                     val jO = jsonArray.getJSONObject(i)
                                     val id = ItemProduk()
                                     id.setNo(i)
+                                    id.setId_produk(jO.getString("id_produk"))
                                     id.setNama_produk(jO.getString("nama_produk"))
                                     id.setQty(jO.getString("qty"))
                                     id.isPajak = jO.getString("ispajak")
                                     id.setHarga(jO.getString("harga"))
                                     id.setTotal_harga(jO.getString("total_harga"))
+                                    id.nomorKarcis = jO.getString("nomor_karcis")
+                                    if(idHiburanNomor != "") idHiburanNomor += "|"
+                                    idHiburanNomor += jO.getString("id_hiburan_nomor")
                                     itemProduk?.add(id)
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -501,44 +584,130 @@ open class MainCetak : AppCompatActivity() {
     }
 
     private fun printTextHotelHiburan(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
-
         val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
-            val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-            val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
-            val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
-            val tanggal = dateTime
-            var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                    DisplayMetrics.DENSITY_LOW, theme
-                )) + "</img>\n" +
-                    "[L]\n"+
-                    "[C]<b>$nmTmpUsaha</b>\n"+
-                    "[C]$alamat\n"+
-                    "[L]\n"+
-                    "[L]No. Trx : $idTrx\n"+
-                    "[L]Tanggal : $tanggal\n"+
-                    "[L]Kasir   : $nmPetugas\n"+
-                    "[C]--------------------------------\n"
+        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+        val tanggal = dateTime
+        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]No. Trx : $idTrx\n"+
+                "[L]Tanggal : $tanggal\n"+
+                "[L]Kasir   : $nmPetugas\n"+
+                "[C]--------------------------------\n"
 
-            for (i in itemProduk!!.indices) {
-                val nmProduk = itemProduk!![i].getNama_produk()
-                val qty = itemProduk!![i].getQty()
-                val harga = itemProduk!![i].getHarga()
-                val totalHarga = itemProduk!![i].getTotal_harga()
-                text += "[L]$nmProduk\n" +
-                        "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        for (i in itemProduk!!.indices) {
+            val nmProduk = itemProduk!![i].getNama_produk()
+            val qty = itemProduk!![i].getQty()
+            val harga = itemProduk!![i].getHarga()
+            val totalHarga = itemProduk!![i].getTotal_harga()
+            text += "[L]$nmProduk\n" +
+                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        }
+
+        text += "[C]--------------------------------\n"+
+                "[L]Disc[R]${tvJmlDisc?.text}\n" +
+                "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+
+                "[C]--------------------------------\n"+
+                "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                "[L]\n"+
+                "[C]- Terima Kasih -"
+        return printer.addTextToPrint(text)
+    }
+
+    private fun printTextHiburanKarcis(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
+        val nmTmpUsaha = MainActivity.namaTempatUsaha
+        val alamat = MainActivity.alamatTempatUsaha
+        val namaPetugas = MainActivity.namaPetugas
+        val tanggal = dateTime
+        var text = ""
+        for (h in itemProduk!!.indices) {
+            val nomorKarcis = itemProduk!![h].nomorKarcis
+            val pisahNomorKarcis = nomorKarcis.split("-")
+            val nomorSeri = nomorKarcis
+            val idProduk = itemProduk!![h].getId_produk()
+            val qtyKarcis = itemProduk!![h].getQty()
+            val hargaKarcis = itemProduk!![h].getHarga()
+            iQty = qtyKarcis.toInt()
+            if(nomorTerakhirKarcis != "") nomorTerakhirKarcis += "|"
+            for (i in 0 until iQty) {
+                val nomorUrutKarcis = pisahNomorKarcis[4].toInt() + i+1
+                text += "[L]\n" +
+                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
+                    printer,
+                    applicationContext.resources.getDrawableForDensity(
+                        R.drawable.ic_malang_makmur_grayscale,
+                        DisplayMetrics.DENSITY_LOW, theme
+                    )
+                ) + "</img>\n" +
+                        "[L]\n" +
+                        "[C]<b>$nmTmpUsaha</b>\n" +
+                        "[C]$alamat\n" +
+                        "[L]\n" +
+                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
+                    printer,
+                    TampilanBarcode().displayBitmap(this, nomorSeri)
+                ) + "</img>\n" +
+                        "[L]\n" +
+                        "[C]${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-${pisahNomorKarcis[3]}-${nomorUrutKarcis}\n" +
+                        "[L]\n" +
+                        "[L]Tanggal : $tanggal\n" +
+                        "[L]Kasir   : $namaPetugas\n" +
+                        "[C]--------------------------------\n" +
+                        "[C]Nominal : $hargaKarcis\n" +
+                        "[L]\n" +
+                        "[C]Terima Kasih\n" +
+                        "[C]Atas Kunjungan\n" +
+                        "[C]Anda\n"
+                //                --iQty
+                if((iQty-1)==i)
+                    nomorTerakhirKarcis += "$idProduk:${pisahNomorKarcis[4].toInt() + i+1}"
             }
 
-            text += "[C]--------------------------------\n"+
-                    "[L]Disc[R]${tvJmlDisc?.text}\n" +
-                    "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                    "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+        }
+        text += "[L]\n"+
+                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]No. Trx : $idTrx\n"+
+                "[L]Tanggal : $tanggal\n"+
+                "[L]Kasir   : $nmPetugas\n"+
+                "[C]--------------------------------\n"
 
-                    "[C]--------------------------------\n"+
-                    "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
-                    "[L]\n"+
-                    "[C]- Terima Kasih -"
-            return printer.addTextToPrint(text)
+        for (i in itemProduk!!.indices) {
+            val nmProduk = itemProduk!![i].getNama_produk()
+            val qty = itemProduk!![i].getQty()
+            val harga = itemProduk!![i].getHarga()
+            val totalHarga = itemProduk!![i].getTotal_harga()
+            text += "[L]$nmProduk\n" +
+                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        }
+
+        text += "[C]--------------------------------\n"+
+                "[L]Disc[R]${tvJmlDisc?.text}\n" +
+                "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+
+                "[C]--------------------------------\n"+
+                "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                "[L]\n"+
+                "[C]- Terima Kasih -"
+
+        return printer.addTextToPrint(text)
     }
 
     private fun gantiKetitik(value: String): String {

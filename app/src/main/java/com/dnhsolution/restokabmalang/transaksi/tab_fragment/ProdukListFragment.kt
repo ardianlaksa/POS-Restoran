@@ -60,7 +60,6 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     private val _tag = javaClass.simpleName
     private var jsonTask: AsyncTask<String, Void, String?>? = null
     var produks:ArrayList<ProdukListElement> = ArrayList()
-    var argTab = arrayOf("1","2","3")
 
     var databaseHandler: DatabaseHandler? = null
 
@@ -113,6 +112,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         idPengguna = MainActivity.idPengguna
         uuid = MainActivity.uuid
         argumenValue = arguments?.get(keyParams).toString()
+        val jenisPajak = MainActivity.jenisPajak
         databaseHandler = DatabaseHandler(requireContext())
 
         if(produkAdapter == null) {
@@ -120,7 +120,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                 startShimmering(true)
                 val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
                         "jenisProduk=${arguments?.get(keyParams).toString()}&" +
-                        "idPengguna=$idPengguna&uuid=$uuid"
+                        "idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak"
                 Log.i(_tag, stringUrl)
                 jsonTask = ProdukListJsonTask(this).execute(stringUrl)
             } else {
@@ -213,10 +213,13 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
                     val isPajak = rArray.getJSONObject(i).getString("ISPAJAK")
                     val jnsProduk = rArray.getJSONObject(i).getString("JENIS_PRODUK")
+                    val kode = rArray.getJSONObject(i).getString("KODE")
+
+                    val keteranganLengkap = "$kode:$keterangan"
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan,"server",isPajak,jnsProduk)
+                            idBarang,nmBarang, harga, foto, keteranganLengkap,"server",isPajak,jnsProduk)
                     )
                 }
 
@@ -376,7 +379,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
-                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
+                            , value.imageUrl,value.price.toInt(), 1, value.isPajak, value.description
                         )
                     )
                 }

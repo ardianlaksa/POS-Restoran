@@ -32,6 +32,7 @@
     <string name="title_tambah">Tambah</string>
     <string name="title_tambah_data">Input Data</string>
     <string name="title_tambah_file">Tambah File</string>
+    <string name="title_service_charge">Service Charge</string>
     <string name="title_tersimpan">Tersimpan</string>
     <string name="title_tgl">Tgl</string>
     <string name="title_theme">Edit Label dan Tema</string>
@@ -124,6 +125,7 @@
     <string name="tanggal">Tanggal</string>
     <string name="tanggal_bayar">Tanggal Bayar</string>
     <string name="tanggal_kosong">-- / -- / ----</string>
+    <string name="tanggal_tidak_sesuai">Tanggal Tidak Sesuai</string>
     <string name="tgl_cln">Tgl : </string>
     <string name="terhubung_dengan_perangkat">Terhubung dengan perangkat</string>
     <string name="tidak_terhubung_ke_perangkat">Tidak terhubung ke perangkat</string>

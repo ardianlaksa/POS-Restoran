@@ -8,6 +8,7 @@ public class ItemProduk {
     public String harga;
     public String total_harga;
     private String isPajak;
+    private String nomor_karcis;
 
     public ItemProduk() {
     }
@@ -66,5 +67,13 @@ public class ItemProduk {
 
     public void setTotal_harga(String total_harga) {
         this.total_harga = total_harga;
+    }
+
+    public String getNomorKarcis() {
+        return nomor_karcis;
+    }
+
+    public void setNomorKarcis(String value) {
+        this.nomor_karcis = value;
     }
 }

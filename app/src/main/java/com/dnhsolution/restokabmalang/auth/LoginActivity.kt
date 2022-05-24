@@ -296,7 +296,7 @@ class LoginActivity : AppCompatActivity() {
                         val idPengguna = json.getString("ID_PENGGUNA")
                         val nmTempatUsaha = json.getString("NM_TEMPAT_USAHA")
                         val label = json.getString("LABEL_APP")
-                        val tema = json.getString("THEME_APP")
+                        val tema = json.getString("THEME_APP") ?: "0"
                         val alamat = json.getString("ALAMAT")
                         val email = json.getString("EMAIL")
                         val telp = json.getString("TELP")
@@ -306,6 +306,8 @@ class LoginActivity : AppCompatActivity() {
                         val namaPetugas = json.getString("NM_PETUGAS")
                         val idJenisPajak = json.getString("ID_JENISPAJAK")
                         val persenPajak = json.getInt("PERSEN_PAJAK")
+                        val idHiburanNomor = json.getInt("ID_HIBURAN_NOMOR")
+                        val serviceCharge = json.getInt("SERVICE_CHARGE")
 
                         //membuat editor untuk menyimpan data ke shared preferences
                         val editor = sharedPreferences.edit()
@@ -326,6 +328,7 @@ class LoginActivity : AppCompatActivity() {
                         editor.putString(Url.SESSION_UUID, uniqueID)
                         editor.putString(Url.SESSION_NAME, namaUser)
                         editor.putString(Url.SESSION_NAMA_PETUGAS, namaPetugas)
+                        editor.putInt(Url.SESSION_SERVICE_CHARGE, serviceCharge)
 //                        var pajakPersen = 0
 //                        when {
 //                            idJenisPajak.equals("02", ignoreCase = true) -> pajakPersen =
@@ -337,6 +340,7 @@ class LoginActivity : AppCompatActivity() {
 //                        }
                         editor.putInt(Url.SESSION_PAJAK_PERSEN, persenPajak)
                         editor.putString(Url.SESSION_JENIS_PAJAK, idJenisPajak)
+                        editor.putInt(Url.SESSION_ID_HIBURAN_NOMOR, idHiburanNomor)
 
                         //menyimpan data ke editor
                         editor.apply()

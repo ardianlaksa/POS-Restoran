@@ -61,6 +61,9 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
     }
 
+    private var nominalServiceCharge: Int = 0
+    private var serviceCharge: Int = 0
+    private var idHiburanNomor: Int? = null
     private lateinit var sharedPreferences: SharedPreferences
     private var isDiskonValid: Boolean = true
     private var omzetRp: Int = 0
@@ -159,6 +162,8 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "0")
         uuid = sharedPreferences.getString(Url.SESSION_UUID, "")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
+        idHiburanNomor = sharedPreferences.getInt(Url.SESSION_ID_HIBURAN_NOMOR, 0)
+        serviceCharge = sharedPreferences.getInt(Url.SESSION_SERVICE_CHARGE, 0)
 
         if(tipeStruk == "2") binding.llPajak.visibility = View.GONE
 //        if(MainActivity.jenisPajak != "02") binding.llDisc.visibility = View.GONE
@@ -382,7 +387,10 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
-        valueTotalPrice +=pajakRp.toInt()
+        nominalServiceCharge = valueTotalPrice*serviceCharge/100
+        binding.tvServiceCharge.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(nominalServiceCharge.toDouble())
+
+        valueTotalPrice +=pajakRp.toInt()+nominalServiceCharge
 
         val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
         binding.tvDiskonTotal.text = rupiahValue
@@ -405,7 +413,10 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
                     binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
-                    valueTotalPrice +=pajakRp.toInt()
+                    nominalServiceCharge = valueTotalPrice*serviceCharge/100
+                    binding.tvServiceCharge.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(nominalServiceCharge.toDouble())
+
+                    valueTotalPrice +=pajakRp.toInt()+nominalServiceCharge
 
                     valueDR = ((diskonRupiah*100)/totalPrice).toDouble()
                     val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
@@ -414,6 +425,11 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 else -> {
                     diskonRupiah = valueDiskonRupiah
                     this.valueTotalPrice = totalPrice-diskonRupiah
+
+                    nominalServiceCharge = valueTotalPrice*serviceCharge/100
+                    binding.tvServiceCharge.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(nominalServiceCharge.toDouble())
+
+                    valueTotalPrice +=nominalServiceCharge
                     val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble()).replace(",","-")
                     binding.tvDiskonTotal.text = rupiahValue
                     pajakRp = 0F
@@ -428,7 +444,10 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
             binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
-            valueTotalPrice +=pajakRp.toInt()
+            nominalServiceCharge = valueTotalPrice*serviceCharge/100
+            binding.tvServiceCharge.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(nominalServiceCharge.toDouble())
+
+            valueTotalPrice +=pajakRp.toInt()+nominalServiceCharge
 
             valueDR = 0.0
 
@@ -584,6 +603,8 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         val pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
         rootObject.put("pajakPersen",pajakPersen.toString())
         rootObject.put("bayar",valueBayar)
+        rootObject.put("idHiburanNomor",idHiburanNomor)
+        rootObject.put("nominalServiceCharge",nominalServiceCharge)
 
         val jsonArr = JSONArray()
 
@@ -591,11 +612,11 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             val pnObj = JSONObject()
             pnObj.put("idProduk", pn.idItem)
             pnObj.put("nmProduk", pn.name)
-            pnObj.put("nmProduk", pn.name)
             pnObj.put("qty", pn.qty)
             pnObj.put("hrgProduk", pn.price)
             pnObj.put("isPajak", pn.isPajak)
             pnObj.put("tipeStruk", tipeStruk)
+            pnObj.put("keterangan", pn.keterangan)
             jsonArr.put(pnObj)
 
             Log.d("NAMA_BARANG", pn.name.toString())

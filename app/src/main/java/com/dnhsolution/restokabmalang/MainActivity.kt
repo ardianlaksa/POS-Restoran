@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         var pajakPersen: Int = 0
         var namaTempatUsaha: String? = null
         var alamatTempatUsaha: String? = null
+        var label: String? = null
     }
 
     private val _tag = javaClass.simpleName
@@ -91,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedPreferences: SharedPreferences = getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-        val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
+        label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         jenisPajak = sharedPreferences.getString(Url.SESSION_JENIS_PAJAK, "00")
         pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
@@ -215,7 +216,6 @@ class MainActivity : AppCompatActivity() {
         cTrx?.moveToFirst()
 
         val jml_trx : Int = databaseHandler?.CountDataTersimpanUpload() ?: 0
-
         if(jml_trx>0){
             val batas = sharedPreferences.getString(Url.SESSION_BATAS_WAKTU, "3") ?: "0"
             tgl_trx = cTrx?.getString(0)?.let { formatDate(it, "yyyyMMdd") } ?: ""
@@ -239,6 +239,9 @@ class MainActivity : AppCompatActivity() {
             cTrx?.close()
             Log.d("TANGGAL", "tgl_trx=$tgl_trx/////tgl_now=$tgl_now/////tgl_batas=$tgl_batas")
         }else{
+            val editor = sharedPreferences.edit()
+            editor.putString(Url.SESSION_STATUS_BATAS, "nonaktif")
+            editor.apply()
             navView!!.menu.findItem(R.id.navigation_transaksi).isEnabled = true
         }
     }

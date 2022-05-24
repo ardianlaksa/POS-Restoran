@@ -58,6 +58,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.database.TblProdukKategori
 import com.dnhsolution.restokabmalang.databinding.FragmentServerBinding
@@ -96,6 +97,7 @@ interface DeleteServices {
 
 class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
 
+    private var jenisPajak: String? = null
     private var getAllKategoriProduk: LiveData<List<TblProdukKategori>>? = null
     private var uuid: String? = null
     private var idPengguna: String? = null
@@ -181,6 +183,7 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
         setHasOptionsMenu(true)
         val sharedPreferences = requireContext().getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
         idTmpUsaha = sharedPreferences.getString(Url.SESSION_ID_TEMPAT_USAHA, "")
+        jenisPajak = MainActivity.jenisPajak
         idPengguna = ProdukMasterActivity.idPengguna
         uuid = ProdukMasterActivity.uuid
 
@@ -261,7 +264,8 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
             val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha +
-                    "&jenisProduk=${arguments?.get(keyParams).toString()}&idPengguna=$idPengguna&uuid=$uuid"
+                    "&jenisProduk=${arguments?.get(keyParams).toString()}&idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak"
+
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             Log.i(_tag, url)
             val stringRequest: StringRequest =

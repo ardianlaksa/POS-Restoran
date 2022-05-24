@@ -106,6 +106,7 @@ class TambahProdukTransaksiFragment:Fragment(), ProdukOnTask {
         argumenValue = arguments?.get(keyParams).toString()
         argumenValue2 = arguments?.get(keyParams2) as ArrayList<*>?
         databaseHandler = DatabaseHandler(requireContext())
+        val jenisPajak = MainActivity.jenisPajak
 
         argTab = MainActivity.argTab
 
@@ -119,7 +120,7 @@ class TambahProdukTransaksiFragment:Fragment(), ProdukOnTask {
 //                val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&jenisProduk=${arguments?.get(keyParams).toString()}"
                 val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
                         "jenisProduk=${arguments?.get(keyParams).toString()}&" +
-                        "idPengguna=$idPengguna&uuid=$uuid"
+                        "idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak"
                 Log.i(_tag,stringUrl)
                 jsonTask = ProdukListJsonTask(this).execute(stringUrl)
             } else {
@@ -198,10 +199,13 @@ class TambahProdukTransaksiFragment:Fragment(), ProdukOnTask {
                     val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
                     val isPajak = rArray.getJSONObject(i).getString("ISPAJAK")
                     val jnsProduk = rArray.getJSONObject(i).getString("JENIS_PRODUK")
+                    val kode = rArray.getJSONObject(i).getString("KODE")
+
+                    val keteranganLengkap = "$kode:$keterangan"
 
                     produks.add(
                         ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keterangan,"server",isPajak,jnsProduk)
+                            idBarang,nmBarang, harga, foto, keteranganLengkap,"server",isPajak,jnsProduk)
                     )
                 }
 
@@ -386,7 +390,7 @@ class TambahProdukTransaksiFragment:Fragment(), ProdukOnTask {
                     arrayProdukSerialization.add(
                         ProdukSerializable(
                             value.idItem, value.name, value.price
-                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
+                            , value.imageUrl,value.price.toInt(), 1, value.isPajak, value.description
                         )
                     )
                 }

@@ -9,6 +9,7 @@ object Url {
     const val SESSION_ALAMAT = "alamat"
     const val SESSION_BATAS_WAKTU = "batas_waktu"
     const val SESSION_EMAIL = "email"
+    const val SESSION_ID_HIBURAN_NOMOR = "idHiburanNomor"
     const val SESSION_ID_PENGGUNA = "idPengguna"
     const val SESSION_ID_TEMPAT_USAHA = "idTempatUsaha"
     const val SESSION_ISCETAK_BILLING = "isCetakBilling"
@@ -22,6 +23,7 @@ object Url {
     const val SESSION_STATUS_BATAS = "status_batas"
     const val SESSION_STS_LOGIN = "status"
     const val SESSION_TEMP_TEMA = "temp_tema"
+    const val SESSION_SERVICE_CHARGE = "service_charge"
     const val SESSION_TELP = "telp"
     const val SESSION_TIPE_STRUK = "tipeStruk"
     const val SESSION_UUID = "UUID"
@@ -38,6 +40,6 @@ object Url {
     const val getDRekapHarian = "${serverPos}getRekapHarianDetail"
     const val getRekapBilling = "${serverPos}getRekapBilling"
     const val getRekapBulanan = "${serverPos}getRekapBulanan"
-    const val getRekapBulanan1 = "${serverPos}getRekapBulanan1"
+//    const val getRekapBulanan1 = "${serverPos}getRekapBulanan1"
     const val getBatasWaktu = "${serverPos}Config"
 }

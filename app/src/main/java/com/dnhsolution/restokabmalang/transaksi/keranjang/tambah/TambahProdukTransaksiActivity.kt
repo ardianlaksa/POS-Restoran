@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.databinding.ActivityTambahhProdukTransaksiBinding
 import com.dnhsolution.restokabmalang.transaksi.KategoriElement
@@ -80,6 +81,7 @@ class TambahProdukTransaksiActivity : AppCompatActivity() {
         loadingLayout = binding.loadingLayout
 
         setSupportActionBar(toolbar)
+        supportActionBar?.title = MainActivity.label
         kategoriListViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[KategoriListViewModel::class.java]
         val getAppDatabase = AppRoomDatabase.getAppDataBase(this)
         val a= getAppDatabase?.tblProdukKategoriDao()?.getAll()

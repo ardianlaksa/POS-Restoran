@@ -74,7 +74,8 @@ public class ThemeFragment extends AppCompatActivity {
         getSupportActionBar().setTitle(label);
 
         spThemes = findViewById(R.id.spThemes);
-        theme = Integer.parseInt(tema);
+        if(!tema.equalsIgnoreCase(""))
+            theme = Integer.parseInt(tema);
 
 
         setupSpinnerItemSelection();

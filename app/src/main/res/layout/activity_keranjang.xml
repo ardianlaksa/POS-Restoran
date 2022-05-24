@@ -252,6 +252,41 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llServiceCharge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvTitleServiceCharge"
+                        android:layout_weight="0.45"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_8"
+                        android:layout_marginRight="@dimen/_8"
+                        app:layout_constraintTop_toTopOf="@id/tvTotal"
+                        app:layout_constraintBottom_toBottomOf="@id/tvTotal"
+                        app:layout_constraintRight_toLeftOf="@id/tvTotal"
+                        android:text="@string/title_service_charge"
+                        android:fontFamily="@font/nunitosansregular"
+                        android:textColor="@color/colorPrimary"/>
+
+                    <TextView
+                        android:gravity="end"
+                        android:layout_weight="1"
+                        android:id="@+id/tvServiceCharge"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_4"
+                        android:layout_marginEnd="@dimen/_8"
+                        android:text="@string/rp_0"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/nunitosansregular"
+                        android:textColor="@android:color/holo_red_light"
+                        android:textSize="@dimen/f_22"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

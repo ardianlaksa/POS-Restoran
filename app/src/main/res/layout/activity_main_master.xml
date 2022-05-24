@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:background="#4CAF50"
                 android:fontFamily="@font/nunitosansregular"
-                android:text="@string/title_tambah_data"
+                android:text="@string/title_service_charge"
                 android:textColor="#fff" />
 
 

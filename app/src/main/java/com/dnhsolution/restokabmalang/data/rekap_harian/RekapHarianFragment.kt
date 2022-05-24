@@ -52,7 +52,7 @@ import kotlin.collections.HashMap
 
 interface UploadPdfService {
     @FormUrlEncoded
-    @POST("${Url.serverPos}notifEmailPdf")
+    @POST("${Url.serverPos}notifEmailPdfHarian")
     fun sendPosts(
         @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
         , @Field("tgl") tgl: String
@@ -61,7 +61,7 @@ interface UploadPdfService {
 
 interface CetakFullService {
     @FormUrlEncoded
-    @POST("${Url.serverPos}cetakFull")
+    @POST("${Url.serverPos}cetakFullHarian")
     fun sendPosts(
         @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
         , @Field("tgl") tgl: String
@@ -282,6 +282,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 //        Log.d(_tag,"ready")
         val nmTmpUsaha = MainActivity.namaTempatUsaha
         val alamat = MainActivity.alamatTempatUsaha
+        val namaPetugas = MainActivity.namaPetugas
 //        val tgl = dateTime
         val tgl = tanggal
         var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
@@ -292,6 +293,8 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                 "[C]<b>$nmTmpUsaha</b>\n"+
                 "[C]$alamat\n"+
                 "[L]\n"+
+                "[L]<b>Rekap Opname Harian</b>\n"+
+                "[L]Kasir : $namaPetugas\n"+
                 "[L]Tanggal : $tgl\n"+
                 "[C]--------------------------------\n\n"
 
@@ -326,6 +329,40 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                 "[L]Total[R]$formatDblTotalTotalharga"
         return printer.addTextToPrint(text)
     }
+
+//    private fun printTextHiburanKarcis(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
+//
+//        val nominal = 1000
+//        val nomorSeri = "2022-N1-0001-AA-00001"
+//        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
+//        val nmTmpUsaha = MainActivity.namaTempatUsaha
+//        val alamat = MainActivity.alamatTempatUsaha
+//        val namaPetugas = MainActivity.namaPetugas
+//        val tanggal = dateTime
+//        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+//            requireActivity().applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+//                DisplayMetrics.DENSITY_LOW, requireActivity().theme
+//            )) + "</img>\n" +
+//                "[L]\n"+
+//                "[C]<b>$nmTmpUsaha</b>\n"+
+//                "[C]$alamat\n"+
+//                "[L]\n"+
+//                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+//            TampilanBarcode().displayBitmap(requireContext(),nomorSeri)) + "</img>\n" +
+//                "[L]\n"+
+//                "[C]$nomorSeri\n" +
+//                "[L]\n"+
+//                "[L]Tanggal : $tanggal\n"+
+//                "[L]Kasir   : $namaPetugas\n"+
+//                "[C]--------------------------------\n" +
+//                "[C]Nominal : $nominal\n" +
+//                "[L]\n"+
+//                "[C]Terima Kasih\n" +
+//                "[C]Atas Kunjungan\n" +
+//                "[C]Anda"
+//
+//        return printer.addTextToPrint(text)
+//    }
 
     var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->

@@ -8,7 +8,7 @@ android {
         applicationId "com.dnhsolution.restokabmalang"
         minSdkVersion 24
         versionCode 1
-        versionName "36"
+        versionName "39"
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -82,4 +82,5 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
 
     implementation 'com.github.dantsu:escpos-thermalprinter-android:3.0.1'
+    implementation 'com.google.zxing:core:3.4.0'
 }

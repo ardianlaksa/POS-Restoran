@@ -12,13 +12,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.widget.Toolbar
+import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.SplashActivity
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
+import com.dnhsolution.restokabmalang.databinding.ActivityMainMasterBinding
 import com.dnhsolution.restokabmalang.sistem.produk.ProdukMasterActivity
 import com.dnhsolution.restokabmalang.sistem.theme.ThemeFragment
-import com.dnhsolution.restokabmalang.utilities.CheckNetwork
-import com.dnhsolution.restokabmalang.utilities.DefaultPojo
-import com.dnhsolution.restokabmalang.utilities.Url
+import com.dnhsolution.restokabmalang.utilities.*
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,10 +38,11 @@ class MainSistem : AppCompatActivity() {
     var btnLogout: Button? = null
     var databaseHandler: DatabaseHandler? = null
     private var isCetakBilling = 1
+    lateinit var binding : ActivityMainMasterBinding
 
     interface IsCetakBillingServices {
         @FormUrlEncoded
-        @POST("pdrd/Android/AndroidJsonPOS/setUpdateUserCetakBilling")
+        @POST("${Url.serverPos}setUpdateUserCetakBilling")
         fun getPosts(@Field("id") id: String,@Field("isCetakBilling") isCetakBillingValue: Int): Call<DefaultPojo>
     }
 
@@ -63,6 +64,7 @@ class MainSistem : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
         val idUser = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "").toString()
         val spIsCetakBilling = sharedPreferences.getString(Url.SESSION_ISCETAK_BILLING, "")
+        val jenisPajak = MainActivity.jenisPajak
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         when {
@@ -86,18 +88,19 @@ class MainSistem : AppCompatActivity() {
             }
         }
 
-        setContentView(R.layout.activity_main_master)
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        scCetakBilling = findViewById<View>(R.id.scCetakBilling) as SwitchCompat
-        setSupportActionBar(toolbar)
+        binding = ActivityMainMasterBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        setSupportActionBar(binding.toolbar)
+        scCetakBilling = binding.scCetakBilling
         supportActionBar?.title = label
         databaseHandler = DatabaseHandler(this)
-        btnInput = findViewById<View>(R.id.bInput) as Button
-        btnTheme = findViewById<View>(R.id.bTheme) as Button
-        btnProduk = findViewById<View>(R.id.bProduk) as Button
-        btnLogout = findViewById<View>(R.id.bLogout) as Button
-        btnProduk!!.setText(R.string.title_daftar_produk)
-        btnInput!!.visibility = View.GONE
+        btnInput = binding.bInput
+        btnTheme = binding.bTheme
+        btnProduk = binding.bProduk
+        btnLogout = binding.bLogout
+        btnProduk?.setText(R.string.title_daftar_produk)
+//        btnInput?.visibility = View.GONE
         val getAppDatabase = AppRoomDatabase.getAppDataBase(this)
 
         scCetakBilling.isChecked = spIsCetakBilling == "1"
@@ -116,8 +119,16 @@ class MainSistem : AppCompatActivity() {
                 isCetakBillingFungsi(idUser)
             }
 
-        btnInput!!.setOnClickListener { v: View? -> }
-        btnLogout!!.setOnClickListener { v: View? ->
+        btnInput?.setOnClickListener { v: View? ->
+            val ft = supportFragmentManager.beginTransaction()
+            val prev = supportFragmentManager.findFragmentByTag("dialog")
+            if (prev != null) {
+                ft.remove(prev)
+            }
+            val dialogFragment = IsianTextFragmentDialog()
+            dialogFragment.show(ft, "dialog")
+        }
+        btnLogout?.setOnClickListener { v: View? ->
             val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
 
             //membuat editor untuk menyimpan data ke shared preferences
@@ -140,13 +151,17 @@ class MainSistem : AppCompatActivity() {
                 )
             )
         }
+
+        if(jenisPajak == "03")
+            btnProduk?.visibility = View.GONE
+
         btnProduk!!.setOnClickListener {
-            startActivity(
-                Intent(
-                    this@MainSistem,
-                    ProdukMasterActivity::class.java
+                startActivity(
+                    Intent(
+                        this@MainSistem,
+                        ProdukMasterActivity::class.java
+                    )
                 )
-            )
         }
         val editor = sharedPreferences.edit()
 
