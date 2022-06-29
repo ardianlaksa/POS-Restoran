@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,7 +54,6 @@ public class DetailTersimpanAdapter extends RecyclerView.Adapter<DetailTersimpan
         holder.tvHarga.setText(detailTersimpan.getHarga());
         holder.tvQty.setText(detailTersimpan.getQty());
         holder.tvTotal.setText(detailTersimpan.getTotal());
-
 
     }
 

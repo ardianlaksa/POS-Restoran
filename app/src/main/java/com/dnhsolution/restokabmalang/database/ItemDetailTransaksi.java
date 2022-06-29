@@ -7,15 +7,18 @@ public class ItemDetailTransaksi {
     String nama_produk;
     String qty;
     String harga;
+    String keterangan;
 
 
-    public ItemDetailTransaksi(int id, String id_trx, String id_produk, String nama_produk, String qty, String harga) {
+    public ItemDetailTransaksi(int id, String id_trx, String id_produk, String nama_produk
+            , String qty, String harga, String keterangan) {
         this.id = id;
         this.id_trx = id_trx;
         this.id_produk = id_produk;
         this.nama_produk = nama_produk;
         this.qty = qty;
         this.harga = harga;
+        this.keterangan = keterangan;
     }
 
     public int getId() {
@@ -64,6 +67,14 @@ public class ItemDetailTransaksi {
 
     public void setHarga(String harga) {
         this.harga = harga;
+    }
+
+    public String getKeterangan() {
+        return keterangan;
+    }
+
+    public void setKeterangan(String value) {
+        this.keterangan = value;
     }
 
 }

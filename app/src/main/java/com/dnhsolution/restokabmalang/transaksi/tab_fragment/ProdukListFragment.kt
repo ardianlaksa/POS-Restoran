@@ -94,7 +94,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
     private lateinit var binding : FragmentProdukListBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentProdukListBinding.inflate(layoutInflater)
         return binding.root
     }
@@ -241,7 +241,6 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
             startShimmering(false)
         }
-
     }
 
     private fun getDataLokal() {
@@ -259,11 +258,15 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             val harga = e.harga
             val foto = e.url_image
             val nmBarang = e.nama_barang
+            val kodeProduk = e.kodeProduk
             val keterangan = e.keterangan
+            val seriProduk = e.seriProduk
+
+            val keteranganLengkap = "$seriProduk:$kodeProduk:$keterangan|${e.rangeTransaksiKarcisAwal}-${e.rangeTransaksiKarcisAkhir}|${e.rangeTransaksiKarcis}"
 
             produks.add(
                 ProdukListElement(
-                    idBarang,nmBarang, harga, foto, keterangan, "lokal",e.isPajak,e.jenisProduk)
+                    idBarang,nmBarang, harga, foto, keteranganLengkap, "lokal",e.isPajak,e.jenisProduk)
             )
         }
 
@@ -344,35 +347,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         val handler = Handler(Looper.getMainLooper())
         val arrayProdukSerialization = ArrayList<ProdukSerializable>()
 
-//        for(valueTab in argTab){
-//            if(valueTab != argumenValue) {
-//                val dataList = transaksiFragment?.tampilDataApsList()
-//                dataList?.let {
-//                    for (value in it) {
-////                        if (value.isFavorite) {
-//                            arrayProdukSerialization.add(
-//                                ProdukSerializable(
-//                                    value.idItem, value.name, value.price
-//                                    , value.imageUrl,value.price.toInt(), 1, value.isPajak
-//                                )
-//                            )
-////                        }
-//                    }
-//                }
-//            }
-//        }
-
         handler.postDelayed({
-//            for (value in produks) {
-//                if (value.isFavorite) {
-//                    arrayProdukSerialization.add(
-//                        ProdukSerializable(
-//                            value.idItem, value.name, value.price
-//                            , value.imageUrl,value.price.toInt(), 1, value.isPajak
-//                        )
-//                    )
-//                }
-//            }
             val dataList = transaksiFragment?.tampilDataApsList()
             dataList?.let {
                 for (value in it) {
@@ -422,18 +397,18 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
             telp = etTelp.getText().toString()
             alamat = etAlamat.getText().toString()
 
-            if (nama.trim({ it <= ' ' }).equals("", ignoreCase = true)) {
+            if (nama.trim { it <= ' ' }.equals("", ignoreCase = true)) {
                 etNamaUsaha.requestFocus()
-                etNamaUsaha.setError("Silahkan isi form ini !")
-            } else if (email.trim({ it <= ' ' }).equals("", ignoreCase = true)) {
+                etNamaUsaha.error = "Silahkan isi form ini !"
+            } else if (email.trim { it <= ' ' }.equals("", ignoreCase = true)) {
                 etEmail.requestFocus()
-                etEmail.setError("Silahkan isi form ini !")
-            } else if (telp.trim({ it <= ' ' }).equals("", ignoreCase = true)) {
+                etEmail.error = "Silahkan isi form ini !"
+            } else if (telp.trim { it <= ' ' }.equals("", ignoreCase = true)) {
                 etTelp.requestFocus()
-                etTelp.setError("Silahkan isi form ini !")
-            } else if (alamat.trim({ it <= ' ' }).equals("", ignoreCase = true)) {
+                etTelp.error = "Silahkan isi form ini !"
+            } else if (alamat.trim { it <= ' ' }.equals("", ignoreCase = true)) {
                 etAlamat.requestFocus()
-                etAlamat.setError("Silahkan isi form ini !")
+                etAlamat.error = "Silahkan isi form ini !"
             } else {
                 sendData()
                 dialogBuilder.dismiss()

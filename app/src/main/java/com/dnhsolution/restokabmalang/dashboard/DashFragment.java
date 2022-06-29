@@ -118,6 +118,16 @@ public class DashFragment extends Fragment {
 
         if(MainActivity.Companion.getAdDashboard() == 1) return;
         MainActivity.Companion.setAdDashboard(1);
+
+//        char ch, ch2;
+//        for(ch = 'A'; ch <= 'Z'; ch++)
+//            for(ch2 = 'a'; ch2 <= 'z'; ch2++) {
+//                /* All combinations of ch and ch2: Aa..AzBa..Bz..Za..Zz */
+//                if(ch == 'A' && ch2 == 'b') {
+//                    ch2++;
+//                    System.out.println("asdf " + ch + "" + ch2);
+//                }
+//            }
     }
 
     public void batasSinkron(){

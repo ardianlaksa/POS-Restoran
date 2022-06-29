@@ -52,7 +52,7 @@ import kotlin.collections.HashMap
 
 interface UploadPdfService {
     @FormUrlEncoded
-    @POST("${Url.serverPos}notifEmailPdfHarian")
+    @POST(Url.notifEmailPdfHarian)
     fun sendPosts(
         @Field("idPengguna") idPengguna: String, @Field("idTmpUsaha") idTmpUsaha: String
         , @Field("tgl") tgl: String

@@ -1,18 +1,31 @@
 package com.dnhsolution.restokabmalang.data.rekap_bulanan
 
+import android.Manifest
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dantsu.escposprinter.connection.DeviceConnection
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
+import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.cetak.AsyncBluetoothEscPosPrint
+import com.dnhsolution.restokabmalang.cetak.AsyncEscPosPrint
+import com.dnhsolution.restokabmalang.cetak.AsyncEscPosPrinter
 import com.dnhsolution.restokabmalang.data.rekap_bulanan.task.RekapBulananJsonTask
 import com.dnhsolution.restokabmalang.databinding.FragmentRekapBulananBinding
 import com.dnhsolution.restokabmalang.utilities.*
@@ -135,6 +148,11 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
     private val myCalendar = Calendar.getInstance()
     private var tanggal1 = ""
     private var tanggal2 = ""
+    private val PERMISSION_BLUETOOTH = 100
+    private val PERMISSION_BLUETOOTH_ADMIN = 101
+    private val PERMISSION_BLUETOOTH_CONNECT = 102
+    private val PERMISSION_BLUETOOTH_SCAN = 103
+    private var selectedDevice: BluetoothConnection? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -482,8 +500,8 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_data_harian, menu)
-        val item: MenuItem = menu.findItem(R.id.action_menu_print)
-        item.isVisible = false
+//        val item: MenuItem = menu.findItem(R.id.action_menu_print)
+//        item.isVisible = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -493,7 +511,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         return when (item.itemId) {
 
             R.id.action_menu_print -> {
-//                cetakFull(idPengguna, idTmpUsaha)
+                cetakFull(idPengguna, idTmpUsaha)
                 true
             } R.id.action_menu_email -> {
 //                Log.d(_tag,tipeStruk)
@@ -534,35 +552,167 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         })
     }
 
-//    private fun cetakFull(idPengguna : String?, idTmpUsaha : String?){
-//        val postServices = CetakFullResultFeedback.create()
-//        postServices.sendPosts(idPengguna ?: ""
-//            ,idTmpUsaha ?: "", "$tanggal1|$tanggal2"
-//        ).enqueue(object : Callback<DefaultResultPojo> {
-//
-//            override fun onFailure(call: Call<DefaultResultPojo>, error: Throwable) {
-//                Log.e(_tag, "errornya ${error.message}")
-//            }
-//
-//            override fun onResponse(
-//                call: Call<DefaultResultPojo>,
-//                response: retrofit2.Response<DefaultResultPojo>
-//            ) {
-//                if (response.isSuccessful) {
-//                    val data = response.body()
-//                    data?.let {
-//                        val feedback = it
-//                        println("${feedback.success}, ${feedback.message}, ${feedback.result}")
-//                        if(feedback.success == 1) {
-////                            Toast.makeText(context,feedback.message, Toast.LENGTH_SHORT).show()
-//                            if(feedback.result.size > 0) printBluetooth(feedback.result)
-//                            else Toast.makeText(context,R.string.data_kosong, Toast.LENGTH_SHORT).show()
-//                        }else {
+    private fun cetakFull(idPengguna : String?, idTmpUsaha : String?){
+        println("cetakFull $idPengguna $idTmpUsaha $tanggal1|$tanggal2")
+        val postServices = CetakFullBulananResultFeedback.create()
+        postServices.sendPosts(idPengguna ?: ""
+            ,idTmpUsaha ?: "", "$tanggal1|$tanggal2"
+        ).enqueue(object : Callback<DefaultResultPojo> {
+
+            override fun onFailure(call: Call<DefaultResultPojo>, error: Throwable) {
+                Log.e(_tag, "errornya ${error.message}")
+            }
+
+            override fun onResponse(
+                call: Call<DefaultResultPojo>,
+                response: retrofit2.Response<DefaultResultPojo>
+            ) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    data?.let {
+                        val feedback = it
+                        println("${feedback.success}, ${feedback.message}, ${feedback.result}")
+                        if(feedback.success == 1) {
 //                            Toast.makeText(context,feedback.message, Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                }
+                            if(feedback.result.size > 0) printBluetooth(feedback.result)
+                            else Toast.makeText(context,R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                        }else {
+                            Toast.makeText(context,feedback.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    fun printBluetooth(value: List<java.util.HashMap<String, String>>) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH),
+                PERMISSION_BLUETOOTH
+            )
+        } else if (ContextCompat.checkSelfPermission(
+                requireContext() as Activity,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH_ADMIN),
+                PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireContext() as Activity,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireContext() as Activity,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireContext() as Activity,
+                arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+
+//            value.forEach {
+//                val totalQty = it["totalQty"]
+//                val nmProduk = it["nmProduk"]
+//                println("$totalQty $nmProduk")
 //            }
-//        })
-//    }
+
+            AsyncBluetoothEscPosPrint(
+                requireContext(),
+                object : AsyncEscPosPrint.OnPrintFinished() {
+                    override fun onError(
+                        asyncEscPosPrinter: AsyncEscPosPrinter?,
+                        codeException: Int
+                    ) {
+                        Log.e(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : An error occurred !"
+                        )
+                    }
+
+                    override fun onSuccess(asyncEscPosPrinter: AsyncEscPosPrinter?) {
+                        Log.i(
+                            "Async.OnPrintFinished",
+                            "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
+                        )
+                    }
+                }
+            ).execute(printText(selectedDevice,value))
+        }
+    }
+
+    private fun printText(printerConnection: DeviceConnection?, value: List<HashMap<String,String>>) : AsyncEscPosPrinter  {
+//        val printer = EscPosPrinter(connection, 203, 48f, 32)
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
+
+        val myFormat = "dd-MM-yyyy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        val tanggal = sdf.format(myCalendar.time)
+//        Log.d(_tag,"ready")
+        val nmTmpUsaha = MainActivity.namaTempatUsaha
+        val alamat = MainActivity.alamatTempatUsaha
+        val namaPetugas = MainActivity.namaPetugas
+//        val tgl = dateTime
+//        val tgl = tanggal
+        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            requireActivity().resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, requireActivity().theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]<b>Rekap Opname Bulanan</b>\n"+
+                "[L]Kasir : $namaPetugas\n"+
+                "[L]Tanggal : $tanggal1 sampai $tanggal2\n"+
+                "[C]--------------------------------\n\n"
+
+        var dblTotalTotalharga = 0.0
+        value.forEach { it ->
+            val totalQty = it["totalQty"]
+            val nmProduk = it["nmProduk"]
+            it["totalHarga"]?.let { a ->
+                val dblTotalHarga = a.toDouble()
+                val formatTotalOmzet = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalHarga)
+//            println("$totalQty $nmProduk")
+                text += "[L]- $nmProduk\n" +
+                        "[L]  $totalQty [R]$formatTotalOmzet\n"
+                dblTotalTotalharga += dblTotalHarga
+            }
+        }
+
+//        for (i in itemProduk!!.indices) {
+//            val nmProduk = itemProduk!![i].getNama_produk()
+//            val qty = itemProduk!![i].getQty()
+//            val harga = itemProduk!![i].getHarga()
+//            val totalHarga = itemProduk!![i].getTotal_harga()
+//            text += "[L]$nmProduk\n" +
+//                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+//        }
+//
+//        text += "[C]--------------------------------\n"+
+//                "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+//                "[L]Disc[R]${tvJmlDisc?.text}\n"
+        val formatDblTotalTotalharga = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalTotalharga)
+        text += "[C]--------------------------------\n"+
+                "[L]Total[R]$formatDblTotalTotalharga"
+        return printer.addTextToPrint(text)
+    }
 }

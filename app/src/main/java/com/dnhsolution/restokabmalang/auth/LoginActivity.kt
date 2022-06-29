@@ -1,38 +1,39 @@
 package com.dnhsolution.restokabmalang.auth
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.text.TextWatcher
-import android.text.Editable
-import android.widget.TextView.OnEditorActionListener
-import android.view.inputmethod.EditorInfo
 import android.annotation.SuppressLint
-import android.os.Build
-import com.dnhsolution.restokabmalang.R
 import android.app.ProgressDialog
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.Volley
-import com.android.volley.toolbox.StringRequest
-import org.json.JSONObject
-import org.json.JSONArray
-import org.json.JSONException
-import com.android.volley.VolleyError
-import com.android.volley.RetryPolicy
-import android.content.SharedPreferences
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Build
+import android.os.Bundle
+import android.telephony.TelephonyManager
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.*
+import android.widget.TextView.OnEditorActionListener
+import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Response
+import com.android.volley.RetryPolicy
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.dnhsolution.restokabmalang.BuildConfig
 import com.dnhsolution.restokabmalang.MainActivity
+import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.database.TblProdukKategori
 import com.dnhsolution.restokabmalang.databinding.ActivityLoginBinding
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.textfield.TextInputEditText
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.*
+
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -71,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
         et2 = binding.et2
         et3 = binding.et3
         et4 = binding.et4
-        uniqueID = UUID.randomUUID().toString()
+//        uniqueID = UUID.randomUUID().toString()
         versiApp = BuildConfig.VERSION_CODE.toString() + "." + BuildConfig.VERSION_NAME
         getAppDatabase = AppRoomDatabase.getAppDataBase(this)
 
@@ -185,6 +186,16 @@ class LoginActivity : AppCompatActivity() {
             }
             handled
         })
+
+        val telephonyManager: TelephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        uniqueID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if(telephonyManager.phoneType == TelephonyManager.PHONE_TYPE_CDMA)
+                    telephonyManager.meid
+                else telephonyManager.imei
+            } else {
+                telephonyManager.deviceId
+            }
+
     }
 
     @SuppressLint("ResourceAsColor")

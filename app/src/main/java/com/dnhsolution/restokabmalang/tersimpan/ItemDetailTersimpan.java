@@ -9,6 +9,9 @@ public class ItemDetailTersimpan {
     String total;
     String id_produk;
     String isPajak;
+    String keterangan;
+    String seriProduk;
+    String rangeTransaksiKarcisAwal;
 
     public int getId() {
         return id;
@@ -72,5 +75,29 @@ public class ItemDetailTersimpan {
 
     public void setIsPajak(String value) {
         this.isPajak = value;
+    }
+
+    public String getKeterangan() {
+        return keterangan;
+    }
+
+    public void setKeterangan(String value) {
+        this.keterangan = value;
+    }
+
+    public String getSeriProduk() {
+        return seriProduk;
+    }
+
+    public void setSeriProduk(String value) {
+        this.seriProduk = value;
+    }
+
+    public void setRangeTransaksiKarcisAwal(String value) {
+        this.rangeTransaksiKarcisAwal = value;
+    }
+
+    public String getRangeTransaksiKarcisAwal() {
+        return rangeTransaksiKarcisAwal;
     }
 }

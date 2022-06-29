@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class UploadData {
-    public static final String UPLOAD_URL= Url.setKeranjangTransaksi;
+    public static final String UPLOAD_URL= Url.setKeranjangTransaksiTersimpan;
 
     private int serverResponseCode;
 

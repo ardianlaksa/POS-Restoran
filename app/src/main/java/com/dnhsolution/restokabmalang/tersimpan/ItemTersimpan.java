@@ -11,6 +11,9 @@ public class ItemTersimpan {
     String disc_rp;
     String status;
     String pajakRp;
+    String bayar;
+    String idHiburanNomor;
+    String nominalServiceCharge;
 
     public ItemTersimpan(int id, String status) {
         this.id = id;
@@ -98,5 +101,29 @@ public class ItemTersimpan {
 
     public void setPajakRp(String value) {
         this.pajakRp = value;
+    }
+
+    public String getBayar() {
+        return bayar;
+    }
+
+    public void setBayar(String value) {
+        this.bayar = value;
+    }
+
+    public String getIdHiburanNomor() {
+        return idHiburanNomor;
+    }
+
+    public void setIdHiburanNomor(String value) {
+        this.idHiburanNomor = value;
+    }
+
+    public String getNominalServiceCharge() {
+        return nominalServiceCharge;
+    }
+
+    public void setNominalServiceCharge(String value) {
+        this.nominalServiceCharge = value;
     }
 }

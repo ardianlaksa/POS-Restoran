@@ -1,26 +1,22 @@
 package com.dnhsolution.restokabmalang.sistem.produk;
 
-/**
- * Created by KHAN on 08/04/2018.
- */
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
+
 import com.dnhsolution.restokabmalang.utilities.Url;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 public class UploadData {
-    public static final String UPLOAD_URL= Url.serverPos +"UpdateData";
-    public static final String TAMBAH_URL= Url.serverPos +"TambahData";
+    public static final String UPLOAD_URL= Url.setUpdateProduk;
+    public static final String TAMBAH_URL= Url.setTambahProduk;
 
     private int serverResponseCode;
 

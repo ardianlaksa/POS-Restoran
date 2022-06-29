@@ -2,8 +2,9 @@ package com.dnhsolution.restokabmalang.utilities
 
 object Url {
 //    const val serverBase = "http://36.89.91.155:8080/"
+    const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
     const val serverBase = "http://sipanji.id:8080/"
-    const val serverPos = "${serverBase}pdrd/Android/AndroidJsonPOS_Dev2/"
+    const val serverPos = "$serverBase$serverHtdoc"
     const val serverFoto = "http://sipanji.id:8080/pdrd/"
 
     const val SESSION_ALAMAT = "alamat"
@@ -34,6 +35,7 @@ object Url {
     const val setTema = "tema"
     const val setHapusProduk = "${serverPos}setHapusProduk"
     const val setKeranjangTransaksi = "${serverPos}setKeranjangTransaksi"
+    const val setKeranjangTransaksiTersimpan = "${serverPos}setKeranjangTransaksiTersimpan"
     const val getProduk = "${serverPos}getProduk"
     const val setSistemMaster = "${serverPos}setSistemMaster"
     const val getRekapHarian = "${serverPos}getRekapHarian"
@@ -42,4 +44,9 @@ object Url {
     const val getRekapBulanan = "${serverPos}getRekapBulanan"
 //    const val getRekapBulanan1 = "${serverPos}getRekapBulanan1"
     const val getBatasWaktu = "${serverPos}Config"
+    const val setTambahProduk = "${serverPos}TambahData"
+    const val setUpdateProduk = "${serverPos}UpdateData"
+    const val getDataStruk = "${serverPos}getDataStruk"
+    const val setUpdateHiburanNomor = "${Url.serverPos}setUpdateHiburanNomor"
+    const val notifEmailPdfHarian = "${Url.serverPos}notifEmailPdfHarian"
 }

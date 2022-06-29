@@ -35,6 +35,7 @@ import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnection
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.databinding.ActivityMainCetakBinding
 import com.dnhsolution.restokabmalang.utilities.DefaultPojo
 import com.dnhsolution.restokabmalang.utilities.TampilanBarcode
@@ -55,6 +56,7 @@ import java.util.*
 
 open class MainCetak : AppCompatActivity() {
 
+//    private var rangeTransaksiKarcisAkhir: String = "0"
     private var idHiburanNomor: String = ""
     private var nomorTerakhirKarcis: String = ""
     private var iQty: Int = 0
@@ -115,7 +117,7 @@ open class MainCetak : AppCompatActivity() {
 
     interface UpdateHiburanNomorServices {
         @FormUrlEncoded
-        @POST("${Url.serverPos}setUpdateHiburanNomor")
+        @POST(Url.setUpdateHiburanNomor)
         fun getPosts(@Field("idPengguna") idPengguna: String
             , @Field("UUID") uuid: String
             , @Field("idTempatUsaha") idTempatUsaha: String
@@ -243,19 +245,11 @@ open class MainCetak : AppCompatActivity() {
             browseBluetoothDevice();
         }
 
-        getData
-
-//        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-//        mBluetoothAdapter = bluetoothManager.adapter
-//        cekKeberadaanBluetooth(btDevice)
         btnCetak?.setOnClickListener {
             printBluetooth()
-
-//            println("${MainActivity.idTempatUsaha} $idPengguna $uuid $idHiburanNomor $nomorTerakhirKarcis" )
-//            updateHiburanNomorFungsi(
-//                idPengguna.toString(),uuid.toString(), MainActivity.idTempatUsaha.toString(),idHiburanNomor
-//            )
         }
+
+        getData
     }
 
     open fun browseBluetoothDevice() {
@@ -410,10 +404,12 @@ open class MainCetak : AppCompatActivity() {
         })
     }
 
-    private fun updateHiburanNomorFungsi(value : String,value1 : String,value2 : String,value3 : String
-        ,value4 : String){
+    private fun updateHiburanNomorFungsi(idPengguna : String,uuid : String,idTempatUsaha : String,
+                                         nomorTerakhirKarcis : String ,idHiburanNomor : String){
+
         val postServices = UpdateHiburanNomorResultFeedback.create()
-        postServices.getPosts(value,value1,value2,value3,value4).enqueue(object : Callback<DefaultPojo> {
+            postServices.getPosts(idPengguna,uuid,idTempatUsaha,nomorTerakhirKarcis,idHiburanNomor
+            ).enqueue(object : Callback<DefaultPojo> {
 
             override fun onFailure(call: Call<DefaultPojo>, error: Throwable) {
                 Log.e(_tag, "errornya ${error.message}")
@@ -428,6 +424,17 @@ open class MainCetak : AppCompatActivity() {
                     data?.let {
                         val feedback = it
                         println("${feedback.success}, ${feedback.message}")
+
+                        val databaseHandler = DatabaseHandler(applicationContext)
+                        val splitNomorKarcis = nomorTerakhirKarcis.split("|")
+                        for(a in splitNomorKarcis) {
+                            val splitA = a.split(":")
+                            databaseHandler.updateNomorTerakhirKarcisProduk(
+                                splitA[0],
+                                splitA[1],
+                                splitA[2]
+                            )
+                        }
 //                        setResult(RESULT_OK)
 //                        finish()
                     }
@@ -440,13 +447,16 @@ open class MainCetak : AppCompatActivity() {
 
     private val getData: Unit
         get() {
+            val databaseHandler = DatabaseHandler(this)
+            val db = databaseHandler.readableDatabase
+
             itemProduk?.clear()
 //            adapter!!.notifyDataSetChanged()
             val progressDialog = ProgressDialog(this@MainCetak)
             progressDialog.setMessage("Mencari data...")
             progressDialog.show()
             val queue = Volley.newRequestQueue(this@MainCetak)
-            val url = Url.serverPos + "getDataStruk"
+            val url = Url.getDataStruk
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
             val stringRequest: StringRequest =
                 object : StringRequest(Method.POST, url, Response.Listener { response ->
@@ -469,6 +479,11 @@ open class MainCetak : AppCompatActivity() {
                             tvJmlDisc?.text = json.getString("jml_disc")
                             tvJmlPajak?.text = json.getString("jml_pajak")
                             tvTotal?.text = json.getString("total")
+                            val serviceChargeRp = json.getString("serviceChargeRp")
+                            if(serviceChargeRp != "")
+                                binding.tvJmlServiceCharge.text = json.getString("serviceChargeRp")
+                            else
+                                binding.llServiceCharge.visibility = View.GONE
 //                            nomorKarcis = json.getString("nomor_karcis")
                             var i = 1
                             while (i < jsonArray.length()) {
@@ -476,13 +491,26 @@ open class MainCetak : AppCompatActivity() {
                                     val jO = jsonArray.getJSONObject(i)
                                     val id = ItemProduk()
                                     id.setNo(i)
-                                    id.setId_produk(jO.getString("id_produk"))
+                                    val idProduk = jO.getString("id_produk")
+                                    id.setId_produk(idProduk)
                                     id.setNama_produk(jO.getString("nama_produk"))
                                     id.setQty(jO.getString("qty"))
                                     id.isPajak = jO.getString("ispajak")
                                     id.setHarga(jO.getString("harga"))
                                     id.setTotal_harga(jO.getString("total_harga"))
                                     id.nomorKarcis = jO.getString("nomor_karcis")
+
+                                    val cDetailTrx = db.rawQuery("select range_transaksi_karcis_akhir " +
+                                            "from produk where id ='" + idProduk + "'", null)
+                                    if (cDetailTrx.moveToFirst()) {
+                                        do {
+                                            val a = cDetailTrx.getString(0)
+                                            id.rangeTransaksiKarcisAkhir = a
+                                            println("asdf $a $idProduk")
+                                        }while(cDetailTrx.moveToNext())
+                                    }
+                                    cDetailTrx.close()
+
                                     if(idHiburanNomor != "") idHiburanNomor += "|"
                                     idHiburanNomor += jO.getString("id_hiburan_nomor")
                                     itemProduk?.add(id)
@@ -492,6 +520,7 @@ open class MainCetak : AppCompatActivity() {
                                 }
                                 i++
                             }
+                            db.close()
                         } else {
                             Toast.makeText(
                                 this@MainCetak,
@@ -576,10 +605,16 @@ open class MainCetak : AppCompatActivity() {
         if (tipeStruk.equals("1", ignoreCase = true)) {
             text += "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"
         }
+
+        val serviceChargeRp = binding.tvJmlServiceCharge.text
+        if(serviceChargeRp != "")
+            text += "[L]Service Charge[R]$serviceChargeRp\n"
+
         text += "[C]--------------------------------\n"+
          "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
          "[L]\n"+
          "[C]- Terima Kasih -"
+
         return printer.addTextToPrint(text)
     }
 
@@ -614,12 +649,17 @@ open class MainCetak : AppCompatActivity() {
         text += "[C]--------------------------------\n"+
                 "[L]Disc[R]${tvJmlDisc?.text}\n" +
                 "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+                "[L]Pajak[R]${tvJmlPajak?.text}\n"
 
-                "[C]--------------------------------\n"+
+        val serviceChargeRp = binding.tvJmlServiceCharge.text
+        if(serviceChargeRp != "")
+            text += "[L]Service Charge[R]$serviceChargeRp\n"
+
+        text += "[C]--------------------------------\n"+
                 "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
                 "[L]\n"+
                 "[C]- Terima Kasih -"
+
         return printer.addTextToPrint(text)
     }
 
@@ -633,14 +673,44 @@ open class MainCetak : AppCompatActivity() {
         for (h in itemProduk!!.indices) {
             val nomorKarcis = itemProduk!![h].nomorKarcis
             val pisahNomorKarcis = nomorKarcis.split("-")
-            val nomorSeri = nomorKarcis
             val idProduk = itemProduk!![h].getId_produk()
             val qtyKarcis = itemProduk!![h].getQty()
             val hargaKarcis = itemProduk!![h].getHarga()
+            val rangeKarcisAkhir1 = itemProduk!![h].rangeTransaksiKarcisAkhir
+            var rangeKarcisAkhir = 0
+            if(rangeKarcisAkhir1.contains(".")) {
+                val splRangeKarcisAkhir = rangeKarcisAkhir1.split(".")
+                rangeKarcisAkhir = splRangeKarcisAkhir[0].toInt()
+            }
             iQty = qtyKarcis.toInt()
             if(nomorTerakhirKarcis != "") nomorTerakhirKarcis += "|"
             for (i in 0 until iQty) {
-                val nomorUrutKarcis = pisahNomorKarcis[4].toInt() + i+1
+                var pnk = pisahNomorKarcis[4].toInt() + i // asli
+//                var pnk = 5000 + i
+                var nomorSeriBaru = pisahNomorKarcis[3]
+                val seriToCharArray = nomorSeriBaru.toCharArray()
+                if(rangeKarcisAkhir < pnk) {
+                    var ch11 = ""
+                    var ch12 = ""
+                    var ch = 'A'
+                    var ch2 = 'A'
+
+                    while (ch <= 'Z') {
+                        while (ch2 <= 'Z') {
+                            if (ch == seriToCharArray[0] && ch2 == seriToCharArray[1]) {
+                                ++ch2
+                                ch11 = ch.toString()
+                                ch12 = ch2.toString()
+                                nomorSeriBaru = "$ch11$ch12"
+                                pnk = 1
+                                break
+                            }
+                            ++ch2
+                        }
+                        ++ch
+                    }
+                }
+                val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
                 text += "[L]\n" +
                         "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
                     printer,
@@ -654,11 +724,11 @@ open class MainCetak : AppCompatActivity() {
                         "[C]$alamat\n" +
                         "[L]\n" +
                         "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
-                    printer,
-                    TampilanBarcode().displayBitmap(this, nomorSeri)
-                ) + "</img>\n" +
+                            printer,
+                            TampilanBarcode().displayBitmap(this, nomorUrutKarcisLengkap)
+                        ) + "</img>\n" +
                         "[L]\n" +
-                        "[C]${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-${pisahNomorKarcis[3]}-${nomorUrutKarcis}\n" +
+                        "[C]$nomorUrutKarcisLengkap\n" +
                         "[L]\n" +
                         "[L]Tanggal : $tanggal\n" +
                         "[L]Kasir   : $namaPetugas\n" +
@@ -670,7 +740,7 @@ open class MainCetak : AppCompatActivity() {
                         "[C]Anda\n"
                 //                --iQty
                 if((iQty-1)==i)
-                    nomorTerakhirKarcis += "$idProduk:${pisahNomorKarcis[4].toInt() + i+1}"
+                    nomorTerakhirKarcis += "$idProduk:${pnk+1}:$nomorSeriBaru"
             }
 
         }
@@ -700,9 +770,13 @@ open class MainCetak : AppCompatActivity() {
         text += "[C]--------------------------------\n"+
                 "[L]Disc[R]${tvJmlDisc?.text}\n" +
                 "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+                "[L]Pajak[R]${tvJmlPajak?.text}\n"
 
-                "[C]--------------------------------\n"+
+        val serviceChargeRp = binding.tvJmlServiceCharge.text
+        if(serviceChargeRp != "")
+            text += "[L]Service Charge[R]$serviceChargeRp\n"
+
+        text += "[C]--------------------------------\n"+
                 "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
                 "[L]\n"+
                 "[C]- Terima Kasih -"

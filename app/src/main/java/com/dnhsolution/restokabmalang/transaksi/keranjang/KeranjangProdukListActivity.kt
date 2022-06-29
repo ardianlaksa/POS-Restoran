@@ -61,6 +61,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         }
     }
 
+    private var pajakPersen: Int = 0
     private var nominalServiceCharge: Int = 0
     private var serviceCharge: Int = 0
     private var idHiburanNomor: Int? = null
@@ -164,6 +165,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
         idHiburanNomor = sharedPreferences.getInt(Url.SESSION_ID_HIBURAN_NOMOR, 0)
         serviceCharge = sharedPreferences.getInt(Url.SESSION_SERVICE_CHARGE, 0)
+        pajakPersen = MainActivity.pajakPersen
 
         if(tipeStruk == "2") binding.llPajak.visibility = View.GONE
 //        if(MainActivity.jenisPajak != "02") binding.llDisc.visibility = View.GONE
@@ -383,7 +385,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         this.valueTotalPrice = totalPrice
 
         if(tipeStruk == "1")
-            pajakRp = totalPajak.toFloat()*MainActivity.pajakPersen/100
+            pajakRp = totalPajak.toFloat()*pajakPersen/100
 
         binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
@@ -409,7 +411,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     totalPajak -= diskonRupiah
 
                     if(tipeStruk == "1")
-                        pajakRp = totalPajak.toFloat()*MainActivity.pajakPersen/100
+                        pajakRp = totalPajak.toFloat()*pajakPersen/100
 
                     binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
@@ -440,7 +442,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             this.valueTotalPrice = totalPrice
 
             if(tipeStruk == "1")
-                pajakRp = totalPajak.toFloat()* MainActivity.pajakPersen/100
+                pajakRp = totalPajak.toFloat()*pajakPersen/100
 
             binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(pajakRp.toInt().toDouble())
 
@@ -599,8 +601,6 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             rootObject.put("disc",valueDiskon)
         }
         rootObject.put("omzet",valueTotalPrice)
-
-        val pajakPersen = sharedPreferences.getInt(Url.SESSION_PAJAK_PERSEN, 0)
         rootObject.put("pajakPersen",pajakPersen.toString())
         rootObject.put("bayar",valueBayar)
         rootObject.put("idHiburanNomor",idHiburanNomor)
@@ -627,10 +627,10 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     }
 
     private fun saveLokal() : String{
-        var tglTrx = ""
+//        var tglTrx = ""
         var disc = ""
         var omzet = ""
-        var id_trx = 0
+        var idTrx = 0
         var bayar = ""
 
         if(binding.etRupiahDiskon.text.toString().isNotEmpty()){
@@ -643,31 +643,34 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         omzet = valueTotalPrice.toString()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val tglTrx = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val current = LocalDateTime.now()
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            tglTrx = current.format(formatter)
+            current.format(formatter)
         } else {
             val date = Date()
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())
-            tglTrx = formatter.format(date)
+            formatter.format(date)
         }
 
         try {
+
             databaseHandler!!.insert_transaksi(
                 ItemTransaksi(
                     0, tglTrx, disc, omzet, idPengguna, idTmpUsaha, valueDiskonRupiah.toString()
-                    , "0",pajakRp.toInt().toString(),bayar
+                    , "0",pajakRp.toInt().toString(),bayar,pajakPersen.toString()
+                    ,idHiburanNomor.toString(),nominalServiceCharge.toString()
                 )
             )
 
-            id_trx = databaseHandler!!.CountMaxIdTrx()
+            idTrx = databaseHandler!!.CountMaxIdTrx()
 
             for (pn in obyek!!) {
                 Log.d("detail_transaksi", pn.idItem.toString()+"/"+pn.name+"/"+pn.qty.toString()+"/"+pn.price)
                 databaseHandler!!.insert_detail_transaksi(
                     ItemDetailTransaksi(
-                        0, id_trx.toString(), pn.idItem.toString(), pn.name, pn.qty.toString(),  pn.price
+                        0, idTrx.toString(), pn.idItem.toString(), pn.name, pn.qty.toString()
+                        ,  pn.price, pn.keterangan
                     )
                 )
             }
@@ -675,7 +678,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
             e.printStackTrace()
         }
 
-        return id_trx.toString()
+        return idTrx.toString()
     }
 
     override fun keranjangTransaksiOnTask(result: String?) {

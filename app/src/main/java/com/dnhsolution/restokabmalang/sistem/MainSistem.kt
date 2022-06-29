@@ -8,6 +8,7 @@ import com.dnhsolution.restokabmalang.R
 import androidx.appcompat.widget.SwitchCompat
 import android.widget.CompoundButton
 import android.content.Intent
+import android.database.sqlite.SQLiteException
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -18,6 +19,7 @@ import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.databinding.ActivityMainMasterBinding
 import com.dnhsolution.restokabmalang.sistem.produk.ProdukMasterActivity
 import com.dnhsolution.restokabmalang.sistem.theme.ThemeFragment
+import com.dnhsolution.restokabmalang.tersimpan.ItemTersimpan
 import com.dnhsolution.restokabmalang.utilities.*
 import com.google.gson.GsonBuilder
 import retrofit2.Call
@@ -129,6 +131,9 @@ class MainSistem : AppCompatActivity() {
             dialogFragment.show(ft, "dialog")
         }
         btnLogout?.setOnClickListener { v: View? ->
+
+            if(dataSinkron > 0) return@setOnClickListener
+
             val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
 
             //membuat editor untuk menyimpan data ke shared preferences
@@ -152,8 +157,8 @@ class MainSistem : AppCompatActivity() {
             )
         }
 
-        if(jenisPajak == "03")
-            btnProduk?.visibility = View.GONE
+//        if(jenisPajak == "03")
+//            btnProduk?.visibility = View.GONE
 
         btnProduk!!.setOnClickListener {
                 startActivity(
@@ -225,4 +230,10 @@ class MainSistem : AppCompatActivity() {
             this@MainSistem.setTheme(R.style.Theme_Sixth)
         }
     }
+
+    private val dataSinkron : Int
+        get() {
+            return databaseHandler!!.CountDataTersimpanUpload()
+
+        }
 }

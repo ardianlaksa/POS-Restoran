@@ -1,5 +1,9 @@
 package com.dnhsolution.restokabmalang.utilities
 
+interface DataTersimpanLongClick {
+    fun dataTersimpanLongClick(result:String?)
+}
+
 interface ProdukOnTask {
     fun produkOnTask(result:String?)
 }

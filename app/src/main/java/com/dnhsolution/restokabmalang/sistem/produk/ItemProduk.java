@@ -14,6 +14,11 @@ public class ItemProduk {
     private String isPajak;
     private String jenisProduk;
     private boolean status;
+    private String kodeProduk;
+    private String seriProduk;
+    private String rangeTransaksiKarcisAwal;
+    private String rangeTransaksiKarcisAkhir;
+    private String rangeTransaksiKarcis;
 
 
     public ItemProduk() {
@@ -86,5 +91,45 @@ public class ItemProduk {
 
     public boolean getStatus() {
         return status;
+    }
+
+    public String getKodeProduk() {
+        return kodeProduk;
+    }
+
+    public void setKodeProduk(String value) {
+        this.kodeProduk = value;
+    }
+
+    public String getSeriProduk() {
+        return seriProduk;
+    }
+
+    public void setSeriProduk(String value) {
+        this.seriProduk = value;
+    }
+
+    public void setRangeTransaksiKarcisAwal(String value) {
+        this.rangeTransaksiKarcisAwal = value;
+    }
+
+    public String getRangeTransaksiKarcisAwal() {
+        return rangeTransaksiKarcisAwal;
+    }
+
+    public void setRangeTransaksiKarcisAkhir(String value) {
+        this.rangeTransaksiKarcisAkhir = value;
+    }
+
+    public String getRangeTransaksiKarcisAkhir() {
+        return rangeTransaksiKarcisAkhir;
+    }
+
+    public void setRangeTransaksiKarcis(String value) {
+        this.rangeTransaksiKarcis = value;
+    }
+
+    public String getRangeTransaksiKarcis() {
+        return rangeTransaksiKarcis;
     }
 }

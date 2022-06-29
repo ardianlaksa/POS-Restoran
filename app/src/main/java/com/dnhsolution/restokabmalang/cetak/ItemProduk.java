@@ -9,6 +9,11 @@ public class ItemProduk {
     public String total_harga;
     private String isPajak;
     private String nomor_karcis;
+    private String kodeProduk;
+    private String seriProduk;
+    private String rangeTransaksiKarcisAwal;
+    private String rangeTransaksiKarcisAkhir;
+    String serviceChargeRp;
 
     public ItemProduk() {
     }
@@ -75,5 +80,45 @@ public class ItemProduk {
 
     public void setNomorKarcis(String value) {
         this.nomor_karcis = value;
+    }
+
+    public String getKodeProduk() {
+        return kodeProduk;
+    }
+
+    public void setKodeProduk(String value) {
+        this.kodeProduk = value;
+    }
+
+    public String getSeriProduk() {
+        return seriProduk;
+    }
+
+    public void setSeriProduk(String value) {
+        this.seriProduk = value;
+    }
+
+    public void setRangeTransaksiKarcisAwal(String value) {
+        this.rangeTransaksiKarcisAwal = value;
+    }
+
+    public String getRangeTransaksiKarcisAwal() {
+        return rangeTransaksiKarcisAwal;
+    }
+
+    public void setRangeTransaksiKarcisAkhir(String value) {
+        this.rangeTransaksiKarcisAkhir = value;
+    }
+
+    public String getRangeTransaksiKarcisAkhir() {
+        return rangeTransaksiKarcisAkhir;
+    }
+
+    public String getServiceChargeRp() {
+        return serviceChargeRp;
+    }
+
+    public void setServiceChargeRp(String value) {
+        this.serviceChargeRp = value;
     }
 }

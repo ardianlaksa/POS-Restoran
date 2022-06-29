@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dnhsolution.restokabmalang.R;
+import com.dnhsolution.restokabmalang.utilities.DataTersimpanLongClick;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class TersimpanAdater extends RecyclerView.Adapter<TersimpanAdater.MyView
 
     private List<ItemTersimpan> tersimpanList;
     Context context;
+    View view;
+    DataTersimpanLongClick onLongClick;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView mId, tvNumItem, tvTrx, tvTgl, tvDisc, tvOmzet, tvStatus;
@@ -33,15 +37,17 @@ public class TersimpanAdater extends RecyclerView.Adapter<TersimpanAdater.MyView
         }
     }
 
-    public TersimpanAdater(List<ItemTersimpan> tersimpanList, Context context){
+    public TersimpanAdater(List<ItemTersimpan> tersimpanList, Context context, DataTersimpanLongClick onLongClick){
         this.tersimpanList = tersimpanList;
         this.context = context;
+        this.onLongClick = onLongClick;
     }
 
     @Override
     public TersimpanAdater.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_list_tersimpan, parent, false);
+        view = itemView;
 
         return new MyViewHolder(itemView);
     }
@@ -62,6 +68,16 @@ public class TersimpanAdater extends RecyclerView.Adapter<TersimpanAdater.MyView
             holder.tvStatus.setText("Sudah Sinkron");
             holder.tvStatus.setTextColor(Color.parseColor("#148E19"));
         }
+
+        view.setOnClickListener(v -> {
+//            Toast.makeText(context,"adsf",Toast.LENGTH_SHORT).show();
+            ((DataTersimpanActivity)context).DialogDetailTrx(ItemTersimpan.getId());
+        });
+
+        view.setOnLongClickListener(v -> {
+            onLongClick.dataTersimpanLongClick(String.valueOf(ItemTersimpan.getId()));
+            return true;
+        });
     }
 
     @Override

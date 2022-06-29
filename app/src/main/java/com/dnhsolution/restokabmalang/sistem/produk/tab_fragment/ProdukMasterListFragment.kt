@@ -77,7 +77,7 @@ import kotlin.collections.HashMap
 
 interface DeleteServices {
         @FormUrlEncoded
-        @POST("pdrd/Android/AndroidJsonPOS/setHapusProduk")
+        @POST("${Url.serverHtdoc}setHapusProduk")
         fun getPosts(@Field("id") id: String): Call<DeletePojo>
     }
 
@@ -141,20 +141,6 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
             isPajak.add(IsPajakListElement("0","Tanpa Pajak"))
             return isPajak
         }
-
-//    private val tipeProdukList: ArrayList<TipeProdukListElement>
-//        get(){
-//            val tipeProduk = ArrayList<TipeProdukListElement>()
-//            if(MainActivity.jenisPajak == "01") {
-//                tipeProduk.add(TipeProdukListElement("4", "Fasilitas"))
-//                tipeProduk.add(TipeProdukListElement("3", "Dll"))
-//            }else if(MainActivity.jenisPajak == "02") {
-//                tipeProduk.add(TipeProdukListElement("1", "Makanan"))
-//                tipeProduk.add(TipeProdukListElement("2", "Minuman"))
-//                tipeProduk.add(TipeProdukListElement("3", "Dll"))
-//            }
-//            return tipeProduk
-//        }
 
     companion object {
 
@@ -263,7 +249,7 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
 
             val queue = Volley.newRequestQueue(context)
             Log.d("ID_TEMPAT_USAHA", (idTmpUsaha)!!)
-            val url = Url.serverPos + "getProduk?idTmpUsaha=" + idTmpUsaha +
+            val url = Url.getProduk + "?idTmpUsaha=" + idTmpUsaha +
                     "&jenisProduk=${arguments?.get(keyParams).toString()}&idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak"
 
             //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
@@ -277,6 +263,7 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                         if (status == 1) {
                             val jsonArray: JSONArray = jsonObject.getJSONArray("result")
                             var i = 0
+                            Log.i(_tag, jsonArray.toString())
                             while (i < jsonArray.length()) {
                                 try {
                                     val jO: JSONObject = jsonArray.getJSONObject(i)
@@ -289,8 +276,18 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                                     itemProduk.keterangan = jO.getString("KETERANGAN")
                                     itemProduk.isPajak = jO.getString("ISPAJAK")
                                     itemProduk.jenisProduk = jO.getString("JENIS_PRODUK")
+                                    itemProduk.kodeProduk = jO.getString("KODE")
+                                    itemProduk.seriProduk = jO.getString("NOMOR_SERI")
+
+                                    val rangeTransaksiProduk = jO.getString("RANGE_TRANSAKSI_PRODUK")
+                                    val rangeTransaksiProdukSplit = rangeTransaksiProduk.split("-")
+
+                                    itemProduk.rangeTransaksiKarcisAwal = rangeTransaksiProdukSplit[0]
+                                    itemProduk.rangeTransaksiKarcisAkhir = rangeTransaksiProdukSplit[1]
+                                    itemProduk.rangeTransaksiKarcis = rangeTransaksiProduk
                                     itemProduk.status = true
-                                    Log.d("NM_BARANG", jO.getString("NM_BARANG"))
+
+                                    Log.d("NM_BARANG", rangeTransaksiProdukSplit[1])
                                     if (databaseHandler!!.CountDataProdukId(idBarang.toInt()) == 0) tambahDataLokal(
                                         itemProduk
                                     )
@@ -359,7 +356,12 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                     itemProduk.url_image,
                     "0",
                     itemProduk.isPajak,
-                    itemProduk.jenisProduk
+                    itemProduk.jenisProduk,
+                    itemProduk.kodeProduk,
+                    itemProduk.seriProduk,
+                    itemProduk.rangeTransaksiKarcisAwal,
+                    itemProduk.rangeTransaksiKarcisAkhir,
+                    itemProduk.rangeTransaksiKarcis
                 )
             )
         } catch (e: Exception) {
@@ -988,7 +990,8 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
             databaseHandler!!.update_produk(
                 com.dnhsolution.restokabmalang.database.ItemProduk(
                     e_id!!.toInt(), idTmpUsaha, e_nama, e_harga, e_ket, e_gambar_lama
-                    , "0",slctdIspajak,slctdTipeProduk
+                    , "0",slctdIspajak,slctdTipeProduk,"0","0"
+                    ,"0-0","0-0","0-0"
                 )
             )
         } catch (e: Exception) {
@@ -1000,6 +1003,8 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
         super.onCreateOptionsMenu(menu, inflater)
         menuTemp = menu
         inflater.inflate(R.menu.menu_master, menu)
+        val tambahItem = menu.findItem(R.id.action_menu_lanjut)
+//        if(jenisPajak == "03") tambahItem.isVisible = false
         val searchItem = menu.findItem(R.id.action_menu_cari)
         searchView = searchItem.actionView as SearchView
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE

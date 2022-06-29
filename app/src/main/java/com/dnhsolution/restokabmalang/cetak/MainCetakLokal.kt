@@ -1,49 +1,44 @@
 package com.dnhsolution.restokabmalang.cetak
 
 import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.DividerItemDecoration
-import android.widget.TextView
-import com.zj.btsdk.BluetoothService
-import android.content.SharedPreferences
-import com.dnhsolution.restokabmalang.database.DatabaseHandler
-import android.os.Bundle
-import com.dnhsolution.restokabmalang.R
 import android.app.Activity
 import android.content.Intent
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.dantsu.escposprinter.EscPosPrinter
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dantsu.escposprinter.connection.DeviceConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.dnhsolution.restokabmalang.MainActivity
+import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.databinding.ActivityMainCetakBinding
+import com.dnhsolution.restokabmalang.utilities.TampilanBarcode
 import com.dnhsolution.restokabmalang.utilities.Url
-import java.lang.Exception
-import java.lang.StringBuilder
+import com.zj.btsdk.BluetoothService
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainCetakLokal : AppCompatActivity() {
+    private var idPengguna: String? = null
     private lateinit var rvData: RecyclerView
     var itemProduk: MutableList<ItemProduk>? = null
     var linearLayout: LinearLayout? = null
@@ -74,6 +69,7 @@ class MainCetakLokal : AppCompatActivity() {
     private val PERMISSION_BLUETOOTH_ADMIN = 101
     private val PERMISSION_BLUETOOTH_CONNECT = 102
     private val PERMISSION_BLUETOOTH_SCAN = 103
+    private var nomorTerakhirKarcis = ""
 
     private var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
@@ -100,6 +96,7 @@ class MainCetakLokal : AppCompatActivity() {
         val tema = sharedPreferences.getString(Url.setTema, "0")
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
         val btDevice = sharedPreferences.getString(Url.SESSION_PRINTER_BT, "")
+        idPengguna = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "")
         nmPetugas = MainActivity.namaPetugas ?: ""
         databaseHandler = DatabaseHandler(this@MainCetakLokal)
         when {
@@ -177,6 +174,25 @@ class MainCetakLokal : AppCompatActivity() {
         btnCetak?.setOnClickListener {
             printBluetooth()
         }
+
+//        var ch11 = ""
+//        var ch12 = ""
+//        var ch = 'A'
+//        var ch2 = 'A'
+//
+//        while (ch <= 'Z') {
+//            while (ch2 <= 'Z') {
+//                if (ch == 'A' && ch2 == 'B') {
+//                    ++ch2
+//                    ch11 = ch.toString()
+//                    ch12 = ch2.toString()
+//                    break
+//                }
+//                ++ch2
+//            }
+//            ++ch
+//        }
+//        println("asdf $ch11$ch12")
     }
 
     private fun browseBluetoothDevice() {
@@ -275,6 +291,15 @@ class MainCetakLokal : AppCompatActivity() {
                     }
 
                     override fun onSuccess(asyncEscPosPrinter: AsyncEscPosPrinter?) {
+                        val splitNomorKarcis = nomorTerakhirKarcis.split("|")
+                        for(a in splitNomorKarcis) {
+                            val splitA = a.split(":")
+                            databaseHandler?.updateNomorTerakhirKarcisProduk(
+                                splitA[0],
+                                splitA[1],
+                                splitA[2]
+                            )
+                        }
                         Log.i(
                             "Async.OnPrintFinished",
                             "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
@@ -282,10 +307,13 @@ class MainCetakLokal : AppCompatActivity() {
                     }
                 }
             ).execute(
-                if(MainActivity.jenisPajak == "02")
-                    printText(selectedDevice)
-                else
-                    printTextHotelHiburan(selectedDevice))
+                when (MainActivity.jenisPajak) {
+                    "01" -> printTextHotelHiburan(selectedDevice)
+                    "02" -> printText(selectedDevice)
+                    else -> {
+                        printTextHiburanKarcis(selectedDevice)
+                    }
+                })
         }
     }
 
@@ -296,24 +324,33 @@ class MainCetakLokal : AppCompatActivity() {
 
             //data transaksi
             val cTrx = db.rawQuery(
-                "select id, omzet, disc_rp, pajak_rp from transaksi where id='$idTrx'",
-                null
+                "select ${databaseHandler?.col_id}, ${databaseHandler?.col_omzet}," +
+                        "${databaseHandler?.col_disc_rp}, ${databaseHandler?.col_pajak_rp}," +
+                        "${databaseHandler?.col_service_charge_rp} " +
+                        "from transaksi where id='$idTrx'",null
             )
             cTrx.moveToFirst()
-            val id_trx = cTrx.getInt(0)
+            val idTrx = cTrx.getInt(0)
             val omzet = cTrx.getString(1).toInt()
-            val disc_rp = cTrx.getString(2).toInt()
-            val pajak_rp = cTrx.getString(3).toInt()
-            val sub_total = omzet + disc_rp - pajak_rp
-            tvSubtotal!!.text = currencyFormatter(sub_total.toString())
-            tvJmlPajak!!.text = currencyFormatter(pajak_rp.toString())
-            tvJmlDisc!!.text = currencyFormatter(disc_rp.toString())
+            val discRp = cTrx.getString(2).toInt()
+            val pajakRp = cTrx.getString(3).toInt()
+            val serviceChargeRp = cTrx.getString(4).toInt()
+            val subTotal = omzet + discRp - pajakRp
+            tvSubtotal!!.text = currencyFormatter(subTotal.toString())
+            tvJmlPajak!!.text = currencyFormatter(pajakRp.toString())
+            tvJmlDisc!!.text = currencyFormatter(discRp.toString())
             tvTotal!!.text = currencyFormatter(omzet.toString())
+            binding.tvJmlServiceCharge.text = currencyFormatter(serviceChargeRp.toString())
             cTrx.close()
 
             //detail transaksi
             val cDetailTrx = db.rawQuery(
-                "select dt.nama_produk, dt.qty, dt.harga,p.ispajak " +
+                "select p.${databaseHandler?.col_id},dt.${databaseHandler?.col_nama_produk}," +
+                        "dt.${databaseHandler?.col_qty}, dt.${databaseHandler?.col_harga}," +
+                        "p.${databaseHandler?.col_ispajak},p.${databaseHandler?.col_kode_produk}," +
+                        "p.${databaseHandler?.col_seri_produk}," +
+                        "${databaseHandler?.col_range_transaksi_karcis_awal}," +
+                        "${databaseHandler?.col_range_transaksi_karcis_akhir} " +
                         "from detail_transaksi dt LEFT JOIN produk p ON dt.id_produk = p.id " +
                         "where id_trx ='" + idTrx + "'", null
             )
@@ -322,14 +359,18 @@ class MainCetakLokal : AppCompatActivity() {
                 do {
                     // Passing values
                     val totalharga =
-                        cDetailTrx.getString(1).toInt() * cDetailTrx.getString(2).toInt()
+                        cDetailTrx.getString(2).toInt() * cDetailTrx.getString(3).toInt()
                     val id = ItemProduk()
                     id.setNo(no)
-                    id.setNama_produk(cDetailTrx.getString(0))
-                    id.setQty(cDetailTrx.getString(1))
-                    id.setHarga(currencyFormatter(cDetailTrx.getString(2)))
-                    id.isPajak = cDetailTrx.getString(3)
+                    id.id_produk = cDetailTrx.getString(0)
+                    id.setNama_produk(cDetailTrx.getString(1))
+                    id.setQty(cDetailTrx.getString(2))
+                    id.setHarga(currencyFormatter(cDetailTrx.getString(3)))
+                    id.isPajak = cDetailTrx.getString(4)
                     id.setTotal_harga(currencyFormatter(totalharga.toString()))
+                    val nomorKarcis = "$dateTahun-${cDetailTrx.getString(5)}-${MainActivity.idTempatUsaha}-${cDetailTrx.getString(6)}-${cDetailTrx.getString(7)}"
+                    id.nomorKarcis = nomorKarcis
+                    id.rangeTransaksiKarcisAkhir = cDetailTrx.getString(8)
                     itemProduk!!.add(id)
                     no++
                     // Do something Here with values
@@ -342,83 +383,219 @@ class MainCetakLokal : AppCompatActivity() {
 
     private fun printText(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
         val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
-            val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-            val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
-            val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
-            val tanggal = dateTime
-            var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                    DisplayMetrics.DENSITY_LOW, theme
-                )) + "</img>\n" +
-                    "[L]\n"+
-                    "[C]<b>$nmTmpUsaha</b>\n"+
-                    "[C]$alamat\n"+
-                    "[L]\n"+
-                    "[L]No. Trx : $idTrx\n"+
-                    "[L]Tanggal : $tanggal\n"+
-                    "[L]Kasir   : $nmPetugas\n"+
-                    "[C]--------------------------------\n"
+        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+        val tanggal = dateTime
+        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]No. Trx : $idTrx\n"+
+                "[L]Tanggal : $tanggal\n"+
+                "[L]Kasir   : $nmPetugas\n"+
+                "[C]--------------------------------\n"
 
-            for (i in itemProduk!!.indices) {
-                val nmProduk = itemProduk!![i].getNama_produk()
-                val qty = itemProduk!![i].getQty()
-                val harga = itemProduk!![i].getHarga()
-                val totalHarga = itemProduk!![i].getTotal_harga()
-                text += "[L]$nmProduk\n" +
-                        "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
-            }
-            text += "[C]--------------------------------\n"+
-                    "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                    "[L]Disc[R]${tvJmlDisc?.text}\n"
+        for (i in itemProduk!!.indices) {
+            val nmProduk = itemProduk!![i].getNama_produk()
+            val qty = itemProduk!![i].getQty()
+            val harga = itemProduk!![i].getHarga()
+            val totalHarga = itemProduk!![i].getTotal_harga()
+            text += "[L]$nmProduk\n" +
+                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        }
 
-            if (tipeStruk.equals("1", ignoreCase = true)) {
-                text += "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"
-            }
-            text += "[C]--------------------------------\n"+
-                    "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
-                    "[L]\n"+
-                    "[C]- Terima Kasih -"
-            return printer.addTextToPrint(text)
+        text += "[C]--------------------------------\n"+
+                "[L]Subtotal[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                "[L]Disc[R]${tvJmlDisc?.text}\n"
+
+        if (tipeStruk.equals("1", ignoreCase = true)) {
+            text += "[L]Pajak Resto[R]${tvJmlPajak?.text}\n"
+        }
+
+        val serviceChargeRp = binding.tvJmlServiceCharge.text
+        if(serviceChargeRp != "")
+            text += "[L]Service Charge[R]$serviceChargeRp\n"
+
+        text += "[C]--------------------------------\n"+
+                "[C]<font size='tall'>TOTAL : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                "[L]\n"+
+                "[C]- Terima Kasih -"
+
+        return printer.addTextToPrint(text)
     }
 
     private fun printTextHotelHiburan(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
         val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
-            val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
-            val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
-            val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
-            val tanggal = dateTime
-            var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                    DisplayMetrics.DENSITY_LOW, theme
-                )) + "</img>\n" +
-                    "[L]\n"+
-                    "[C]<b>$nmTmpUsaha</b>\n"+
-                    "[C]$alamat\n"+
-                    "[L]\n"+
-                    "[L]No. Trx : $idTrx\n"+
-                    "[L]Tanggal : $tanggal\n"+
-                    "[L]Kasir   : $nmPetugas\n"+
-                    "[C]--------------------------------\n"
+        val sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
+        val nmTmpUsaha = sharedPreferences.getString(Url.SESSION_NAMA_TEMPAT_USAHA, "0")
+        val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
+        val tanggal = dateTime
+        var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]No. Trx : $idTrx\n"+
+                "[L]Tanggal : $tanggal\n"+
+                "[L]Kasir   : $nmPetugas\n"+
+                "[C]--------------------------------\n"
 
-            for (i in itemProduk!!.indices) {
-                val nmProduk = itemProduk!![i].getNama_produk()
-                val qty = itemProduk!![i].getQty()
-                val harga = itemProduk!![i].getHarga()
-                val totalHarga = itemProduk!![i].getTotal_harga()
-                text += "[L]$nmProduk\n" +
-                        "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        for (i in itemProduk!!.indices) {
+            val nmProduk = itemProduk!![i].getNama_produk()
+            val qty = itemProduk!![i].getQty()
+            val harga = itemProduk!![i].getHarga()
+            val totalHarga = itemProduk!![i].getTotal_harga()
+            text += "[L]$nmProduk\n" +
+                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        }
+
+        text += "[C]--------------------------------\n"+
+                "[L]Disc[R]${tvJmlDisc?.text}\n" +
+                "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                "[L]Pajak[R]${tvJmlPajak?.text}\n"
+
+        val serviceChargeRp = binding.tvJmlServiceCharge.text
+        if(serviceChargeRp != "")
+            text += "[L]Service Charge[R]$serviceChargeRp\n"
+
+        text += "[C]--------------------------------\n"+
+                "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                "[L]\n"+
+                "[C]- Terima Kasih -"
+
+        return printer.addTextToPrint(text)
+    }
+
+    private fun printTextHiburanKarcis(printerConnection: DeviceConnection?) : AsyncEscPosPrinter  {
+        val printer = AsyncEscPosPrinter(printerConnection, 203, 48f, 32)
+        val nmTmpUsaha = MainActivity.namaTempatUsaha
+        val alamat = MainActivity.alamatTempatUsaha
+        val namaPetugas = MainActivity.namaPetugas
+        val tanggal = dateTime
+        var text = ""
+        var iQty = 0
+        for (h in itemProduk!!.indices) {
+            val nomorKarcis = itemProduk!![h].nomorKarcis
+            val pisahNomorKarcis = nomorKarcis.split("-")
+            val idProduk = itemProduk!![h].getId_produk()
+            val qtyKarcis = itemProduk!![h].getQty()
+            val hargaKarcis = itemProduk!![h].getHarga()
+//            val rangeKarcisAkhir = itemProduk!![h].rangeTransaksiKarcisAkhir.toInt()
+
+            val rangeKarcisAkhir1 = itemProduk!![h].rangeTransaksiKarcisAkhir
+            var rangeKarcisAkhir = 0
+            if(rangeKarcisAkhir1.contains(".")) {
+                val splRangeKarcisAkhir = rangeKarcisAkhir1.split(".")
+                rangeKarcisAkhir = splRangeKarcisAkhir[0].toInt()
             }
+            iQty = qtyKarcis.toInt()
+            if(nomorTerakhirKarcis != "") nomorTerakhirKarcis += "|"
+            for (i in 0 until iQty) {
 
-            text += "[C]--------------------------------\n"+
-                    "[L]Disc[R]${tvJmlDisc?.text}\n" +
-                    "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                    "[L]Pajak[R]${tvJmlPajak?.text}\n" +
+                var pnk = pisahNomorKarcis[4].toInt() + i // asli
+//                var pnk = 5000 + i
+                var nomorSeriBaru = pisahNomorKarcis[3]
+                val seriToCharArray = nomorSeriBaru.toCharArray()
+                if(rangeKarcisAkhir < pnk) {
+                    var ch11 = ""
+                    var ch12 = ""
+                    var ch = 'A'
+                    var ch2 = 'A'
 
-                    "[C]--------------------------------\n"+
-                    "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
-                    "[L]\n"+
-                    "[C]- Terima Kasih -"
-            return printer.addTextToPrint(text)
+                    while (ch <= 'Z') {
+                        while (ch2 <= 'Z') {
+                            if (ch == seriToCharArray[0] && ch2 == seriToCharArray[1]) {
+                                ++ch2
+                                ch11 = ch.toString()
+                                ch12 = ch2.toString()
+                                nomorSeriBaru = "$ch11$ch12"
+                                pnk = 1
+                                break
+                            }
+                            ++ch2
+                        }
+                        ++ch
+                    }
+                }
+                val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
+                text += "[L]\n" +
+                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
+                    printer,
+                    applicationContext.resources.getDrawableForDensity(
+                        R.drawable.ic_malang_makmur_grayscale,
+                        DisplayMetrics.DENSITY_LOW, theme
+                    )
+                ) + "</img>\n" +
+                        "[L]\n" +
+                        "[C]<b>$nmTmpUsaha</b>\n" +
+                        "[C]$alamat\n" +
+                        "[L]\n" +
+                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
+                            printer,
+                            TampilanBarcode().displayBitmap(this, nomorUrutKarcisLengkap)
+                        ) + "</img>\n" +
+                        "[L]\n" +
+                        "[C]$nomorUrutKarcisLengkap\n" +
+                        "[L]\n" +
+                        "[L]Tanggal : $tanggal\n" +
+                        "[L]Kasir   : $namaPetugas\n" +
+                        "[C]--------------------------------\n" +
+                        "[C]Nominal : $hargaKarcis\n" +
+                        "[L]\n" +
+                        "[C]Terima Kasih\n" +
+                        "[C]Atas Kunjungan\n" +
+                        "[C]Anda\n"
+                //                --iQty
+                if((iQty-1)==i)
+                    nomorTerakhirKarcis += "$idProduk:${pnk+1}:$nomorSeriBaru"
+            }
+        }
+        text += "[L]\n"+
+                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                DisplayMetrics.DENSITY_LOW, theme
+            )) + "</img>\n" +
+                "[L]\n"+
+                "[C]<b>$nmTmpUsaha</b>\n"+
+                "[C]$alamat\n"+
+                "[L]\n"+
+                "[L]No. Trx : $idTrx\n"+
+                "[L]Tanggal : $tanggal\n"+
+                "[L]Kasir   : $nmPetugas\n"+
+                "[C]--------------------------------\n"
+
+        for (i in itemProduk!!.indices) {
+            val nmProduk = itemProduk!![i].getNama_produk()
+            val qty = itemProduk!![i].getQty()
+            val harga = itemProduk!![i].getHarga()
+            val totalHarga = itemProduk!![i].getTotal_harga()
+            text += "[L]$nmProduk\n" +
+                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
+        }
+
+        text += "[C]--------------------------------\n"+
+                "[L]Disc[R]${tvJmlDisc?.text}\n" +
+                "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                "[L]Pajak[R]${tvJmlPajak?.text}\n"
+
+        val serviceChargeRp = binding.tvJmlServiceCharge.text
+        if(serviceChargeRp != "")
+            text += "[L]Service Charge[R]$serviceChargeRp\n"
+
+        text += "[C]--------------------------------\n"+
+                "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                "[L]\n"+
+                "[C]- Terima Kasih -"
+
+        return printer.addTextToPrint(text)
     }
 
     private fun gantiKetitik(value: String): String {
@@ -429,6 +606,14 @@ class MainCetakLokal : AppCompatActivity() {
         get() {
             val dateFormat: DateFormat =
                 SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+            val date = Date()
+            return dateFormat.format(date)
+        }
+
+    private val dateTahun: String
+        get() {
+            val dateFormat: DateFormat =
+                SimpleDateFormat("yyyy", Locale.getDefault())
             val date = Date()
             return dateFormat.format(date)
         }
