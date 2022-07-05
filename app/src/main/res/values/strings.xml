@@ -147,4 +147,9 @@
     <string name="tab_text_2">Data Lokal</string>
     <string name="title_activity_main2">Main2Activity</string>
 
+    <string name="downloading">Downloading&#8230;</string>
+    <string name="title_file_download">File is downloading</string>
+    <string name="storage_access_required">Storage access is required to downloading the file.</string>
+    <string name="storage_permission_denied">Storage permission request was denied.</string>
+    <string name="ok">OK</string>
 </resources>

@@ -5,8 +5,11 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -32,12 +35,14 @@ import com.dnhsolution.restokabmalang.databinding.ActivityMainCetakBinding
 import com.dnhsolution.restokabmalang.utilities.TampilanBarcode
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.zj.btsdk.BluetoothService
+import java.io.File
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainCetakLokal : AppCompatActivity() {
+    private var bitmap: Bitmap? = null
     private var idPengguna: String? = null
     private lateinit var rvData: RecyclerView
     var itemProduk: MutableList<ItemProduk>? = null
@@ -175,24 +180,10 @@ class MainCetakLokal : AppCompatActivity() {
             printBluetooth()
         }
 
-//        var ch11 = ""
-//        var ch12 = ""
-//        var ch = 'A'
-//        var ch2 = 'A'
-//
-//        while (ch <= 'Z') {
-//            while (ch2 <= 'Z') {
-//                if (ch == 'A' && ch2 == 'B') {
-//                    ++ch2
-//                    ch11 = ch.toString()
-//                    ch12 = ch2.toString()
-//                    break
-//                }
-//                ++ch2
-//            }
-//            ++ch
-//        }
-//        println("asdf $ch11$ch12")
+        var destinationFile = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/"
+        destinationFile += "ic_malang_makmur_grayscale.png"
+        bitmap = BitmapFactory.decodeFile(destinationFile)
+        bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(destinationFile),128,112,true)
     }
 
     private fun browseBluetoothDevice() {
@@ -388,9 +379,13 @@ class MainCetakLokal : AppCompatActivity() {
         val alamat = sharedPreferences.getString(Url.SESSION_ALAMAT, "0")
         val tanggal = dateTime
         var text = "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                DisplayMetrics.DENSITY_LOW, theme
-            )) + "</img>\n" +
+                    applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                        DisplayMetrics.DENSITY_LOW, theme
+                    )) + "</img>\n" +
+                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+                    applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                        DisplayMetrics.DENSITY_LOW, theme
+                    )) + "</img>\n" +
                 "[L]\n"+
                 "[C]<b>$nmTmpUsaha</b>\n"+
                 "[C]$alamat\n"+
@@ -528,12 +523,8 @@ class MainCetakLokal : AppCompatActivity() {
                 val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
                 text += "[L]\n" +
                         "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
-                    printer,
-                    applicationContext.resources.getDrawableForDensity(
-                        R.drawable.ic_malang_makmur_grayscale,
-                        DisplayMetrics.DENSITY_LOW, theme
-                    )
-                ) + "</img>\n" +
+                            printer, bitmap
+                        ) + "</img>"
                         "[L]\n" +
                         "[C]<b>$nmTmpUsaha</b>\n" +
                         "[C]$alamat\n" +

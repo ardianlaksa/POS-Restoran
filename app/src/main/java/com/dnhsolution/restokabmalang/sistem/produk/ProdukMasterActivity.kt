@@ -379,8 +379,8 @@ class ProdukMasterActivity : AppCompatActivity() {
                         ft.remove(prev)
                     }
 //                  ft.addToBackStack(null)
-                    val dialogFragment = PilihanAttachmentFragmentDialog()
-                    dialogFragment.show(ft, "dialog")
+//                    val dialogFragment = PilihanAttachmentFragmentDialog()
+//                    dialogFragment.show(ft, "dialog")
                 }
                 else -> {
                 }

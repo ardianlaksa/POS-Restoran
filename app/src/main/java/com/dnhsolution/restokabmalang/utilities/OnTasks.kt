@@ -1,5 +1,12 @@
 package com.dnhsolution.restokabmalang.utilities
 
+import com.dnhsolution.restokabmalang.MainActivity
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.Streaming
+
+
 interface DataTersimpanLongClick {
     fun dataTersimpanLongClick(result:String?)
 }
@@ -52,4 +59,8 @@ internal interface OnDataFetched {
     fun showProgressBar()
     fun hideProgressBar()
     fun setDataInPageWithResult(result: Any?)
+}
+
+interface DownloadFileNetworkResult {
+    fun downloadFileNetworkResult(result: Any?)
 }

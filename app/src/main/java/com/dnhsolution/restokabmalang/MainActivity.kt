@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.RetryPolicy
@@ -22,9 +23,12 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.dnhsolution.restokabmalang.dashboard.DashFragment
+import com.dnhsolution.restokabmalang.data.DataFragment2
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
+import com.dnhsolution.restokabmalang.databinding.ActivityMainBinding
 import com.dnhsolution.restokabmalang.sistem.MainSistem
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity
+import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
@@ -35,10 +39,6 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.fragment.app.FragmentManager
-import com.dnhsolution.restokabmalang.data.DataFragment2
-import com.dnhsolution.restokabmalang.databinding.ActivityMainBinding
-import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,6 +60,8 @@ class MainActivity : AppCompatActivity() {
         var namaTempatUsaha: String? = null
         var alamatTempatUsaha: String? = null
         var label: String? = null
+        val messageProgress = "message_progress"
+        var versiTerbaru: String = "0"
     }
 
     private val _tag = javaClass.simpleName
@@ -120,11 +122,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if(CheckNetwork().checkingNetwork(this)) {
-            getConfig()
-        } else {
-            Toast.makeText(this, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
-        }
+//        if(CheckNetwork().checkingNetwork(this)) {
+//            getConfig()
+//        } else {
+//            Toast.makeText(this, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+//        }
 
         databaseHandler = DatabaseHandler(this)
 
@@ -438,72 +440,73 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun getConfig() {
-        Log.d("PESAN", "GET CONFIG RUN")
-        val queue = Volley.newRequestQueue(this)
-        val url = Url.getBatasWaktu
-        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
-        val stringRequest = object : StringRequest(Request.Method.POST, url,
-            Response.Listener { response ->
-                try {
-                    val jsonObject = JSONObject(response)
-                    Log.i("json", jsonObject.toString())
-                    val jsonArray = jsonObject.getJSONArray("result")
-                    var json = jsonArray.getJSONObject(0)
-                    val pesan = json.getString("pesan")
-                    if (pesan.equals("0", ignoreCase = true)) {
-                       Log.d("PESAN", "ERROR GET DATA")
-                    } else if (pesan.equals("1", ignoreCase = true)) {
-                        var batas : String = json.getString("BATAS_WAKTU_SINKRON")
-                        Log.d("PESAN", "SUCCESS GET DATA")
-                        val sharedPreferences =
-                            this!!.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
-
-                        //membuat editor untuk menyimpan data ke shared preferences
-                        val editor = sharedPreferences.edit()
-
-                        //menambah data ke editor
-                        editor.putString(Url.SESSION_BATAS_WAKTU, batas)
-
-                        //menyimpan data ke editor
-                        editor.apply()
-                    } else {
-                        Log.d("PESAN", "JARINGAN SIBUK !")
-                    }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-
-                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
-
-            }, Response.ErrorListener { error ->
-                Log.d("ERROR", error.toString())
-                //Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show()
-            }) {
-            override fun getParams(): Map<String, String> {
-                val params = HashMap<String, String>()
-                params["status"] = "ok"
-
-                return params
-            }
-        }
-        stringRequest.retryPolicy = object : RetryPolicy {
-            override fun getCurrentTimeout(): Int {
-                return 50000
-            }
-
-            override fun getCurrentRetryCount(): Int {
-                return 50000
-            }
-
-            override fun retry(error: VolleyError) {
-
-            }
-        }
-
-        queue.add(stringRequest)
-
-    }
+//    private fun getConfig() {
+//        Log.d("PESAN", "GET CONFIG RUN")
+//        val queue = Volley.newRequestQueue(this)
+//        val url = Url.getBatasWaktu
+//        //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
+//        val stringRequest = object : StringRequest(Request.Method.POST, url,
+//            Response.Listener { response ->
+//                try {
+//                    val jsonObject = JSONObject(response)
+//                    Log.i("json", jsonObject.toString())
+//                    val jsonArray = jsonObject.getJSONArray("result")
+//                    var json = jsonArray.getJSONObject(0)
+//                    val pesan = json.getString("pesan")
+//                    if (pesan.equals("0", ignoreCase = true)) {
+//                       Log.d("PESAN", "ERROR GET DATA")
+//                    } else if (pesan.equals("1", ignoreCase = true)) {
+//                        var batas : String = json.getString("BATAS_WAKTU_SINKRON")
+//                        versiTerbaru = json.getString("VERSI_TERBARU")
+//                        Log.d("PESAN", "SUCCESS GET DATA")
+//                        val sharedPreferences =
+//                            this.getSharedPreferences(Url.SESSION_NAME, Context.MODE_PRIVATE)
+//
+//                        //membuat editor untuk menyimpan data ke shared preferences
+//                        val editor = sharedPreferences.edit()
+//
+//                        //menambah data ke editor
+//                        editor.putString(Url.SESSION_BATAS_WAKTU, batas)
+//
+//                        //menyimpan data ke editor
+//                        editor.apply()
+//                    } else {
+//                        Log.d("PESAN", "JARINGAN SIBUK !")
+//                    }
+//                } catch (e: JSONException) {
+//                    e.printStackTrace()
+//                }
+//
+//                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
+//
+//            }, Response.ErrorListener { error ->
+//                Log.d("ERROR", error.toString())
+//                //Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show()
+//            }) {
+//            override fun getParams(): Map<String, String> {
+//                val params = HashMap<String, String>()
+//                params["status"] = "ok"
+//
+//                return params
+//            }
+//        }
+//        stringRequest.retryPolicy = object : RetryPolicy {
+//            override fun getCurrentTimeout(): Int {
+//                return 50000
+//            }
+//
+//            override fun getCurrentRetryCount(): Int {
+//                return 50000
+//            }
+//
+//            override fun retry(error: VolleyError) {
+//
+//            }
+//        }
+//
+//        queue.add(stringRequest)
+//
+//    }
 
     private fun getDateTime(): String? {
         val dateFormat: DateFormat = SimpleDateFormat("yyyyMMdd")

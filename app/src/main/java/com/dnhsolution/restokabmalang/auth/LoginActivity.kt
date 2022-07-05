@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.telephony.TelephonyManager
 import android.text.Editable
 import android.text.InputType
@@ -28,14 +29,16 @@ import com.dnhsolution.restokabmalang.R
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.database.TblProdukKategori
 import com.dnhsolution.restokabmalang.databinding.ActivityLoginBinding
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.DownloadFileNetworkResult
+import com.dnhsolution.restokabmalang.utilities.TaskRunner
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
-
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
     private lateinit var sharedPreferences: SharedPreferences
     private var getAppDatabase: AppRoomDatabase? = null
     var etUsername: EditText? = null
@@ -54,6 +57,7 @@ class LoginActivity : AppCompatActivity() {
     private var uniqueID = ""
     private var versiApp = ""
     private var packageNameApp = ""
+    private var _tag = javaClass.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -195,7 +199,6 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 telephonyManager.deviceId
             }
-
     }
 
     @SuppressLint("ResourceAsColor")
@@ -340,15 +343,6 @@ class LoginActivity : AppCompatActivity() {
                         editor.putString(Url.SESSION_NAME, namaUser)
                         editor.putString(Url.SESSION_NAMA_PETUGAS, namaPetugas)
                         editor.putInt(Url.SESSION_SERVICE_CHARGE, serviceCharge)
-//                        var pajakPersen = 0
-//                        when {
-//                            idJenisPajak.equals("02", ignoreCase = true) -> pajakPersen =
-//                                10
-//                            idJenisPajak.equals("01", ignoreCase = true) -> pajakPersen =
-//                                35
-//                            idJenisPajak.equals("03", ignoreCase = true) -> pajakPersen =
-//                                35
-//                        }
                         editor.putInt(Url.SESSION_PAJAK_PERSEN, persenPajak)
                         editor.putString(Url.SESSION_JENIS_PAJAK, idJenisPajak)
                         editor.putInt(Url.SESSION_ID_HIBURAN_NOMOR, idHiburanNomor)
@@ -439,8 +433,21 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            startActivity(Intent(applicationContext, MainActivity::class.java))
-            finishAffinity()
+            if(CheckNetwork().checkingNetwork(this)) {
+                val stringUrl = Url.getDownloadLogoMalangMakmur
+                val destination =
+                    getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
+                Log.i(_tag,stringUrl)
+                val runner = TaskRunner()
+                runner.executeAsync(DownloadFileNetworkTask(this,stringUrl,destination))
+            } else {
+                Toast.makeText(this, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+            }
         }.start()
+    }
+
+    override fun downloadFileNetworkResult(result: Any?) {
+        startActivity(Intent(applicationContext, MainActivity::class.java))
+        finishAffinity()
     }
 }

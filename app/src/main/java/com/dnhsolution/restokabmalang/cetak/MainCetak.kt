@@ -6,8 +6,11 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -56,7 +59,9 @@ import java.util.*
 
 open class MainCetak : AppCompatActivity() {
 
-//    private var rangeTransaksiKarcisAkhir: String = "0"
+    private var bitmap: Bitmap? = null
+
+    //    private var rangeTransaksiKarcisAkhir: String = "0"
     private var idHiburanNomor: String = ""
     private var nomorTerakhirKarcis: String = ""
     private var iQty: Int = 0
@@ -250,6 +255,11 @@ open class MainCetak : AppCompatActivity() {
         }
 
         getData
+
+        var destinationFile = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/"
+        destinationFile += "ic_malang_makmur_grayscale.png"
+        bitmap = BitmapFactory.decodeFile(destinationFile)
+        bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(destinationFile),128,112,true)
     }
 
     open fun browseBluetoothDevice() {
@@ -713,12 +723,9 @@ open class MainCetak : AppCompatActivity() {
                 val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
                 text += "[L]\n" +
                         "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
-                    printer,
-                    applicationContext.resources.getDrawableForDensity(
-                        R.drawable.ic_malang_makmur_grayscale,
-                        DisplayMetrics.DENSITY_LOW, theme
-                    )
-                ) + "</img>\n" +
+                            printer,
+                            bitmap
+                        ) + "</img>\n" +
                         "[L]\n" +
                         "[C]<b>$nmTmpUsaha</b>\n" +
                         "[C]$alamat\n" +

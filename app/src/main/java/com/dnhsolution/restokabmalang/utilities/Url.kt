@@ -31,6 +31,7 @@ object Url {
     const val SESSION_USERNAME = "username"
     const val SESSION_NAMA_PETUGAS = "namaPetugas"
 
+    const val getConfig = "${serverPos}getConfig"
     const val setLabel = "label"
     const val setTema = "tema"
     const val setHapusProduk = "${serverPos}setHapusProduk"
@@ -47,6 +48,10 @@ object Url {
     const val setTambahProduk = "${serverPos}TambahData"
     const val setUpdateProduk = "${serverPos}UpdateData"
     const val getDataStruk = "${serverPos}getDataStruk"
-    const val setUpdateHiburanNomor = "${Url.serverPos}setUpdateHiburanNomor"
-    const val notifEmailPdfHarian = "${Url.serverPos}notifEmailPdfHarian"
+    const val setUpdateHiburanNomor = "${serverPos}setUpdateHiburanNomor"
+    const val notifEmailPdfHarian = "${serverPos}notifEmailPdfHarian"
+
+    const val getDownloadApk = "${serverBase}etax/file_etax/POS_Android.apk"
+    const val getDownloadLogoMalangMakmur = "${serverBase}etax/file_etax/ic_malang_makmur_grayscale.png"
+
 }

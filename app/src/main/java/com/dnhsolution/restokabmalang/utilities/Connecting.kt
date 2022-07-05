@@ -173,6 +173,59 @@ class Connecting {
         }
     }
 
+    @Throws(IOException::class)
+    fun downloadFile(fileURL: String, saveDir: String) {
+        val url = URL(fileURL)
+        val httpConn = url.openConnection() as HttpURLConnection
+        val responseCode = httpConn.responseCode
+
+        // always check HTTP response code first
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            var fileName = ""
+            val disposition = httpConn.getHeaderField("Content-Disposition")
+            val contentType = httpConn.contentType
+            val contentLength = httpConn.contentLength
+            if (disposition != null) {
+                // extracts file name from header field
+                val index = disposition.indexOf("filename=")
+                if (index > 0) {
+                    fileName = disposition.substring(
+                        index + 10,
+                        disposition.length - 1
+                    )
+                }
+            } else {
+                // extracts file name from URL
+                fileName = fileURL.substring(
+                    fileURL.lastIndexOf("/") + 1,
+                    fileURL.length
+                )
+            }
+            println("Content-Type = $contentType")
+            println("Content-Disposition = $disposition")
+            println("Content-Length = $contentLength")
+            println("fileName = $fileName")
+
+            // opens input stream from the HTTP connection
+            val inputStream = httpConn.inputStream
+            val saveFilePath = saveDir + File.separator.toString() + fileName
+
+            // opens an output stream to save into file
+            val outputStream = FileOutputStream(saveFilePath)
+            var bytesRead = -1
+            val buffer = ByteArray(4096)
+            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                outputStream.write(buffer, 0, bytesRead)
+            }
+            outputStream.close()
+            inputStream.close()
+            println("File downloaded")
+        } else {
+            println("No file to download. Server replied HTTP code: $responseCode")
+        }
+        httpConn.disconnect()
+    }
+
     private fun addFileFormField(dataOutputStream: DataOutputStream, parameter: String, filename: String) {
         try {
             dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd)
