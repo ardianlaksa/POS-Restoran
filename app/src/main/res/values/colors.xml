@@ -5,9 +5,12 @@
     <color name="colorAccent">#00574B</color>
 
     <color name="blackTransparent50">#50000000</color>
+    <color name="green_100">#E9FFF2</color>
     <color name="green_200">#55cf86</color>
     <color name="green_500">#0f9d58</color>
     <color name="green_700">#006d2d</color>
     <color name="translucent_black">#80000000</color>
     <color name="bg_loading">#dddddd</color>
+    <color name="light_gray">#DCDCDC</color>
+
 </resources>

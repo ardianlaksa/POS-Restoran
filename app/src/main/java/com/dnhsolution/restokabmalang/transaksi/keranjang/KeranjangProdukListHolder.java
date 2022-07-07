@@ -30,6 +30,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
     private final Activity activity;
     private final ImageButton minus,plus;
     private final String _tag = "SelectedProdukList";
+    private final View vBorderBottom;
 
     static KeranjangProdukListHolder newInstance(View parent, Activity activity) {
         ImageView ivItem = parent.findViewById(R.id.ivItem);
@@ -39,13 +40,14 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         ImageButton bMinus = parent.findViewById(R.id.bMinus);
         ImageButton bPlus = parent.findViewById(R.id.bPlus);
         TextView tvTotalPrice = parent.findViewById(R.id.tvTotalPrice);
+        View vBorderBottom = parent.findViewById(R.id.vBorderBottom);
         return new KeranjangProdukListHolder(parent, activity, ivItem, tvJudul, tvPrice, tvJumlahProduk
-                , bMinus, bPlus, tvTotalPrice);
+                , bMinus, bPlus, tvTotalPrice, vBorderBottom);
     }
 
     private KeranjangProdukListHolder(final View parent, final Activity activity, ImageView ivItem, TextView judul
             , final TextView price, final TextView jumlahProduk, final ImageButton minus, final ImageButton plus,
-                                      final TextView totalPrice) {
+                                      final TextView totalPrice, final View vBorderBottom) {
         super(parent);
         this.activity = activity;
         this.ivItem = ivItem;
@@ -56,6 +58,7 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         this.plus = plus;
         this.totalPrice = totalPrice;
         view = parent;
+        this.vBorderBottom = vBorderBottom;
 
         parent.setOnClickListener(v -> {
 //                String dId = mId.getText().toString();
@@ -63,12 +66,15 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    void setValues(final KeranjangProdukItemOnTask onTask, final ProdukSerializable obyek, final int position) {
+    void setValues(final KeranjangProdukItemOnTask onTask, final ProdukSerializable obyek,
+                   final int position, final int jmlProdukDipesan) {
         int jumlah = obyek.getQty();
         Log.i(_tag, "setValue : "+jumlah+", posisi "+position);
         judul.setText(obyek.getName());
         final String priceValue = obyek.getPrice();
         if (priceValue == null) return;
+
+        if (jmlProdukDipesan-1 == position) vBorderBottom.setVisibility(View.GONE);
 
         String rupiahPrice = new AddingIDRCurrency().formatIdrCurrencyNonKoma(Double.parseDouble(priceValue));
         price.setText(rupiahPrice);

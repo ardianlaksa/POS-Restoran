@@ -4,127 +4,141 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="@dimen/_8"
-    android:paddingBottom="@dimen/_8">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        tools:ignore="ContentDescription"
-        android:id="@+id/ivItem"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHorizontal_weight="0.2"
-        android:src="@drawable/img_no_image"
-        android:scaleType="fitXY"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/ll2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/ll1"/>
-
-    <LinearLayout
-        android:id="@+id/ll1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHorizontal_weight="0.4"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/ivItem"
-        app:layout_constraintRight_toLeftOf="@id/ll2"
-        android:layout_marginStart="@dimen/_4"
-        android:layout_marginLeft="@dimen/_4"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvJudul"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:text="@string/judul"
-            android:fontFamily="@font/nunitosansregular"/>
-
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_4"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="@dimen/f_14"
-            android:fontFamily="@font/nunitosansregular"
-            android:text="@string/rp_0"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll2"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/ll1"
-        app:layout_constraintHorizontal_weight="0.4"
-        android:orientation="vertical">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="@dimen/_12"
+        android:paddingBottom="@dimen/_12">
+
+        <ImageView
+            tools:ignore="ContentDescription"
+            android:id="@+id/ivItem"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_8"
+            app:layout_constraintHorizontal_weight="0.2"
+            android:src="@drawable/img_no_image"
+            android:scaleType="fitXY"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/ll2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/ll1"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:orientation="horizontal">
-
-            <ImageButton
-                tools:ignore="ContentDescription"
-                android:id="@+id/bMinus"
-                android:layout_width="@dimen/_36"
-                android:layout_height="@dimen/_36"
-                android:background="@drawable/ic_minus_64px" />
+            android:id="@+id/ll1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHorizontal_weight="0.4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/ivItem"
+            app:layout_constraintRight_toLeftOf="@id/ll2"
+            android:layout_marginStart="@dimen/_4"
+            android:layout_marginLeft="@dimen/_4"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvJumlahProduk"
-                android:layout_width="@dimen/_36"
-                android:layout_height="@dimen/_36"
-                android:text="@string/_1"
-                android:gravity="center"
-                android:ems="3"
-                android:background="@drawable/btlm_line_shape" />
+                android:id="@+id/tvJudul"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:text="@string/judul"
+                android:fontFamily="@font/nunitosansregular"/>
 
-            <ImageButton
-                tools:ignore="ContentDescription"
-                android:id="@+id/bPlus"
-                android:layout_width="@dimen/_36"
-                android:layout_height="@dimen/_36"
-                android:background="@drawable/ic_plus_64px" />
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_10"
+                android:fontFamily="@font/nunitosansregular"
+                android:text="@string/rp_0"
+                android:textColor="@android:color/darker_gray"/>
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvTotalPrice"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_4"
-            android:layout_marginRight="@dimen/_8"
             android:layout_marginEnd="@dimen/_8"
-            android:layout_gravity="end"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="@dimen/f_18"
-            android:fontFamily="@font/nunitosansregular"
-            android:text="@string/rp_0"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/ll1"
+            app:layout_constraintHorizontal_weight="0.4"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:orientation="horizontal"
+                android:layout_marginEnd="@dimen/_8"
+                android:paddingStart="@dimen/_4"
+                android:paddingEnd="@dimen/_4"
+                android:background="@drawable/four_round_border">
+
+                <ImageButton
+                    tools:ignore="ContentDescription"
+                    android:id="@+id/bMinus"
+                    android:layout_width="@dimen/_20"
+                    android:layout_height="@dimen/_20"
+                    android:background="@drawable/ic_baseline_remove_24_greendark" />
+
+                <TextView
+                    android:id="@+id/tvJumlahProduk"
+                    android:layout_width="@dimen/_16"
+                    android:layout_height="@dimen/_16"
+                    android:layout_marginStart="@dimen/_12"
+                    android:layout_marginEnd="@dimen/_12"
+                    android:textSize="@dimen/f_10"
+                    android:text="@string/_1"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:ems="3"
+                    android:textColor="@android:color/darker_gray" />
+
+                <ImageButton
+                    tools:ignore="ContentDescription"
+                    android:id="@+id/bPlus"
+                    android:layout_width="@dimen/_20"
+                    android:layout_height="@dimen/_20"
+                    android:background="@drawable/ic_baseline_add_24_greendark" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTotalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4"
+                android:layout_marginRight="@dimen/_8"
+                android:layout_marginEnd="@dimen/_8"
+                android:layout_gravity="end"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/f_18"
+                android:fontFamily="@font/nunitosansregular"
+                android:text="@string/rp_0"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/vBorderBottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1"
-        app:layout_constraintTop_toBottomOf="@id/ll2"
+        app:layout_constraintTop_toBottomOf="@id/cl1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="@dimen/_8"
-        android:layout_marginStart="@dimen/_12"
-        android:layout_marginLeft="@dimen/_12"
-        android:layout_marginEnd="@dimen/_12"
-        android:layout_marginRight="@dimen/_12"
         android:background="@color/colorAccent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

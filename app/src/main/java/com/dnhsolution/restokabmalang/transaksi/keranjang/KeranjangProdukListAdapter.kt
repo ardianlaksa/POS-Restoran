@@ -38,7 +38,7 @@ class KeranjangProdukListAdapter(itemList: ArrayList<ProdukSerializable>, privat
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val holder = viewHolder as KeranjangProdukListHolder
         val itemText = mItemList!![position]
-        holder.setValues(onTask,itemText,position)
+        holder.setValues(onTask,itemText,position,mItemList!!.size)
     }
 
     override fun getItemCount(): Int {
