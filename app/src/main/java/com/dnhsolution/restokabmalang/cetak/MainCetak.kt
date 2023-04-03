@@ -679,6 +679,9 @@ open class MainCetak : AppCompatActivity() {
         val alamat = MainActivity.alamatTempatUsaha
         val namaPetugas = MainActivity.namaPetugas
         val tanggal = dateTime
+        val splTanggal = tanggal.split("-")
+        val hari = splTanggal[0]
+        val bulan = splTanggal[1]
         var text = ""
         for (h in itemProduk!!.indices) {
             val nomorKarcis = itemProduk!![h].nomorKarcis
@@ -698,6 +701,10 @@ open class MainCetak : AppCompatActivity() {
                 var pnk = pisahNomorKarcis[4].toInt() + i // asli
 //                var pnk = 5000 + i
                 var nomorSeriBaru = pisahNomorKarcis[3]
+                if(hari == "01" && bulan == "01"){
+                    pnk = 1
+                    nomorSeriBaru = "AA"
+                }
                 val seriToCharArray = nomorSeriBaru.toCharArray()
                 if(rangeKarcisAkhir < pnk) {
                     var ch11 = ""

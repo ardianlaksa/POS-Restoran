@@ -118,7 +118,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cvTransaksi"
+            android:id="@+id/cvTransaksiTersimpan"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="100dp"
@@ -170,6 +170,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cvBatas"
             android:visibility="visible"
             android:layout_width="0dp"
             android:layout_weight="1"

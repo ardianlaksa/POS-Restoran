@@ -10,8 +10,8 @@ class AddingIDRCurrency {
         var fText = formatter.format(value)
         fText = fText.format(value).replace(".","-")
         fText = fText.replace(",",".")
-        fText = fText.replace("-",",")
-        var rupiah = String.format(Locale.getDefault(), "Rp %s", fText)
+//        fText = fText.replace("-",",")
+        var rupiah = String.format(Locale.getDefault(), "Rp. %s", fText)
         if (!rupiah.contains(",")) rupiah = "$rupiah,00"
         return rupiah
     }
@@ -21,8 +21,8 @@ class AddingIDRCurrency {
         var fText = formatter.format(value)
         fText = fText.format(value).replace(".","-")
         fText = fText.replace(",",".")
-        fText = fText.replace("-",",")
-        var rupiah = String.format(Locale.getDefault(), "Rp %s", fText)
+//        fText = fText.replace("-",",")
+        var rupiah = String.format(Locale.getDefault(), "Rp. %s", fText)
         return rupiah
     }
 }

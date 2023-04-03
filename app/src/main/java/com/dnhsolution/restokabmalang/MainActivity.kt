@@ -30,7 +30,6 @@ import com.dnhsolution.restokabmalang.sistem.MainSistem
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
 import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
-import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.json.JSONException
@@ -39,6 +38,7 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -202,6 +202,7 @@ class MainActivity : AppCompatActivity() {
                     return@setOnItemSelectedListener false
                 }
             }
+
             false
         }
 

@@ -92,6 +92,7 @@
 
     <string name="batas_waktu_sinkron">Batas Waktu Sinkron</string>
     <string name="batal_transaksi">Batal Transaksi</string>
+    <string name="bayar_tidak_valid">Bayar Tidak Valid</string>
     <string name="billing">Billing</string>
     <string name="bluetooth_tidak_didukung">Bluetooth tidak didukung</string>
     <string name="bluetooth_tidak_aktif">Bluetooth tidak aktif</string>

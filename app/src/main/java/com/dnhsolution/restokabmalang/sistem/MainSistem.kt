@@ -152,6 +152,24 @@ class MainSistem : AppCompatActivity() {
                     ThemeFragment::class.java
                 )
             )
+
+//            val a = "1. Transaksi tersimpan : Transaksi yang dilakukan saat tidak ada koneksi.\n" +
+//                    "2. Batas Waktu Sinkron : Batasan waktu maksimal untuk upload transaksi saat tidak ada koneksi internet."
+//            val builder = ShowcaseManager.Builder()
+//            builder.context(this)
+//                .key("KEY")
+//                .developerMode(true)
+//                .view(btnTheme!!)
+//                .descriptionImageRes(R.drawable.ic_malang_makmur)
+//                .descriptionTitle("Bantuan")
+//                .descriptionText(a)
+//                .buttonText("Tutup")
+//                .buttonVisibility(true)
+//                .cancelButtonVisibility(true)
+//                .cancelButtonColor(R.color.white)
+//                .add()
+//                .build()
+//                .show()
         }
 
 //        if(jenisPajak == "03")

@@ -51,11 +51,14 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.bProses -> {
+                println("asdf $valueTotalPrice $valueDiskonRupiah $valueBayar $isDiskonValid $isBayarValid")
                 if(isDiskonValid) {
-                    val jumlahObjek = obyek?.size ?: 0
-                    if (jumlahObjek > 0)
-                        showDialog("Konfirmasi", "Apakan anda ingin memproses?")
-                    else Toast.makeText(applicationContext, R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                    if(isBayarValid){
+                        val jumlahObjek = obyek?.size ?: 0
+                        if (jumlahObjek > 0)
+                            showDialog("Konfirmasi", "Apakan anda ingin memproses?")
+                        else Toast.makeText(applicationContext, R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                    } else Toast.makeText(applicationContext, R.string.bayar_tidak_valid, Toast.LENGTH_SHORT).show()
                 } else Toast.makeText(this,R.string.diskon_tidak_valid,Toast.LENGTH_SHORT).show()
             }
         }
@@ -67,6 +70,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var idHiburanNomor: Int? = null
     private lateinit var sharedPreferences: SharedPreferences
     private var isDiskonValid: Boolean = true
+    private var isBayarValid: Boolean = true
     private var omzetRp: Int = 0
     private var tipeStruk: String? = null
     private var pajakRp: Float = 0F
@@ -285,6 +289,9 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 val valueKembalianUang = AddingIDRCurrency().formatIdrCurrencyNonKoma((valueBayar-valueTotalPrice).toDouble())
                 binding.tvValueKembalianUang.text = valueKembalianUang
 
+                isDiskonValid = valueTotalPrice >= valueDiskonRupiah
+                isBayarValid = valueBayar >= valueTotalPrice
+
             }
         })
 
@@ -396,6 +403,12 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
         val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
         binding.tvDiskonTotal.text = rupiahValue
+
+        val kembalian = valueBayar-valueTotalPrice
+        binding.tvValueKembalianUang.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(kembalian.toDouble())
+
+        isDiskonValid = valueTotalPrice >= valueDiskonRupiah
+        isBayarValid = valueBayar >= valueTotalPrice
     }
 
     private fun setDiskonDanTotalRupiah (ttlPjk: Int, totalPrice: Int) {
@@ -423,6 +436,9 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     valueDR = ((diskonRupiah*100)/totalPrice).toDouble()
                     val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
                     binding.tvDiskonTotal.text = rupiahValue
+
+                    val kembalian = valueBayar-valueTotalPrice
+                    binding.tvValueKembalianUang.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(kembalian.toDouble())
                 }
                 else -> {
                     diskonRupiah = valueDiskonRupiah
@@ -436,6 +452,9 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                     binding.tvDiskonTotal.text = rupiahValue
                     pajakRp = 0F
                     binding.tvPajak.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(0.0)
+
+                    val kembalian = valueBayar-valueTotalPrice
+                    binding.tvValueKembalianUang.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(kembalian.toDouble())
                 }
             }
         }else{
@@ -455,8 +474,12 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
 
             val rupiahValue = AddingIDRCurrency().formatIdrCurrencyNonKoma(valueTotalPrice.toDouble())
             binding.tvDiskonTotal.text = rupiahValue
+
+            val kembalian = valueBayar-valueTotalPrice
+            binding.tvValueKembalianUang.text = AddingIDRCurrency().formatIdrCurrencyNonKoma(kembalian.toDouble())
         }
-        isDiskonValid = totalPrice >= valueDiskonRupiah
+        isDiskonValid = valueTotalPrice >= valueDiskonRupiah
+        isBayarValid = valueBayar >= valueTotalPrice
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

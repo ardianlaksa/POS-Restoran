@@ -39,6 +39,8 @@ import org.json.JSONObject
 import java.util.*
 
 class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
+    private lateinit var progressDialog1: ProgressDialog
+    private var logo: String = ""
     private lateinit var sharedPreferences: SharedPreferences
     private var getAppDatabase: AppRoomDatabase? = null
     var etUsername: EditText? = null
@@ -76,7 +78,7 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
         et2 = binding.et2
         et3 = binding.et3
         et4 = binding.et4
-//        uniqueID = UUID.randomUUID().toString()
+        uniqueID = UUID.randomUUID().toString()
         versiApp = BuildConfig.VERSION_CODE.toString() + "." + BuildConfig.VERSION_NAME
         getAppDatabase = AppRoomDatabase.getAppDataBase(this)
 
@@ -191,14 +193,14 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
             handled
         })
 
-        val telephonyManager: TelephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        uniqueID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if(telephonyManager.phoneType == TelephonyManager.PHONE_TYPE_CDMA)
-                    telephonyManager.meid
-                else telephonyManager.imei
-            } else {
-                telephonyManager.deviceId
-            }
+//        val telephonyManager: TelephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+//        uniqueID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                if(telephonyManager.phoneType == TelephonyManager.PHONE_TYPE_CDMA)
+//                    telephonyManager.meid
+//                else telephonyManager.imei
+//            } else {
+//                telephonyManager.deviceId
+//            }
     }
 
     @SuppressLint("ResourceAsColor")
@@ -282,9 +284,9 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
     }
 
     private fun sendData() {
-        val progressDialog = ProgressDialog(this@LoginActivity)
-        progressDialog.setMessage("Loading...")
-        progressDialog.show()
+        progressDialog1 = ProgressDialog(this@LoginActivity)
+        progressDialog1.setMessage("Loading...")
+        progressDialog1.show()
         val queue = Volley.newRequestQueue(this@LoginActivity)
         val url = Url.serverPos + "Auth"
         //Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_LONG).show();
@@ -322,6 +324,7 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
                         val persenPajak = json.getInt("PERSEN_PAJAK")
                         val idHiburanNomor = json.getInt("ID_HIBURAN_NOMOR")
                         val serviceCharge = json.getInt("SERVICE_CHARGE")
+                        logo = json.getString("LOGO")
 
                         //membuat editor untuk menyimpan data ke shared preferences
                         val editor = sharedPreferences.edit()
@@ -346,6 +349,7 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
                         editor.putInt(Url.SESSION_PAJAK_PERSEN, persenPajak)
                         editor.putString(Url.SESSION_JENIS_PAJAK, idJenisPajak)
                         editor.putInt(Url.SESSION_ID_HIBURAN_NOMOR, idHiburanNomor)
+                        editor.putString(Url.SESSION_LOGO, logo)
 
                         //menyimpan data ke editor
                         editor.apply()
@@ -362,10 +366,10 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
                     e.printStackTrace()
                 }
                 //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss()
+                progressDialog1.dismiss()
                 btnLogin!!.isEnabled = true
             }, Response.ErrorListener { error: VolleyError ->
-                progressDialog.dismiss()
+                progressDialog1.dismiss()
                 btnLogin!!.isEnabled = true
                 Toast.makeText(this@LoginActivity, error.toString(), Toast.LENGTH_SHORT).show()
             }) {
@@ -434,7 +438,7 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
             }
 
             if(CheckNetwork().checkingNetwork(this)) {
-                val stringUrl = Url.getDownloadLogoMalangMakmur
+                val stringUrl = "${Url.serverFoto}$logo"
                 val destination =
                     getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
                 Log.i(_tag,stringUrl)
@@ -447,6 +451,7 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
     }
 
     override fun downloadFileNetworkResult(result: Any?) {
+        progressDialog1.dismiss()
         startActivity(Intent(applicationContext, MainActivity::class.java))
         finishAffinity()
     }

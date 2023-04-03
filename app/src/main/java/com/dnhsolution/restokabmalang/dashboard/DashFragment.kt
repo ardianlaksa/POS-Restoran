@@ -1,70 +1,65 @@
 package com.dnhsolution.restokabmalang.dashboard
 
 import android.Manifest
-import com.dnhsolution.restokabmalang.MainActivity.Companion.jenisPajak
-import com.dnhsolution.restokabmalang.MainActivity.Companion.adDashboard
-import com.dnhsolution.restokabmalang.MainActivity.Companion.messageProgress
-import android.database.sqlite.SQLiteDatabase
-import android.os.Bundle
-import com.dnhsolution.restokabmalang.database.DatabaseHandler
-import com.dnhsolution.restokabmalang.R
-import com.dnhsolution.restokabmalang.MainActivity
-import androidx.core.content.ContextCompat
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestListener
-import android.graphics.drawable.Drawable
-import com.bumptech.glide.load.engine.GlideException
-import android.os.Environment
-import android.os.Build
-import android.provider.MediaStore
-import androidx.core.content.FileProvider
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
+import android.provider.MediaStore
 import android.provider.Settings
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.RetryPolicy
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.dnhsolution.restokabmalang.BuildConfig
+import com.dnhsolution.restokabmalang.MainActivity
+import com.dnhsolution.restokabmalang.MainActivity.Companion.adDashboard
+import com.dnhsolution.restokabmalang.MainActivity.Companion.jenisPajak
+import com.dnhsolution.restokabmalang.R
+import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.databinding.FragmentDashboard2Binding
 import com.dnhsolution.restokabmalang.sistem.produk.RealPathUtil
-import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.IsPajakSpinAdapter
-import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.ProdukMasterListFragment
-import com.dnhsolution.restokabmalang.sistem.produk.tab_fragment.TipeProdukSpinAdapter
-import com.dnhsolution.restokabmalang.transaksi.KategoriElement
-import com.dnhsolution.restokabmalang.transaksi.KategoriListViewModel
-import com.dnhsolution.restokabmalang.transaksi.KategoriListlement
-import com.dnhsolution.restokabmalang.utilities.*
+import com.dnhsolution.restokabmalang.utilities.CheckNetwork
+import com.dnhsolution.restokabmalang.utilities.DownloadController
+import com.dnhsolution.restokabmalang.utilities.DownloadService
+import com.dnhsolution.restokabmalang.utilities.Url
+import com.dnhsolution.restokabmalang.utilities.dialog.AdapterWizard
 import com.dnhsolution.restokabmalang.utilities.dialog.ItemView
-import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
 import java.io.*
-import java.lang.NumberFormatException
-import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class DashFragment : Fragment() {
     private var sharedPreferences: SharedPreferences? = null
@@ -83,6 +78,7 @@ class DashFragment : Fragment() {
             layoutInflater
         )
         //        return inflater.inflate(R.layout.fragment_dashboard2, parent, false);
+
         return binding!!.root
     }
 
@@ -126,8 +122,32 @@ class DashFragment : Fragment() {
         batasSinkron()
 
         ivInfo?.setOnClickListener {
-                tampilAlertDialogTutorial()
+            tampilAlertDialogTutorial()
         }
+
+        binding?.cvTransaksiTersimpan?.setOnClickListener {
+            GuideView.Builder(requireContext())
+                .setTitle("Keterangan")
+                .setContentText("Jumlah transaksi yang dilakukan saat mode offline.")
+                .setTargetView(binding?.cvTransaksiTersimpan)
+//            .setContentTypeFace(Typeface) //optional
+//            .setTitleTypeFace(Typeface) //optional
+                .setDismissType(DismissType.outside) //optional - default dismissible by TargetView
+                .build()
+                .show()
+        }
+        binding?.cvBatas?.setOnClickListener {
+            GuideView.Builder(requireContext())
+                .setTitle("Keterangan")
+                .setContentText("Batasan waktu maksimal untuk upload transaksi saat mode offline.")
+                .setTargetView(binding?.cvBatas)
+//            .setContentTypeFace(Typeface) //optional
+//            .setTitleTypeFace(Typeface) //optional
+                .setDismissType(DismissType.outside) //optional - default dismissible by TargetView
+                .build()
+                .show()
+        }
+
         if (adDashboard == 1) return
         adDashboard = 1
 
@@ -707,7 +727,8 @@ class DashFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_menu_bantuan) {
-            tampilAlertDialogTutorial()
+//            tampilAlertDialogTutorial()
+
             return true
         }
         return super.onOptionsItemSelected(item)
