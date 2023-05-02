@@ -283,11 +283,15 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                                     val rangeTransaksiProdukSplit = rangeTransaksiProduk.split("-")
 
                                     itemProduk.rangeTransaksiKarcisAwal = rangeTransaksiProdukSplit[0]
-                                    itemProduk.rangeTransaksiKarcisAkhir = rangeTransaksiProdukSplit[1]
+                                    if(rangeTransaksiProdukSplit.size > 1){
+                                        itemProduk.rangeTransaksiKarcisAkhir = rangeTransaksiProdukSplit[1]
+                                        Log.d("NM_BARANG", rangeTransaksiProdukSplit[1])
+                                    }else{
+                                        itemProduk.rangeTransaksiKarcisAkhir = ""
+                                    }
                                     itemProduk.rangeTransaksiKarcis = rangeTransaksiProduk
                                     itemProduk.status = true
 
-                                    Log.d("NM_BARANG", rangeTransaksiProdukSplit[1])
                                     if (databaseHandler!!.CountDataProdukId(idBarang.toInt()) == 0) tambahDataLokal(
                                         itemProduk
                                     )

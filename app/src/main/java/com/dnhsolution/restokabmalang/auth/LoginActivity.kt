@@ -448,6 +448,8 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
                 Toast.makeText(this, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
             }
         }.start()
+//        startActivity(Intent(applicationContext, MainActivity::class.java))
+//        finishAffinity()
     }
 
     override fun downloadFileNetworkResult(result: Any?) {

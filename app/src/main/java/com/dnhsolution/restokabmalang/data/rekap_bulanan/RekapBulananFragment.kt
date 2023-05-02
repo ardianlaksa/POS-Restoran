@@ -218,6 +218,9 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         tanggal2 = getCurrentDate()
         binding.etDate2.setText(getCurrentDate())
 
+
+        println("onCreatView : "+tanggal1+" s/d "+tanggal2)
+
 //        btnCari.setOnClickListener{
 //
 //            var totalValue = 0.0
@@ -313,14 +316,15 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         sdfFormatDate1 = sdf.format(myCalendar.time)
         binding.etDate1.setText(sdfFormatDate1)
         tanggal1 = sdfFormatDate1
+        println("updateLabel1 : "+tanggal1+" s/d "+tanggal2)
 
         if(tanggal2 == "") return
 
         val strDate = sdf.parse(tanggal2)
-        if (myCalendar.time.after(strDate)) {
-            Toast.makeText(requireContext(),R.string.tanggal_tidak_sesuai,Toast.LENGTH_SHORT).show()
-            return
-        }
+//        if (myCalendar.time.after(strDate)) {
+//            Toast.makeText(requireContext(),R.string.tanggal_tidak_sesuai,Toast.LENGTH_SHORT).show()
+//            return
+//        }
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
             val stringUrl = "${Url.getRekapBulanan}?filterTanggal1=$tanggal1&filterTanggal2=$tanggal2" +
@@ -341,13 +345,15 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
         binding.etDate2.setText(sdfFormatDate2)
         tanggal2 = sdfFormatDate2
 
+        println("updateLabel2 : "+tanggal1+" s/d "+tanggal2)
+
         if(tanggal1 == "") return
 
         val strDate = sdf.parse(tanggal1)
-        if (myCalendar.time.before(strDate)) {
-            Toast.makeText(requireContext(),R.string.tanggal_tidak_sesuai,Toast.LENGTH_SHORT).show()
-            return
-        }
+//        if (myCalendar.time.before(strDate)) {
+//            Toast.makeText(requireContext(),R.string.tanggal_tidak_sesuai,Toast.LENGTH_SHORT).show()
+//            return
+//        }
 
         if(CheckNetwork().checkingNetwork(requireContext())) {
             val stringUrl = "${Url.getRekapBulanan}?filterTanggal1=$tanggal1&filterTanggal2=$tanggal2" +
