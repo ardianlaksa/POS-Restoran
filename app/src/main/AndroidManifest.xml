@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.dnhsolution.restokabmalang">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
     <dist:module dist:instant="true" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -73,6 +76,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".sistem.produk.ProdukMasterActivity" />
+        <activity android:name=".sistem.nomor_seri.NomorSeri" />
         <activity
             android:name=".transaksi.keranjang.KeranjangProdukListActivity"
             android:windowSoftInputMode="adjustResize" />

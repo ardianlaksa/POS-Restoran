@@ -4,8 +4,15 @@ object Url {
 //    const val serverBase = "http://36.89.91.155/"
     const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
     const val serverBase = "http://202.46.90.101/"
+//    const val serverBase = "http://192.168.0.112/"
     const val serverPos = "$serverBase$serverHtdoc"
     const val serverFoto = "http://202.46.90.101/pdrd/"
+
+//    const val serverBase = "http://192.168.43.195/"
+//    const val serverPdrd = "http://devdeenha.ddns.net:8080/pdrd/"
+//    const val serverPos = "http://192.168.43.195/pdrd/Android/testing/AndroidJsonPOS/"
+//    const val serverPosParkir = "http://192.168.43.195/etax_dev/MobilePosParkirJson/"
+//    const val serverFoto = "http://192.168.43.195/pdrd/"
 
     const val SESSION_ALAMAT = "alamat"
     const val SESSION_BATAS_WAKTU = "batas_waktu"
@@ -53,5 +60,9 @@ object Url {
 
     const val getDownloadApk = "${serverBase}etax/file_etax/POS_Android.apk"
     const val getDownloadLogoMalangMakmur = "${serverBase}etax/file_etax/ic_malang_makmur_grayscale.png"
+
+    //Nomor Seri
+
+    const val TambahNomorSeri = "${serverPos}tambah_nomor_seri"
 
 }

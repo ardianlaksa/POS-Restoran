@@ -221,6 +221,16 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 
         println("onCreatView : "+tanggal1+" s/d "+tanggal2)
 
+        if(CheckNetwork().checkingNetwork(requireContext())) {
+            val stringUrl = "${Url.getRekapBulanan}?filterTanggal1=$tanggal1&filterTanggal2=$tanggal2" +
+                    "&idTmpUsaha=$idTmpUsaha&tipeStruk=$tipeStruk&idPengguna=$idPengguna"
+            Log.i(_tag,stringUrl)
+            jsonTask = RekapBulananJsonTask(this).execute(stringUrl)
+        } else {
+//            Toast.makeText(context, getString(R.string.tidak_terkoneksi_internet), Toast.LENGTH_SHORT).show()
+            binding.ivIconDataKosong.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_conn_lost,null))
+        }
+
 //        btnCari.setOnClickListener{
 //
 //            var totalValue = 0.0

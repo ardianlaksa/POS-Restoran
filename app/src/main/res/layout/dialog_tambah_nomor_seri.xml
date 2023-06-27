@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/etJmlNomorSeri"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Jumlah Nomor Seri"
+                android:fontFamily="@font/nunitosansregular"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/btnSimpan"
+            android:background="#4CAF50"
+            android:textColor="#fff"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunitosansregular"
+            android:textStyle="bold"
+            android:text="Simpan"/>
+
+    </LinearLayout>
+
+</ScrollView>

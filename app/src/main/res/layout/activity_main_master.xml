@@ -106,10 +106,30 @@
 
         <RelativeLayout
             android:layout_marginTop="@dimen/_8"
-            android:id="@+id/llbtnLogout"
+            android:id="@+id/llbtnNomorSeri"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/llbtnProduk">
+
+            <Button
+                android:id="@+id/bNomorSeri"
+                style="?button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8"
+                android:background="#009688"
+                android:fontFamily="@font/nunitosansregular"
+                android:text="@string/title_nomor_seri"
+                android:textColor="#fff" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/_8"
+            android:id="@+id/llbtnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llbtnNomorSeri">
 
             <Button
                 android:id="@+id/bLogout"

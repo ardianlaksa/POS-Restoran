@@ -15,6 +15,7 @@ import com.dnhsolution.restokabmalang.MainActivity
 import com.dnhsolution.restokabmalang.SplashActivity
 import com.dnhsolution.restokabmalang.database.AppRoomDatabase
 import com.dnhsolution.restokabmalang.databinding.ActivityMainMasterBinding
+import com.dnhsolution.restokabmalang.sistem.nomor_seri.NomorSeri
 import com.dnhsolution.restokabmalang.sistem.produk.ProdukMasterActivity
 import com.dnhsolution.restokabmalang.sistem.theme.ThemeFragment
 import com.dnhsolution.restokabmalang.utilities.*
@@ -34,10 +35,12 @@ class MainSistem : AppCompatActivity() {
     var btnInput: Button? = null
     var btnTheme: Button? = null
     var btnProduk: Button? = null
+    var btnNomorSeri: Button? = null
     var btnLogout: Button? = null
     var databaseHandler: DatabaseHandler? = null
     private var isCetakBilling = 1
     lateinit var binding : ActivityMainMasterBinding
+    var jenisPajak: String? = null
 
     interface IsCetakBillingServices {
         @FormUrlEncoded
@@ -63,7 +66,7 @@ class MainSistem : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(Url.SESSION_NAME, MODE_PRIVATE)
         val idUser = sharedPreferences.getString(Url.SESSION_ID_PENGGUNA, "").toString()
         val spIsCetakBilling = sharedPreferences.getString(Url.SESSION_ISCETAK_BILLING, "")
-        val jenisPajak = MainActivity.jenisPajak
+        jenisPajak = sharedPreferences.getString(Url.SESSION_JENIS_PAJAK, "00")
         val label = sharedPreferences.getString(Url.setLabel, "Belum disetting")
         val tema = sharedPreferences.getString(Url.setTema, "0")
         when {
@@ -97,8 +100,16 @@ class MainSistem : AppCompatActivity() {
         btnInput = binding.bInput
         btnTheme = binding.bTheme
         btnProduk = binding.bProduk
+        btnNomorSeri = binding.bNomorSeri
         btnLogout = binding.bLogout
         btnProduk?.setText(R.string.title_daftar_produk)
+
+        Log.d("Jenis Pajak", "onCreate: "+jenisPajak)
+        if(jenisPajak== "03"){
+            btnNomorSeri!!.visibility = View.VISIBLE
+        }else{
+            btnNomorSeri!!.visibility = View.GONE
+        }
 //        btnInput?.visibility = View.GONE
         val getAppDatabase = AppRoomDatabase.getAppDataBase(this)
 
@@ -182,6 +193,14 @@ class MainSistem : AppCompatActivity() {
                         ProdukMasterActivity::class.java
                     )
                 )
+        }
+        btnNomorSeri!!.setOnClickListener {
+            startActivity(
+                Intent(
+                    this@MainSistem,
+                    NomorSeri::class.java
+                )
+            )
         }
         val editor = sharedPreferences.edit()
 

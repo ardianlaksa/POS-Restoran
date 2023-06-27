@@ -64,3 +64,9 @@ internal interface OnDataFetched {
 interface DownloadFileNetworkResult {
     fun downloadFileNetworkResult(result: Any?)
 }
+
+internal interface NomorSeriOnDataFetched {
+    fun showProgressBar()
+    fun hideProgressBar()
+    fun setDataInPageWithResult(result: Any?)
+}
