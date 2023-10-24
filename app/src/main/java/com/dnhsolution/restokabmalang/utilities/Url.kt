@@ -4,9 +4,13 @@ object Url {
 //    const val serverBase = "http://36.89.91.155/"
     const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
     const val serverBase = "http://202.46.90.101/"
-//    const val serverBase = "http://192.168.0.112/"
     const val serverPos = "$serverBase$serverHtdoc"
     const val serverFoto = "http://202.46.90.101/pdrd/"
+
+//    const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
+//    const val serverBase = "http://192.168.10.116/"
+//    const val serverPos = "$serverBase$serverHtdoc"
+//    const val serverFoto = "http://192.168.10.116/pdrd/"
 
 //    const val serverBase = "http://192.168.43.195/"
 //    const val serverPdrd = "http://devdeenha.ddns.net:8080/pdrd/"

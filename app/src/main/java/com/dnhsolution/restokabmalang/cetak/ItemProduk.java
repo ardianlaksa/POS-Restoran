@@ -15,6 +15,8 @@ public class ItemProduk {
     private String rangeTransaksiKarcisAkhir;
     String serviceChargeRp;
 
+    private String nomor_seri;
+
     public ItemProduk() {
     }
 
@@ -121,4 +123,13 @@ public class ItemProduk {
     public void setServiceChargeRp(String value) {
         this.serviceChargeRp = value;
     }
+
+    public String getNomorSeri() {
+        return nomor_seri;
+    }
+
+    public void setNomorSeri(String value) {
+        this.nomor_seri = value;
+    }
+
 }

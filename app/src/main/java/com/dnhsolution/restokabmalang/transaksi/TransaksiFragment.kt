@@ -38,6 +38,8 @@ class TransaksiFragment : Fragment() {
         tabMain = binding.tabsMain
 
 //        argTab = MainActivity.argTab
+
+        if(getActivity()!=null && isAdded())
         kategoriListViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[KategoriListViewModel::class.java]
 
         val getAppDatabase = AppRoomDatabase.getAppDataBase(requireContext())
@@ -101,7 +103,14 @@ class TransaksiFragment : Fragment() {
     }
 
     private inner class ScreenSlidePagerAdapter(fa: Fragment) : FragmentStateAdapter(fa) {
+
         override fun getItemCount(): Int = kategoriList.size
+
+//        override fun createFragment(position: Int): Fragment {
+//            return ProdukListFragment()
+//        }
+
+//        override fun getItem(position: Int): Fragment = SlideFragment()
         override fun createFragment(position: Int): Fragment = ProdukListFragment.newInstance(
             kategoriList[position].id)
     }

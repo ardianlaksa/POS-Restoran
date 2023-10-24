@@ -1,6 +1,7 @@
 package com.dnhsolution.restokabmalang.cetak
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -67,6 +68,7 @@ open class MainCetak : AppCompatActivity() {
     private var iQty: Int = 0
     private var idPengguna: String? = null
     private var uuid: String? = null
+    private var nomor_seri: String? = null
 //    private var nomorKarcis: String = ""
     private lateinit var sharedPreferences: SharedPreferences
     var rvData: RecyclerView? = null
@@ -179,6 +181,7 @@ open class MainCetak : AppCompatActivity() {
 
         val intent = intent
         idTrx = intent.getStringExtra("getIdItem")
+        Log.d("MainCetak", "onCreate: idTrx = "+idTrx)
         Log.i(_tag, idTrx!!)
         when {
             tema.equals("0", ignoreCase = true) -> {
@@ -414,8 +417,10 @@ open class MainCetak : AppCompatActivity() {
         })
     }
 
-    private fun updateHiburanNomorFungsi(idPengguna : String,uuid : String,idTempatUsaha : String,
-                                         nomorTerakhirKarcis : String ,idHiburanNomor : String){
+
+    @SuppressLint("SuspiciousIndentation")
+    private fun updateHiburanNomorFungsi(idPengguna : String, uuid : String, idTempatUsaha : String,
+                                         nomorTerakhirKarcis : String, idHiburanNomor : String){
 
         val postServices = UpdateHiburanNomorResultFeedback.create()
             postServices.getPosts(idPengguna,uuid,idTempatUsaha,nomorTerakhirKarcis,idHiburanNomor
@@ -489,6 +494,7 @@ open class MainCetak : AppCompatActivity() {
                             tvJmlDisc?.text = json.getString("jml_disc")
                             tvJmlPajak?.text = json.getString("jml_pajak")
                             tvTotal?.text = json.getString("total")
+                            nomor_seri = json.getString("nomor_seri")
                             val serviceChargeRp = json.getString("serviceChargeRp")
                             if(serviceChargeRp != "")
                                 binding.tvJmlServiceCharge.text = json.getString("serviceChargeRp")
@@ -502,6 +508,7 @@ open class MainCetak : AppCompatActivity() {
                                     val id = ItemProduk()
                                     id.setNo(i)
                                     val idProduk = jO.getString("id_produk")
+                                    println("asdf $idProduk")
                                     id.setId_produk(idProduk)
                                     id.setNama_produk(jO.getString("nama_produk"))
                                     id.setQty(jO.getString("qty"))
@@ -684,50 +691,51 @@ open class MainCetak : AppCompatActivity() {
         val bulan = splTanggal[1]
         var text = ""
         for (h in itemProduk!!.indices) {
+            Log.d(TAG, "printTextHiburanKarcis: ")
             val nomorKarcis = itemProduk!![h].nomorKarcis
             val pisahNomorKarcis = nomorKarcis.split("-")
             val idProduk = itemProduk!![h].getId_produk()
             val qtyKarcis = itemProduk!![h].getQty()
             val hargaKarcis = itemProduk!![h].getHarga()
-            val rangeKarcisAkhir1 = itemProduk!![h].rangeTransaksiKarcisAkhir
-            var rangeKarcisAkhir = 0
-            if(rangeKarcisAkhir1.contains(".")) {
-                val splRangeKarcisAkhir = rangeKarcisAkhir1.split(".")
-                rangeKarcisAkhir = splRangeKarcisAkhir[0].toInt()
-            }
+//            val rangeKarcisAkhir1 = itemProduk!![h].rangeTransaksiKarcisAkhir
+//            var rangeKarcisAkhir = 0
+//            if(rangeKarcisAkhir1.contains(".")) {
+//                val splRangeKarcisAkhir = rangeKarcisAkhir1.split(".")
+//                rangeKarcisAkhir = splRangeKarcisAkhir[0].toInt()
+//            }
             iQty = qtyKarcis.toInt()
-            if(nomorTerakhirKarcis != "") nomorTerakhirKarcis += "|"
+//            if(nomorTerakhirKarcis != "") nomorTerakhirKarcis += "|"
             for (i in 0 until iQty) {
-                var pnk = pisahNomorKarcis[4].toInt() + i // asli
-//                var pnk = 5000 + i
-                var nomorSeriBaru = pisahNomorKarcis[3]
-                if(hari == "01" && bulan == "01"){
-                    pnk = 1
-                    nomorSeriBaru = "AA"
-                }
-                val seriToCharArray = nomorSeriBaru.toCharArray()
-                if(rangeKarcisAkhir < pnk) {
-                    var ch11 = ""
-                    var ch12 = ""
-                    var ch = 'A'
-                    var ch2 = 'A'
-
-                    while (ch <= 'Z') {
-                        while (ch2 <= 'Z') {
-                            if (ch == seriToCharArray[0] && ch2 == seriToCharArray[1]) {
-                                ++ch2
-                                ch11 = ch.toString()
-                                ch12 = ch2.toString()
-                                nomorSeriBaru = "$ch11$ch12"
-                                pnk = 1
-                                break
-                            }
-                            ++ch2
-                        }
-                        ++ch
-                    }
-                }
-                val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
+//                var pnk = pisahNomorKarcis[4].toInt() + i // asli
+////                var pnk = 5000 + i
+//                var nomorSeriBaru = pisahNomorKarcis[3]
+//                if(hari == "01" && bulan == "01"){
+//                    pnk = 1
+//                    nomorSeriBaru = "AA"
+//                }
+//                val seriToCharArray = nomorSeriBaru.toCharArray()
+//                if(rangeKarcisAkhir < pnk) {
+//                    var ch11 = ""
+//                    var ch12 = ""
+//                    var ch = 'A'
+//                    var ch2 = 'A'
+//
+//                    while (ch <= 'Z') {
+//                        while (ch2 <= 'Z') {
+//                            if (ch == seriToCharArray[0] && ch2 == seriToCharArray[1]) {
+//                                ++ch2
+//                                ch11 = ch.toString()
+//                                ch12 = ch2.toString()
+//                                nomorSeriBaru = "$ch11$ch12"
+//                                pnk = 1
+//                                break
+//                            }
+//                            ++ch2
+//                        }
+//                        ++ch
+//                    }
+//                }
+//                val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
                 text += "[L]\n" +
                         "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
                             printer,
@@ -737,15 +745,16 @@ open class MainCetak : AppCompatActivity() {
                         "[C]<b>$nmTmpUsaha</b>\n" +
                         "[C]$alamat\n" +
                         "[L]\n" +
-                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
-                            printer,
-                            TampilanBarcode().displayBitmap(this, nomorUrutKarcisLengkap)
-                        ) + "</img>\n" +
+//                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
+//                            printer,
+//                            TampilanBarcode().displayBitmap(this, nomorUrutKarcisLengkap)
+//                        ) + "</img>\n" +
                         "[L]\n" +
-                        "[C]$nomorUrutKarcisLengkap\n" +
+//                        "[C]$nomorUrutKarcisLengkap\n" +
                         "[L]\n" +
                         "[L]Tanggal : $tanggal\n" +
                         "[L]Kasir   : $namaPetugas\n" +
+                        "[L]Nomor Seri   : $nomor_seri\n" +
                         "[C]--------------------------------\n" +
                         "[C]Nominal : $hargaKarcis\n" +
                         "[L]\n" +
@@ -753,8 +762,8 @@ open class MainCetak : AppCompatActivity() {
                         "[C]Atas Kunjungan\n" +
                         "[C]Anda\n"
                 //                --iQty
-                if((iQty-1)==i)
-                    nomorTerakhirKarcis += "$idProduk:${pnk+1}:$nomorSeriBaru"
+//                if((iQty-1)==i)
+//                    nomorTerakhirKarcis += "$idProduk:${pnk+1}:$nomorSeriBaru"
             }
 
         }
@@ -770,6 +779,7 @@ open class MainCetak : AppCompatActivity() {
                 "[L]No. Trx : $idTrx\n"+
                 "[L]Tanggal : $tanggal\n"+
                 "[L]Kasir   : $nmPetugas\n"+
+                "[L]Nomor Seri   : $nomor_seri\n" +
                 "[C]--------------------------------\n"
 
         for (i in itemProduk!!.indices) {

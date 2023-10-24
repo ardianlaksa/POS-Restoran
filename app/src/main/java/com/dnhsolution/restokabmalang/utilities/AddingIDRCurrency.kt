@@ -25,4 +25,14 @@ class AddingIDRCurrency {
         var rupiah = String.format(Locale.getDefault(), "Rp. %s", fText)
         return rupiah
     }
+
+    fun formatIdrCurrencyNonKomaRp(value: Double) : String {
+        val formatter = DecimalFormat("#,###.##")
+        var fText = formatter.format(value)
+        fText = fText.format(value).replace(".",".")
+        fText = fText.replace(",",".")
+//        fText = fText.replace("-",",")
+        var rupiah = String.format(Locale.getDefault(), "%s", fText)
+        return rupiah
+    }
 }

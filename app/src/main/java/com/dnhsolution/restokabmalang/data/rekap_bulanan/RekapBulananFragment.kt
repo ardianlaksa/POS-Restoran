@@ -697,7 +697,7 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
                 "[L]\n"+
                 "[L]<b>Rekap Opname Bulanan</b>\n"+
                 "[L]Kasir : $namaPetugas\n"+
-                "[L]Tanggal : $tanggal1 sampai $tanggal2\n"+
+                "[L]Tanggal : $tanggal1 s/d $tanggal2\n"+
                 "[C]--------------------------------\n\n"
 
         var dblTotalTotalharga = 0.0
@@ -728,7 +728,8 @@ class RekapBulananFragment : Fragment(), RekapBulananOnTask {
 //                "[L]Disc[R]${tvJmlDisc?.text}\n"
         val formatDblTotalTotalharga = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalTotalharga)
         text += "[C]--------------------------------\n"+
-                "[L]Total[R]$formatDblTotalTotalharga"
+                "[L]Total[R]$formatDblTotalTotalharga\n"
+        text += "[C]\n"
         return printer.addTextToPrint(text)
     }
 }

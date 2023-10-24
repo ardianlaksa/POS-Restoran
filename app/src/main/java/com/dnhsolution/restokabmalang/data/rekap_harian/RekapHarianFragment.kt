@@ -303,11 +303,12 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
             val totalQty = it["totalQty"]
             val nmProduk = it["nmProduk"]
             it["totalHarga"]?.let { a ->
-                val dblTotalHarga = a.toDouble()
+                val harga = AddingIDRCurrency().formatIdrCurrencyNonKomaRp(a.toDouble())
+                val dblTotalHarga = a.toDouble() * totalQty!!.toInt()
                 val formatTotalOmzet = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalHarga)
 //            println("$totalQty $nmProduk")
                 text += "[L]- $nmProduk\n" +
-                        "[L]  $totalQty [R]$formatTotalOmzet\n"
+                        "[L]  $harga x $totalQty   [R]$formatTotalOmzet\n"
                 dblTotalTotalharga += dblTotalHarga
             }
         }
@@ -326,7 +327,8 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
 //                "[L]Disc[R]${tvJmlDisc?.text}\n"
         val formatDblTotalTotalharga = AddingIDRCurrency().formatIdrCurrencyNonKoma(dblTotalTotalharga)
         text += "[C]--------------------------------\n"+
-                "[L]Total[R]$formatDblTotalTotalharga"
+                "[L]Total[R]$formatDblTotalTotalharga\n"
+        text += "[C]\n"
         return printer.addTextToPrint(text)
     }
 
