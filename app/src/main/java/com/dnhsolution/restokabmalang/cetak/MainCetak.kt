@@ -366,16 +366,16 @@ open class MainCetak : AppCompatActivity() {
                             "AsyncEscPosPrint.OnPrintFinished : Print is finished !"
                         )
 
-                        if(MainActivity.jenisPajak == "03"){
-//                            println("${MainActivity.idTempatUsaha} $idPengguna $uuid $idHiburanNomor $nomorTerakhirKarcis" )
-//                            updateHiburanNomorFungsi(MainActivity.idTempatUsaha.toString()
-//                                ,idPengguna.toString(),uuid.toString(), nomorTerakhirKarcis.toString()
+//                        if(MainActivity.jenisPajak == "03"){
+////                            println("${MainActivity.idTempatUsaha} $idPengguna $uuid $idHiburanNomor $nomorTerakhirKarcis" )
+////                            updateHiburanNomorFungsi(MainActivity.idTempatUsaha.toString()
+////                                ,idPengguna.toString(),uuid.toString(), nomorTerakhirKarcis.toString()
+////                            )
+//                            updateHiburanNomorFungsi(
+//                                idPengguna.toString(),uuid.toString(), MainActivity.idTempatUsaha.toString()
+//                                ,nomorTerakhirKarcis,idHiburanNomor
 //                            )
-                            updateHiburanNomorFungsi(
-                                idPengguna.toString(),uuid.toString(), MainActivity.idTempatUsaha.toString()
-                                ,nomorTerakhirKarcis,idHiburanNomor
-                            )
-                        }
+//                        }
                     }
                 }
             ).execute(
@@ -736,7 +736,9 @@ open class MainCetak : AppCompatActivity() {
 //                    }
 //                }
 //                val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
-                text += "[L]\n" +
+                text +=
+                        "[C]--------------------------------\n" +
+                        "[L]\n" +
                         "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
                             printer,
                             bitmap
@@ -749,7 +751,7 @@ open class MainCetak : AppCompatActivity() {
 //                            printer,
 //                            TampilanBarcode().displayBitmap(this, nomorUrutKarcisLengkap)
 //                        ) + "</img>\n" +
-                        "[L]\n" +
+//                        "[L]\n" +
 //                        "[C]$nomorUrutKarcisLengkap\n" +
                         "[L]\n" +
                         "[L]Tanggal : $tanggal\n" +
