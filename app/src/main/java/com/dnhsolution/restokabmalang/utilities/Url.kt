@@ -3,9 +3,9 @@ package com.dnhsolution.restokabmalang.utilities
 object Url {
 //    const val serverBase = "http://36.89.91.155/"
     const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
-    const val serverBase = "http://202.46.90.101/"
+    const val serverBase = "https://sipanji.id/"
     const val serverPos = "$serverBase$serverHtdoc"
-    const val serverFoto = "http://202.46.90.101/pdrd/"
+    const val serverFoto = "https://sipanji.id/pdrd/"
 
 //    const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
 //    const val serverBase = "http://192.168.10.116/"

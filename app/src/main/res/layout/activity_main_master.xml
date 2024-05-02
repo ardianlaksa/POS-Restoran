@@ -9,9 +9,9 @@
     android:focusableInTouchMode="true" >
 
     <com.google.android.material.appbar.AppBarLayout
+        style="?actionBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?actionBarStyle"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -24,7 +24,7 @@
             android:elevation="@dimen/_4"
             android:overScrollMode="always"
             android:theme="@style/ToolbarTheme"
-            app:titleTextColor="@android:color/white"/>
+            app:titleTextColor="@android:color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

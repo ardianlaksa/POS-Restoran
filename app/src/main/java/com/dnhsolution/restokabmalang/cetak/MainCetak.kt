@@ -266,39 +266,56 @@ open class MainCetak : AppCompatActivity() {
     }
 
     open fun browseBluetoothDevice() {
-        val bluetoothDevicesList = BluetoothPrintersConnections().list
-        if (bluetoothDevicesList != null) {
-            val items = arrayOfNulls<String>(bluetoothDevicesList.size + 1)
-            items[0] = "Default printer"
-            for ((i, device) in bluetoothDevicesList.withIndex()) {
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.BLUETOOTH_CONNECT
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return
+        try {
+            val bluetoothDevicesList = BluetoothPrintersConnections().list
+            if (bluetoothDevicesList != null) {
+                val items = arrayOfNulls<String>(bluetoothDevicesList.size + 1)
+                items[0] = "Default printer"
+                for ((i, device) in bluetoothDevicesList.withIndex()) {
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.BLUETOOTH_CONNECT
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return
+                    }
+                    items[i + 1] = device.device.name
                 }
-                items[i + 1] = device.device.name
-            }
-            val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
-            alertDialog.setTitle("Bluetooth printer selection")
-            alertDialog.setItems(items) { dialogInterface, i ->
-                val index = i - 1
-                selectedDevice = if (index == -1) {
-                    null
-                } else {
-                    bluetoothDevicesList[index]
-                }
+                val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
+                alertDialog.setTitle("Bluetooth printer selection")
+                alertDialog.setItems(items) { dialogInterface, i ->
+                    val index = i - 1
+                    selectedDevice = if (index == -1) {
+                        null
+                    } else {
+                        bluetoothDevicesList[index]
+                    }
 //                val button = findViewById<View>(R.id.button_bluetooth_browse) as Button
-                tv_status?.text = items[i]
+                    tv_status?.text = items[i]
+                }
+                val alert: AlertDialog = alertDialog.create()
+                alert.setCanceledOnTouchOutside(false)
+                alert.show()
+            }else{
+                val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
+                alertDialog.setTitle("Pemberitahuan")
+                alertDialog.setMessage(bluetoothDevicesList)
+                val alert: AlertDialog = alertDialog.create()
+                alert.setCanceledOnTouchOutside(false)
+                alert.show()
             }
+        } catch(e: Exception) {
+            // catch the exception and handle it
+            val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
+            alertDialog.setTitle("Pemberitahuan")
+            alertDialog.setMessage(e.message)
             val alert: AlertDialog = alertDialog.create()
             alert.setCanceledOnTouchOutside(false)
             alert.show()

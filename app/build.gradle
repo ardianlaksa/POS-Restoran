@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 31
+    compileSdk 33
     defaultConfig {
         applicationId "com.dnhsolution.restokabmalang"
         minSdkVersion 24
@@ -81,8 +81,12 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
 
-    implementation 'com.github.dantsu:escpos-thermalprinter-android:3.0.1'
-    implementation 'com.google.zxing:core:3.4.0'
+//    implementation 'com.github.dantsu:escpos-thermalprinter-android:3.0.1'
+    implementation 'com.google.zxing:core:3.5.3'
+
+    implementation 'com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.3.0'
 
     implementation 'com.github.mreram:showcaseview:1.4.0'
+
+    implementation 'com.github.iminsoftware:IminPrinterLibrary:V1.0.0.12'
 }

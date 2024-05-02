@@ -284,8 +284,8 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
         val menuItem = menu.findItem(R.id.action_menu_lanjut)
         val actionView = menuItem.actionView
-        val flCustomTambahBadge = actionView.findViewById(R.id.flCustomTambahBadge) as FrameLayout
-        tvBadgeMenuLanjut = actionView.findViewById(R.id.cart_badge) as TextView
+        val flCustomTambahBadge = actionView?.findViewById(R.id.flCustomTambahBadge) as FrameLayout
+        tvBadgeMenuLanjut = actionView?.findViewById(R.id.cart_badge) as TextView
         flCustomTambahBadge.setOnClickListener {
             (activity as MainActivity).binding.toolbar.collapseActionView()
             menuLanjutHandler()
