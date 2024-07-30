@@ -55,9 +55,13 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 if(isDiskonValid) {
                     if(isBayarValid){
                         val jumlahObjek = obyek?.size ?: 0
-                        if (jumlahObjek > 0)
-                            showDialog("Konfirmasi", "Apakan anda ingin memproses?")
-                        else Toast.makeText(applicationContext, R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                        if (jumlahObjek > 0) {
+                            prosesTrx()
+//                            showDialog("Konfirmasi", "Apakan anda ingin memproses?")
+                        }
+                        else {
+                            Toast.makeText(applicationContext, R.string.data_kosong, Toast.LENGTH_SHORT).show()
+                        }
                     } else Toast.makeText(applicationContext, R.string.bayar_tidak_valid, Toast.LENGTH_SHORT).show()
                 } else Toast.makeText(this,R.string.diskon_tidak_valid,Toast.LENGTH_SHORT).show()
             }
@@ -79,6 +83,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
     private var idPengguna: String? = null
     private var uuid: String? = null
     private var idTmpUsaha: String? = null
+    private var jenis_pajak: String? = null
     private var valueDiskon: Int = 0
     private var valueDiskonRupiah: Int = 0
     private var valueDR: Double = 0.0
@@ -169,6 +174,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         tipeStruk = sharedPreferences.getString(Url.SESSION_TIPE_STRUK, "")
         idHiburanNomor = sharedPreferences.getInt(Url.SESSION_ID_HIBURAN_NOMOR, 0)
         serviceCharge = sharedPreferences.getInt(Url.SESSION_SERVICE_CHARGE, 0)
+        jenis_pajak = sharedPreferences.getString(Url.SESSION_JENIS_PAJAK, "")
         pajakPersen = MainActivity.pajakPersen
 
         if(tipeStruk == "2") binding.llPajak.visibility = View.GONE
@@ -548,6 +554,23 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         dialog.setCanceledOnTouchOutside(false)
     }
 
+    fun prosesTrx(){
+        if(CheckNetwork().checkingNetwork(this)) {
+            val params = HashMap<String, String>()
+            params["paramsArray"] = createJson()
+            println("$_tag $params")
+            KeranjangProdukListJsonTask(
+                this,
+                params
+            ).execute(Url.setKeranjangTransaksi)
+
+        } else {
+            val idTrx : String = saveLokal()
+            showDialogBerhasilLokal("Selamat","Transaksi Anda Berhasil di proses !", idTrx)
+            //Toast.makeText(this, getString(R.string.check_network), Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun showDialogBerhasil(title:String,message:String){
         val builder = AlertDialog.Builder(this)
 
@@ -559,8 +582,12 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         builder.setPositiveButton("Cetak"){_, _ ->
             //                println(createJson())
 //            startActivity()
-            resultLauncher.launch(
-                Intent(this@KeranjangProdukListActivity, MainCetak::class.java).putExtra("getIdItem", "0"))
+
+            val intent = Intent(this@KeranjangProdukListActivity, MainCetak::class.java)
+            intent.putExtra("getIdItem", "0")
+            intent.putExtra("tipe", "karcis")
+            resultLauncher.launch(intent)
+//            resultLauncher.launch(Intent(this@KeranjangProdukListActivity, MainCetak::class.java).putExtra("getIdItem", "0"))
         }
 
         builder.setNegativeButton("Batal"){_, _ ->
@@ -578,6 +605,29 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
     }
+
+    private fun showDialogGagal(title:String,message:String){
+        val builder = AlertDialog.Builder(this)
+
+        // Set the alert dialog title
+        builder.setTitle(title)
+
+        // Display a message on alert dialog
+        builder.setMessage(message)
+        builder.setPositiveButton("Tutup"){_, _ ->
+            dialog.dismiss()
+        }
+
+        // Finally, make the alert dialog using builder
+        val dialog: AlertDialog = builder.create()
+
+        // Display the alert dialog on app interface
+        dialog.show()
+        dialog.getWindow()!!.setLayout(800, 400)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+    }
+
 
     private fun showDialogBerhasilLokal(title:String,message:String, idTrx:String){
         val builder = AlertDialog.Builder(this)
@@ -615,6 +665,7 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
         val rootObject= JSONObject()
         rootObject.put("uuid",uuid)
         rootObject.put("idTmptUsaha",idTmpUsaha)
+        rootObject.put("jenis_pajak",jenis_pajak)
         rootObject.put("user",idPengguna)
         rootObject.put("disc_rp",valueDiskonRupiah)
         rootObject.put("pajakRp",pajakRp.toInt())
@@ -722,7 +773,12 @@ class KeranjangProdukListActivity:AppCompatActivity(), KeranjangProdukItemOnTask
                 //Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 Log.d("MESSAGE", message)
 
-                showDialogBerhasil("Selamat","Transaksi Anda Berhasil di proses !")
+                resultLauncher.launch(
+                    Intent(this@KeranjangProdukListActivity, MainCetak::class.java).putExtra("getIdItem", "0"))
+
+//                showDialogBerhasil("Selamat","Transaksi Anda Berhasil di proses !")
+            }else{
+                showDialogGagal("Mohon Maaf","Transaksi Anda tidak dapat diproses !")
             }
         } catch (ex : JSONException) {
             ex.printStackTrace()

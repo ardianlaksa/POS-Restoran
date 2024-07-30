@@ -11,6 +11,7 @@ import com.dnhsolution.restokabmalang.auth.CekUUIDPojo
 import com.dnhsolution.restokabmalang.auth.LoginActivity
 import com.dnhsolution.restokabmalang.database.DatabaseHandler
 import com.dnhsolution.restokabmalang.databinding.ActivitySplashBinding
+import com.dnhsolution.restokabmalang.testing.TestingActivity
 import com.dnhsolution.restokabmalang.utilities.CheckNetwork
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.gson.GsonBuilder
@@ -71,11 +72,13 @@ class SplashActivity : AppCompatActivity() {
             cekUUIDFungsi(idPengguna,uuid)
         }, 500)
         if (!CheckNetwork().checkingNetwork(this)){
-            if (status.equals("0", ignoreCase = true)) {
-                startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
-            } else {
-                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-            }
+//            if (status.equals("0", ignoreCase = true)) {
+//                startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
+//            } else {
+//                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+//            }
+
+            startActivity(Intent(this@SplashActivity, TestingActivity::class.java))
             finish()
         }
     }

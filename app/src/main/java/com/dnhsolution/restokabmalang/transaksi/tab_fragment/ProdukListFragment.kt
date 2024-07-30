@@ -233,7 +233,7 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
                 startShimmering(false)
 
             } else {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 startShimmering(false)
             }
         } catch (e: JSONException) {

@@ -296,7 +296,7 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
                 "[L]<b>Rekap Opname Harian</b>\n"+
                 "[L]Kasir : $namaPetugas\n"+
                 "[L]Tanggal : $tgl\n"+
-                "[C]--------------------------------\n\n"
+                "[C]--------------------------------\n"
 
         var dblTotalTotalharga = 0.0
         value.forEach { it ->
@@ -648,7 +648,10 @@ class RekapHarianFragment : Fragment(), DRekapHarianOnTask, RekapHarianOnTask, R
     }
 
     override fun rekapHarianDetailLongClick(result: String?) {
-        resultLauncher.launch(Intent(requireContext(), MainCetak::class.java).putExtra("getIdItem", result))
+        val intent = Intent(requireContext(), MainCetak::class.java)
+        intent.putExtra("getIdItem", result)
+        intent.putExtra("tipe", "invoice")
+        resultLauncher.launch(intent)
 //        requireContext().startActivity(Intent(context, MainCetak::class.java).putExtra("getIdItem", result))
     }
 

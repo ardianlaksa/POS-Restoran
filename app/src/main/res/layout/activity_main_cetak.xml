@@ -344,6 +344,19 @@
             </LinearLayout>
 
             <Button
+                android:visibility="gone"
+                android:id="@+id/btnRefresh"
+                android:layout_margin="5dp"
+                android:background="#8BC34A"
+                android:textColor="#fff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Refresh"
+                android:textSize="@dimen/f_16"
+                android:fontFamily="@font/nunitosansregular"
+                android:maxLines="1"/>
+
+            <Button
                 android:id="@+id/btnPilihBT"
                 android:layout_margin="5dp"
                 android:background="#3F51B5"

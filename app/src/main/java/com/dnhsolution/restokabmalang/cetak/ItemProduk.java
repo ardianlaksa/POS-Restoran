@@ -15,7 +15,7 @@ public class ItemProduk {
     private String rangeTransaksiKarcisAkhir;
     String serviceChargeRp;
 
-    private String nomor_seri;
+    public String nomor_seri;
 
     public ItemProduk() {
     }

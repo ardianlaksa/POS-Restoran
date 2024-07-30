@@ -73,6 +73,7 @@ open class MainCetak : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     var rvData: RecyclerView? = null
     var itemProduk: MutableList<ItemProduk>? = null
+    var itemProdukShow: MutableList<ItemProduk>? = null
     var linearLayout: LinearLayout? = null
     private val _tag = javaClass.simpleName
     private var linearLayoutManager: LinearLayoutManager? = null
@@ -87,11 +88,13 @@ open class MainCetak : AppCompatActivity() {
     var btnKembali: Button? = null
     var btnCetak: Button? = null
     var btnPilih: Button? = null
+    var btnRefresh: Button? = null
     private val TAG = MainActivity::class.java.simpleName
 //    private var mService: BluetoothService? = null
     private var isPrinterReady = false
     private var tipeStruk: String? = null
     private var idTrx: String? = "0"
+    private var tipe: String? = "-"
     private var nmPetugas = ""
     private var requestCode = 0
     private lateinit var binding: ActivityMainCetakBinding
@@ -181,6 +184,7 @@ open class MainCetak : AppCompatActivity() {
 
         val intent = intent
         idTrx = intent.getStringExtra("getIdItem")
+        tipe = intent.getStringExtra("tipe")
         Log.d("MainCetak", "onCreate: idTrx = "+idTrx)
         Log.i(_tag, idTrx!!)
         when {
@@ -221,6 +225,7 @@ open class MainCetak : AppCompatActivity() {
         tv_status = binding.tvStatus
         btnCetak = binding.btnCetak
         btnKembali = binding.btnKembali
+        btnRefresh = binding.btnRefresh
         btnPilih = binding.btnPilihBT
         linearLayoutManager = LinearLayoutManager(this@MainCetak)
         linearLayoutManager?.orientation = RecyclerView.VERTICAL
@@ -230,7 +235,8 @@ open class MainCetak : AppCompatActivity() {
         rvData?.layoutManager = linearLayoutManager
         //recyclerView.addItemDecoration(dividerItemDecoration);
         itemProduk = ArrayList()
-        adapter = AdapterProduk(itemProduk, this@MainCetak)
+        itemProdukShow = ArrayList()
+        adapter = AdapterProduk(itemProdukShow, this@MainCetak)
         rvData?.adapter = adapter
 
         if (tipeStruk.equals("2", ignoreCase = true)) llPajak.visibility = View.GONE
@@ -245,6 +251,10 @@ open class MainCetak : AppCompatActivity() {
 //            resultIntent.putExtra("kembali", "0")
             setResult(RESULT_OK)
             finish()
+        }
+
+        btnRefresh!!.setOnClickListener { v: View? ->
+            getData
         }
 
         btnPilih?.setOnClickListener { v: View? ->
@@ -483,6 +493,7 @@ open class MainCetak : AppCompatActivity() {
             val db = databaseHandler.readableDatabase
 
             itemProduk?.clear()
+            itemProdukShow?.clear()
 //            adapter!!.notifyDataSetChanged()
             val progressDialog = ProgressDialog(this@MainCetak)
             progressDialog.setMessage("Mencari data...")
@@ -495,6 +506,8 @@ open class MainCetak : AppCompatActivity() {
                     try {
                         val jsonObject = JSONObject(response)
                         val jsonArray = jsonObject.getJSONArray("result")
+                        val jsonArray2 = jsonObject.getJSONArray("result_show")
+//                        Log.d(TAG, jsonArray2.toString())
                         val json = jsonArray.getJSONObject(0)
                         Log.d(_tag, jsonObject.toString())
                         val pesan = json.getString("pesan")
@@ -533,6 +546,7 @@ open class MainCetak : AppCompatActivity() {
                                     id.setHarga(jO.getString("harga"))
                                     id.setTotal_harga(jO.getString("total_harga"))
                                     id.nomorKarcis = jO.getString("nomor_karcis")
+                                    id.nomorSeri = jO.getString("nomor_seri_karcis")
 
                                     val cDetailTrx = db.rawQuery("select range_transaksi_karcis_akhir " +
                                             "from produk where id ='" + idProduk + "'", null)
@@ -554,6 +568,31 @@ open class MainCetak : AppCompatActivity() {
                                 }
                                 i++
                             }
+
+                            var y = 0
+                            while (y < jsonArray2.length()) {
+                                try {
+                                    val jOs = jsonArray2.getJSONObject(y)
+                                    val ids = ItemProduk()
+                                    ids.setNo(y+1)
+
+                                    ids.setId_produk(jOs.getString("id_produk"))
+                                    ids.setNama_produk(jOs.getString("nama_produk"))
+                                    ids.setQty(jOs.getString("qty"))
+                                    ids.isPajak = jOs.getString("ispajak")
+                                    ids.setHarga(jOs.getString("harga"))
+                                    ids.setTotal_harga(jOs.getString("total_harga"))
+                                    ids.nomorKarcis = ""
+
+                                    itemProdukShow?.add(ids)
+                                } catch (e: JSONException) {
+                                    e.printStackTrace()
+                                    progressDialog.dismiss()
+                                }
+                                y++
+                            }
+
+
                             db.close()
                         } else {
                             Toast.makeText(
@@ -565,7 +604,6 @@ open class MainCetak : AppCompatActivity() {
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
-                    //Toast.makeText(SinkronisasiActivity.this, response, Toast.LENGTH_SHORT).show();
                     adapter?.notifyDataSetChanged()
                     progressDialog.dismiss()
                 }, Response.ErrorListener { error ->
@@ -707,123 +745,75 @@ open class MainCetak : AppCompatActivity() {
         val hari = splTanggal[0]
         val bulan = splTanggal[1]
         var text = ""
-        for (h in itemProduk!!.indices) {
-            Log.d(TAG, "printTextHiburanKarcis: ")
-            val nomorKarcis = itemProduk!![h].nomorKarcis
-            val pisahNomorKarcis = nomorKarcis.split("-")
-            val idProduk = itemProduk!![h].getId_produk()
-            val qtyKarcis = itemProduk!![h].getQty()
-            val hargaKarcis = itemProduk!![h].getHarga()
-//            val rangeKarcisAkhir1 = itemProduk!![h].rangeTransaksiKarcisAkhir
-//            var rangeKarcisAkhir = 0
-//            if(rangeKarcisAkhir1.contains(".")) {
-//                val splRangeKarcisAkhir = rangeKarcisAkhir1.split(".")
-//                rangeKarcisAkhir = splRangeKarcisAkhir[0].toInt()
-//            }
-            iQty = qtyKarcis.toInt()
-//            if(nomorTerakhirKarcis != "") nomorTerakhirKarcis += "|"
-            for (i in 0 until iQty) {
-//                var pnk = pisahNomorKarcis[4].toInt() + i // asli
-////                var pnk = 5000 + i
-//                var nomorSeriBaru = pisahNomorKarcis[3]
-//                if(hari == "01" && bulan == "01"){
-//                    pnk = 1
-//                    nomorSeriBaru = "AA"
-//                }
-//                val seriToCharArray = nomorSeriBaru.toCharArray()
-//                if(rangeKarcisAkhir < pnk) {
-//                    var ch11 = ""
-//                    var ch12 = ""
-//                    var ch = 'A'
-//                    var ch2 = 'A'
-//
-//                    while (ch <= 'Z') {
-//                        while (ch2 <= 'Z') {
-//                            if (ch == seriToCharArray[0] && ch2 == seriToCharArray[1]) {
-//                                ++ch2
-//                                ch11 = ch.toString()
-//                                ch12 = ch2.toString()
-//                                nomorSeriBaru = "$ch11$ch12"
-//                                pnk = 1
-//                                break
-//                            }
-//                            ++ch2
-//                        }
-//                        ++ch
-//                    }
-//                }
-//                val nomorUrutKarcisLengkap = "${pisahNomorKarcis[0]}-${pisahNomorKarcis[1]}-${pisahNomorKarcis[2]}-$nomorSeriBaru-$pnk"
+        if(tipe!="invoice"){
+            for (h in itemProduk!!.indices) {
+                Log.d(TAG, "printTextHiburanKarcis: ")
+                val nomorKarcis = itemProduk!![h].nomorKarcis
+                val pisahNomorKarcis = nomorKarcis.split("-")
+                val idProduk = itemProduk!![h].getId_produk()
+                val qtyKarcis = itemProduk!![h].getQty()
+                val hargaKarcis = itemProduk!![h].getHarga()
+                val nomor_seri_karcis = itemProduk!![h].nomorSeri
+
                 text +=
-                        "[C]--------------------------------\n" +
-                        "[L]\n" +
-                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
-                            printer,
-                            bitmap
-                        ) + "</img>\n" +
-                        "[L]\n" +
-                        "[C]<b>$nmTmpUsaha</b>\n" +
-                        "[C]$alamat\n" +
-                        "[L]\n" +
-//                        "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(
-//                            printer,
-//                            TampilanBarcode().displayBitmap(this, nomorUrutKarcisLengkap)
-//                        ) + "</img>\n" +
-//                        "[L]\n" +
-//                        "[C]$nomorUrutKarcisLengkap\n" +
-                        "[L]\n" +
-                        "[L]Tanggal : $tanggal\n" +
-                        "[L]Kasir   : $namaPetugas\n" +
-                        "[L]Nomor Seri   : $nomor_seri\n" +
-                        "[C]--------------------------------\n" +
-                        "[C]Nominal : $hargaKarcis\n" +
-                        "[L]\n" +
-                        "[C]Terima Kasih\n" +
-                        "[C]Atas Kunjungan\n" +
-                        "[C]Anda\n"
-                //                --iQty
-//                if((iQty-1)==i)
-//                    nomorTerakhirKarcis += "$idProduk:${pnk+1}:$nomorSeriBaru"
+                    "[C]--------------------------------\n" +
+                    "[L]\n" +
+                    "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) +
+                    "</img>\n" +
+                    "[L]\n" +
+                    "[C]<b>$nmTmpUsaha</b>\n" +
+                    "[C]$alamat\n" +
+                    "[L]\n" +
+                    "[L]Tanggal : $tanggal\n" +
+                    "[L]Kasir   : $namaPetugas\n" +
+                    "[L]No. Trx / Seri   : $idTrx / $nomor_seri_karcis\n" +
+                    "[C]--------------------------------\n" +
+                    "[C]Nominal : $hargaKarcis\n" +
+                    "[L]\n" +
+                    "[C]Terima Kasih\n" +
+                    "[C]Atas Kunjungan\n" +
+                    "[C]Anda\n"
+
+            }
+        }else{
+            text += "[L]\n"+
+                    "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+                applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                    DisplayMetrics.DENSITY_LOW, theme
+                )) + "</img>\n" +
+                    "[L]\n"+
+                    "[C]<b>$nmTmpUsaha</b>\n"+
+                    "[C]$alamat\n"+
+                    "[L]\n"+
+                    "[L]No. Trx : $idTrx\n"+
+                    "[L]Tanggal : $tanggal\n"+
+                    "[L]Kasir   : $nmPetugas\n"+
+//                    "[L]Nomor Seri   : $nomor_seri\n" +
+                    "[C]--------------------------------\n"
+
+            for (i in itemProduk!!.indices) {
+                val nmProduk = itemProduk!![i].getNama_produk()
+                val qty = itemProduk!![i].getQty()
+                val harga = itemProduk!![i].getHarga()
+                val totalHarga = itemProduk!![i].getTotal_harga()
+                text += "[L]$nmProduk\n" +
+                        "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
             }
 
+            text += "[C]--------------------------------\n"+
+                    "[L]Disc[R]${tvJmlDisc?.text}\n" +
+                    "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
+                    "[L]Pajak[R]${tvJmlPajak?.text}\n"
+
+            val serviceChargeRp = binding.tvJmlServiceCharge.text
+            if(serviceChargeRp != "")
+                text += "[L]Service Charge[R]$serviceChargeRp\n"
+
+            text += "[C]--------------------------------\n"+
+                    "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
+                    "[L]\n"+
+                    "[C]- Terima Kasih -"
         }
-        text += "[L]\n"+
-                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
-            applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
-                DisplayMetrics.DENSITY_LOW, theme
-            )) + "</img>\n" +
-                "[L]\n"+
-                "[C]<b>$nmTmpUsaha</b>\n"+
-                "[C]$alamat\n"+
-                "[L]\n"+
-                "[L]No. Trx : $idTrx\n"+
-                "[L]Tanggal : $tanggal\n"+
-                "[L]Kasir   : $nmPetugas\n"+
-                "[L]Nomor Seri   : $nomor_seri\n" +
-                "[C]--------------------------------\n"
-
-        for (i in itemProduk!!.indices) {
-            val nmProduk = itemProduk!![i].getNama_produk()
-            val qty = itemProduk!![i].getQty()
-            val harga = itemProduk!![i].getHarga()
-            val totalHarga = itemProduk!![i].getTotal_harga()
-            text += "[L]$nmProduk\n" +
-                    "[L] $harga x $qty[R]${gantiKetitik(totalHarga)}\n"
-        }
-
-        text += "[C]--------------------------------\n"+
-                "[L]Disc[R]${tvJmlDisc?.text}\n" +
-                "[L]Total[R]${gantiKetitik(tvSubtotal?.text.toString())}\n"+
-                "[L]Pajak[R]${tvJmlPajak?.text}\n"
-
-        val serviceChargeRp = binding.tvJmlServiceCharge.text
-        if(serviceChargeRp != "")
-            text += "[L]Service Charge[R]$serviceChargeRp\n"
-
-        text += "[C]--------------------------------\n"+
-                "[C]<font size='tall'>Grand Total : ${gantiKetitik(tvTotal?.text.toString())}</font>\n"+
-                "[L]\n"+
-                "[C]- Terima Kasih -"
-
         return printer.addTextToPrint(text)
     }
 
