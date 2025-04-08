@@ -753,20 +753,24 @@ open class MainCetak : AppCompatActivity() {
                 val idProduk = itemProduk!![h].getId_produk()
                 val qtyKarcis = itemProduk!![h].getQty()
                 val hargaKarcis = itemProduk!![h].getHarga()
-                val nomor_seri_karcis = itemProduk!![h].nomorSeri
+                val nomor_seri_karcis = itemProduk!![h].nomor_seri
 
                 text +=
                     "[C]--------------------------------\n" +
                     "[L]\n" +
-                    "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) +
-                    "</img>\n" +
+//                    "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) +
+//                    "</img>\n" +
+                    "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer,
+                    applicationContext.resources.getDrawableForDensity(R.drawable.ic_malang_makmur_grayscale,
+                        DisplayMetrics.DENSITY_LOW, theme
+                    )) + "</img>\n" +
                     "[L]\n" +
                     "[C]<b>$nmTmpUsaha</b>\n" +
                     "[C]$alamat\n" +
                     "[L]\n" +
                     "[L]Tanggal : $tanggal\n" +
                     "[L]Kasir   : $namaPetugas\n" +
-                    "[L]No. Trx / Seri   : $idTrx / $nomor_seri_karcis\n" +
+                    "[L]No.Trx / Seri : $idTrx / $nomor_seri_karcis\n" +
                     "[C]--------------------------------\n" +
                     "[C]Nominal : $hargaKarcis\n" +
                     "[L]\n" +
