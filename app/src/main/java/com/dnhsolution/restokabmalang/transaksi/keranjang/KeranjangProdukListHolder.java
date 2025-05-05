@@ -82,25 +82,25 @@ class KeranjangProdukListHolder extends RecyclerView.ViewHolder {
         jumlahProduk.setText(String.valueOf(jumlah));
 
         String url = Url.serverFoto+obyek.getImgUrl();
-        Glide.with(ivItem.getContext()).load(url)
-                .override(512,512)
-                .centerCrop()
-                .fitCenter()
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("xmx1","Error "+e.toString());
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Log.e("xmx1","no Error ");
-                        return false;
-                    }
-                })
-                .into(ivItem);
+//        Glide.with(ivItem.getContext()).load(url)
+//                .override(512,512)
+//                .centerCrop()
+//                .fitCenter()
+//                .diskCacheStrategy(DiskCacheStrategy.DATA)
+//                .listener(new RequestListener<Drawable>() {
+//                    @Override
+//                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                        Log.e("xmx1","Error "+e.toString());
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                        Log.e("xmx1","no Error ");
+//                        return false;
+//                    }
+//                })
+//                .into(ivItem);
 //        Picasso.get().load(Url.serverFoto+obyek.getImgUrl())
 //                .into(ivItem);
 

@@ -90,35 +90,35 @@ class ProdukListAdapter(
         viewHolder.imageViewFavorite.setImageResource(if (book.isFavorite) R.drawable.ic_baseline_check_circle_24_dark_green else R.drawable.ic_baseline_check_circle_24_gray)
         viewHolder.descriptionTextView.text = book.description
         val url = Url.serverFoto + book.imageUrl
-        Glide.with(viewHolder.imageViewCoverArt.context).load(url)
-            .override(512, 512)
-            .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .fitCenter()
-            .listener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    Log.e("onLoadFailed", "Error $e")
-                    //                viewHolder.imageViewCoverArt.setImageDrawable(mContext.getResources().getDrawable(R.drawable.img_no_image));
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    Log.e("onResourceReady", "no Error ")
-                    return false
-                }
-            })
-            .into(viewHolder.imageViewCoverArt)
+//        Glide.with(viewHolder.imageViewCoverArt.context).load(url)
+//            .override(512, 512)
+//            .centerCrop()
+//            .diskCacheStrategy(DiskCacheStrategy.DATA)
+//            .fitCenter()
+//            .listener(object : RequestListener<Drawable?> {
+//                override fun onLoadFailed(
+//                    e: GlideException?,
+//                    model: Any,
+//                    target: Target<Drawable?>,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    Log.e("onLoadFailed", "Error $e")
+//                    //                viewHolder.imageViewCoverArt.setImageDrawable(mContext.getResources().getDrawable(R.drawable.img_no_image));
+//                    return false
+//                }
+//
+//                override fun onResourceReady(
+//                    resource: Drawable?,
+//                    model: Any,
+//                    target: Target<Drawable?>,
+//                    dataSource: DataSource,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    Log.e("onResourceReady", "no Error ")
+//                    return false
+//                }
+//            })
+//            .into(viewHolder.imageViewCoverArt)
         //    Log.i("url : ", url);
 //    Picasso.get().load(url).fit().centerCrop().into(viewHolder.imageViewCoverArt);
         //Picasso.get().load(url).into(viewHolder.imageViewCoverArt);

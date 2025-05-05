@@ -1,15 +1,15 @@
 package com.dnhsolution.restokabmalang.utilities
 
 object Url {
-//    const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
-//    const val serverBase = "https://sipanji.id/"
-//    const val serverPos = "$serverBase$serverHtdoc"
-//    const val serverFoto = "https://sipanji.id/pdrd/"
-
     const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
-    const val serverBase = "http://192.168.10.108/"
+    const val serverBase = "https://sipanji.id/"
     const val serverPos = "$serverBase$serverHtdoc"
-    const val serverFoto = "http://192.168.10.108/pdrd/"
+    const val serverFoto = "https://sipanji.id/pdrd/"
+
+//    const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
+//    const val serverBase = "http://192.168.10.108/"
+//    const val serverPos = "$serverBase$serverHtdoc"
+//    const val serverFoto = "http://192.168.10.108/pdrd/"
 
 //    const val serverBase = "http://192.168.43.195/"
 //    const val serverPdrd = "http://devdeenha.ddns.net:8080/pdrd/"
