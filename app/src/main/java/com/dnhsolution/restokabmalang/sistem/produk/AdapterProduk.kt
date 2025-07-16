@@ -61,34 +61,34 @@ class AdapterProduk(private val itemProdukList: MutableList<ItemProduk>
         val a = itemProduk.nama_barang
         holder.nama.text = a
         val url = Url.serverFoto + itemProduk.url_image
-        Glide.with(holder.ivFoto.context).load(url)
-            .override(512, 512)
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .centerCrop()
-            .fitCenter()
-            .listener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    Log.e("xmx1", "Error $e")
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    Log.e("xmx1", "no Error ")
-                    return false
-                }
-            })
-            .into(holder.ivFoto)
+//        Glide.with(holder.ivFoto.context).load(url)
+//            .override(512, 512)
+//            .diskCacheStrategy(DiskCacheStrategy.DATA)
+//            .centerCrop()
+//            .fitCenter()
+//            .listener(object : RequestListener<Drawable?> {
+//                override fun onLoadFailed(
+//                    e: GlideException?,
+//                    model: Any,
+//                    target: Target<Drawable?>,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    Log.e("xmx1", "Error $e")
+//                    return false
+//                }
+//
+//                override fun onResourceReady(
+//                    resource: Drawable?,
+//                    model: Any,
+//                    target: Target<Drawable?>,
+//                    dataSource: DataSource,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    Log.e("xmx1", "no Error ")
+//                    return false
+//                }
+//            })
+//            .into(holder.ivFoto)
 
         holder.holderView.setOnClickListener {
             if(Utils.isOpenRecently()) {

@@ -1,0 +1,10 @@
+package com.dnhsolution.restokabmalang.transaksihiburan
+
+class ProdukListElement(val idItem: Int, val name: String, val price: String, val imageUrl: String
+                        , val description: String, val status: String) {
+    var isFavorite = false
+
+    fun toggleFavorite() {
+        isFavorite = !isFavorite
+    }
+}

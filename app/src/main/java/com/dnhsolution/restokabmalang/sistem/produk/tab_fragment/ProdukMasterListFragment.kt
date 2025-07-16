@@ -548,61 +548,61 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
         })
 
         if (CheckNetwork().checkingNetwork(requireContext())) {
-            Glide.with(ivGambarLama.context).load(Url.serverFoto + url_image)
-                .placeholder(R.mipmap.ic_foto)
-                .centerCrop()
-                .fitCenter()
-                .listener(object : RequestListener<Drawable?> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("xmx1", "Error " + e.toString())
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("xmx1", "no Error ")
-                        return false
-                    }
-                })
-                .into(ivGambarLama)
+//            Glide.with(ivGambarLama.context).load(Url.serverFoto + url_image)
+//                .placeholder(R.mipmap.ic_foto)
+//                .centerCrop()
+//                .fitCenter()
+//                .listener(object : RequestListener<Drawable?> {
+//                    override fun onLoadFailed(
+//                        e: GlideException?,
+//                        model: Any,
+//                        target: Target<Drawable?>,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        Log.e("xmx1", "Error " + e.toString())
+//                        return false
+//                    }
+//
+//                    override fun onResourceReady(
+//                        resource: Drawable?,
+//                        model: Any,
+//                        target: Target<Drawable?>,
+//                        dataSource: DataSource,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        Log.e("xmx1", "no Error ")
+//                        return false
+//                    }
+//                })
+//                .into(ivGambarLama)
         } else {
-            Glide.with(ivGambarLama.context).load(File(url_image).toString())
-                .placeholder(R.mipmap.ic_foto)
-                .centerCrop()
-                .fitCenter()
-                .listener(object : RequestListener<Drawable?> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("xmx1", "Error " + e.toString())
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("xmx1", "no Error ")
-                        return false
-                    }
-                })
-                .into(ivGambarLama)
+//            Glide.with(ivGambarLama.context).load(File(url_image).toString())
+//                .placeholder(R.mipmap.ic_foto)
+//                .centerCrop()
+//                .fitCenter()
+//                .listener(object : RequestListener<Drawable?> {
+//                    override fun onLoadFailed(
+//                        e: GlideException?,
+//                        model: Any,
+//                        target: Target<Drawable?>,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        Log.e("xmx1", "Error " + e.toString())
+//                        return false
+//                    }
+//
+//                    override fun onResourceReady(
+//                        resource: Drawable?,
+//                        model: Any,
+//                        target: Target<Drawable?>,
+//                        dataSource: DataSource,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        Log.e("xmx1", "no Error ")
+//                        return false
+//                    }
+//                })
+//                .into(ivGambarLama)
         }
         ivGambarLama.visibility = View.VISIBLE
         ivTambahGambar.setOnClickListener {
@@ -747,33 +747,33 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                 val file_size = (file.length() / 1024).toString().toInt()
                 Log.d("PirangMB", file_size.toString())
                 if (status.equals("e", ignoreCase = true)) {
-                    Glide.with(ivGambarBaru!!.context).load(File(file.absolutePath).toString())
-                        .placeholder(R.mipmap.ic_foto)
-                        .centerCrop()
-                        .fitCenter()
-                        .listener(object : RequestListener<Drawable?> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "Error " + e.toString())
-                                return false
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "no Error ")
-                                return false
-                            }
-                        })
-                        .into((ivGambarBaru)!!)
+//                    Glide.with(ivGambarBaru!!.context).load(File(file.absolutePath).toString())
+//                        .placeholder(R.mipmap.ic_foto)
+//                        .centerCrop()
+//                        .fitCenter()
+//                        .listener(object : RequestListener<Drawable?> {
+//                            override fun onLoadFailed(
+//                                e: GlideException?,
+//                                model: Any,
+//                                target: Target<Drawable?>,
+//                                isFirstResource: Boolean
+//                            ): Boolean {
+//                                Log.e("xmx1", "Error " + e.toString())
+//                                return false
+//                            }
+//
+//                            override fun onResourceReady(
+//                                resource: Drawable?,
+//                                model: Any,
+//                                target: Target<Drawable?>,
+//                                dataSource: DataSource,
+//                                isFirstResource: Boolean
+//                            ): Boolean {
+//                                Log.e("xmx1", "no Error ")
+//                                return false
+//                            }
+//                        })
+//                        .into((ivGambarBaru)!!)
                     ivGambarBaru!!.visibility = View.VISIBLE
                     if (e_nama_file.equals("", ignoreCase = true)) {
                     } else {
@@ -782,34 +782,34 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                     }
                     e_nama_file = file.absolutePath
                 } else if (status.equals("t", ignoreCase = true)) {
-                    Glide.with(ivGambar!!.context).load(File(file.absolutePath).toString())
-                        .placeholder(R.mipmap.ic_foto)
-                        .centerCrop()
-                        .fitCenter()
-                        .listener(object : RequestListener<Drawable?> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "Error " + e.toString())
-                                return false
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any,
-                                target: Target<Drawable?>,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("xmx1", "no Error ")
-                                return false
-                            }
-                        })
-                        .into((ivGambar)!!)
-                    ivGambar!!.visibility = View.VISIBLE
+//                    Glide.with(ivGambar!!.context).load(File(file.absolutePath).toString())
+//                        .placeholder(R.mipmap.ic_foto)
+//                        .centerCrop()
+//                        .fitCenter()
+//                        .listener(object : RequestListener<Drawable?> {
+//                            override fun onLoadFailed(
+//                                e: GlideException?,
+//                                model: Any,
+//                                target: Target<Drawable?>,
+//                                isFirstResource: Boolean
+//                            ): Boolean {
+//                                Log.e("xmx1", "Error " + e.toString())
+//                                return false
+//                            }
+//
+//                            override fun onResourceReady(
+//                                resource: Drawable?,
+//                                model: Any,
+//                                target: Target<Drawable?>,
+//                                dataSource: DataSource,
+//                                isFirstResource: Boolean
+//                            ): Boolean {
+//                                Log.e("xmx1", "no Error ")
+//                                return false
+//                            }
+//                        })
+//                        .into((ivGambar)!!)
+//                    ivGambar!!.visibility = View.VISIBLE
                     if (!t_nama_file.equals("", ignoreCase = true)) {
                         val fl = File(t_nama_file)
                         val deleted = fl.delete()
@@ -830,33 +830,33 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                         val file_size = (filePhoto.length() / 1024).toString().toInt()
                         Log.d("PirangMB", file_size.toString())
                         if (status.equals("e", ignoreCase = true)) {
-                            Glide.with(ivGambarBaru!!.context).load(File(f.absolutePath).toString())
-                                .placeholder(R.mipmap.ic_foto)
-                                .centerCrop()
-                                .fitCenter()
-                                .listener(object : RequestListener<Drawable?> {
-                                    override fun onLoadFailed(
-                                        e: GlideException?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "Error " + e.toString())
-                                        return false
-                                    }
-
-                                    override fun onResourceReady(
-                                        resource: Drawable?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        dataSource: DataSource,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "no Error ")
-                                        return false
-                                    }
-                                })
-                                .into((ivGambarBaru)!!)
+//                            Glide.with(ivGambarBaru!!.context).load(File(f.absolutePath).toString())
+//                                .placeholder(R.mipmap.ic_foto)
+//                                .centerCrop()
+//                                .fitCenter()
+//                                .listener(object : RequestListener<Drawable?> {
+//                                    override fun onLoadFailed(
+//                                        e: GlideException?,
+//                                        model: Any,
+//                                        target: Target<Drawable?>,
+//                                        isFirstResource: Boolean
+//                                    ): Boolean {
+//                                        Log.e("xmx1", "Error " + e.toString())
+//                                        return false
+//                                    }
+//
+//                                    override fun onResourceReady(
+//                                        resource: Drawable?,
+//                                        model: Any,
+//                                        target: Target<Drawable?>,
+//                                        dataSource: DataSource,
+//                                        isFirstResource: Boolean
+//                                    ): Boolean {
+//                                        Log.e("xmx1", "no Error ")
+//                                        return false
+//                                    }
+//                                })
+//                                .into((ivGambarBaru)!!)
                             ivGambarBaru!!.visibility = View.VISIBLE
                             if (e_nama_file.equals("", ignoreCase = true)) {
                             } else {
@@ -865,33 +865,33 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                             }
                             e_nama_file = f.absolutePath
                         } else if (status.equals("t", ignoreCase = true)) {
-                            Glide.with(ivGambar!!.context).load(File(f.absolutePath).toString())
-                                .placeholder(R.mipmap.ic_foto)
-                                .centerCrop()
-                                .fitCenter()
-                                .listener(object : RequestListener<Drawable?> {
-                                    override fun onLoadFailed(
-                                        e: GlideException?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "Error " + e.toString())
-                                        return false
-                                    }
-
-                                    override fun onResourceReady(
-                                        resource: Drawable?,
-                                        model: Any,
-                                        target: Target<Drawable?>,
-                                        dataSource: DataSource,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        Log.e("xmx1", "no Error ")
-                                        return false
-                                    }
-                                })
-                                .into((ivGambar)!!)
+//                            Glide.with(ivGambar!!.context).load(File(f.absolutePath).toString())
+//                                .placeholder(R.mipmap.ic_foto)
+//                                .centerCrop()
+//                                .fitCenter()
+//                                .listener(object : RequestListener<Drawable?> {
+//                                    override fun onLoadFailed(
+//                                        e: GlideException?,
+//                                        model: Any,
+//                                        target: Target<Drawable?>,
+//                                        isFirstResource: Boolean
+//                                    ): Boolean {
+//                                        Log.e("xmx1", "Error " + e.toString())
+//                                        return false
+//                                    }
+//
+//                                    override fun onResourceReady(
+//                                        resource: Drawable?,
+//                                        model: Any,
+//                                        target: Target<Drawable?>,
+//                                        dataSource: DataSource,
+//                                        isFirstResource: Boolean
+//                                    ): Boolean {
+//                                        Log.e("xmx1", "no Error ")
+//                                        return false
+//                                    }
+//                                })
+//                                .into((ivGambar)!!)
                             ivGambar!!.visibility = View.VISIBLE
                             if (!t_nama_file.equals("", ignoreCase = true)) {
                                 val fl = File(t_nama_file)
@@ -1188,10 +1188,10 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                     etKeterangan.requestFocus()
                     etKeterangan.error = "Silahkan isi form ini !"
                 }
-                t_nama_file.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
-                    Toast.makeText(requireContext(), "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
-                        .show()
-                }
+//                t_nama_file.trim { it <= ' ' }.equals("", ignoreCase = true) -> {
+//                    Toast.makeText(requireContext(), "Silahkan pilih gambar !", Toast.LENGTH_SHORT)
+//                        .show()
+//                }
                 else -> {
                     if (CheckNetwork().checkingNetwork(requireContext())) {
                         tambahData()
@@ -1316,7 +1316,7 @@ class ProdukMasterListFragment() : Fragment(), HapusProdukMasterOnTask {
                 super.onPostExecute(s)
                 Log.d("HASIL", s!!)
                 when {
-                    s.equals("sukses", ignoreCase = true) -> {
+                    s.equals("berhasil", ignoreCase = true) -> {
                         if (progressdialog!!.isShowing) progressdialog!!.dismiss()
                         Toast.makeText(
                             requireContext(),

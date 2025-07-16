@@ -13,4 +13,9 @@
     <color name="bg_loading">#dddddd</color>
     <color name="light_gray">#DCDCDC</color>
 
+    <color name="colorOn">#2196F3</color>
+    <color name="colorOff">#CDCDCD</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
+
 </resources>

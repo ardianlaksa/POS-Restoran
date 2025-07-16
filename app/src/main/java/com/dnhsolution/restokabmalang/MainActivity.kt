@@ -29,6 +29,7 @@ import com.dnhsolution.restokabmalang.databinding.ActivityMainBinding
 import com.dnhsolution.restokabmalang.sistem.MainSistem
 import com.dnhsolution.restokabmalang.tersimpan.DataTersimpanActivity
 import com.dnhsolution.restokabmalang.transaksi.TransaksiFragment
+import com.dnhsolution.restokabmalang.transaksihiburan.ProdukListFragment
 import com.dnhsolution.restokabmalang.utilities.BottomMenuHelper
 import com.dnhsolution.restokabmalang.utilities.Url
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -169,8 +170,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_transaksi -> {
                     jumlahProdukTerpilih = 0
                     if(status_batas == "nonaktif"){
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.frameLayout, TransaksiFragment()).commit()
+                        if(jenisPajak=="03"){
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.frameLayout, ProdukListFragment()).commit()
+                        }else if(jenisPajak=="01" || jenisPajak=="02"){
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.frameLayout, TransaksiFragment()).commit()
+                        }
                     }else{
                         val builder = AlertDialog.Builder(this)
                         builder.setTitle("Pemberitahuan !")

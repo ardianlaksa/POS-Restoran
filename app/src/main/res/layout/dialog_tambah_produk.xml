@@ -88,7 +88,8 @@
             android:layout_height="wrap_content"
             android:text="Foto"
             android:fontFamily="@font/nunitosansregular"
-            android:textSize="17dp"/>
+            android:textSize="17dp"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_marginLeft="2dp"
@@ -97,7 +98,8 @@
             android:background="@drawable/border_foto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <ImageView
                 android:visibility="gone"

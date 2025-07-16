@@ -1,5 +1,6 @@
 package com.dnhsolution.restokabmalang.transaksi
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ class TransaksiFragment : Fragment() {
     private lateinit var binding : FragmentDataBinding
     private lateinit var kategoriListViewModel: KategoriListViewModel
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentDataBinding.inflate(layoutInflater)
         val view = binding.root

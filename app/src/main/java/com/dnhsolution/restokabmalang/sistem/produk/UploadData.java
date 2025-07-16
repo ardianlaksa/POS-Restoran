@@ -110,43 +110,43 @@ public class UploadData {
             dos.writeBytes(foto_lama);
             dos.writeBytes(lineEnd);
 
-            if(foto_baru.equalsIgnoreCase("")){
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"s_foto_baru\""
-                        + lineEnd);
-                dos.writeBytes(lineEnd);
-                dos.writeBytes("0");
-                dos.writeBytes(lineEnd);
-            }else{
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"s_foto_baru\""
-                        + lineEnd);
-                dos.writeBytes(lineEnd);
-                dos.writeBytes("1");
-                dos.writeBytes(lineEnd);
-
-//                String pat = foto_baru;
-                File sourceFile = new File(foto_baru);
-                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"foto_baru\";filename=\""+ foto_baru + "\"" + lineEnd);
-                dos.writeBytes(lineEnd);
-                bytesAvailable = fileInputStream.available();
-                Log.i("Huzza", "Initial .available : " + bytesAvailable);
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                buffer = new byte[bufferSize];
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                while (bytesRead > 0) {
-                    dos.write(buffer, 0, bufferSize);
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                }
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-                fileInputStream.close();
-            }
+//            if(foto_baru.equalsIgnoreCase("")){
+//                dos.writeBytes(twoHyphens + boundary + lineEnd);
+//                dos.writeBytes("Content-Disposition: form-data; name=\"s_foto_baru\""
+//                        + lineEnd);
+//                dos.writeBytes(lineEnd);
+//                dos.writeBytes("0");
+//                dos.writeBytes(lineEnd);
+//            }else{
+//                dos.writeBytes(twoHyphens + boundary + lineEnd);
+//                dos.writeBytes("Content-Disposition: form-data; name=\"s_foto_baru\""
+//                        + lineEnd);
+//                dos.writeBytes(lineEnd);
+//                dos.writeBytes("1");
+//                dos.writeBytes(lineEnd);
+//
+////                String pat = foto_baru;
+//                File sourceFile = new File(foto_baru);
+//                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+//
+//                dos.writeBytes(twoHyphens + boundary + lineEnd);
+//                dos.writeBytes("Content-Disposition: form-data; name=\"foto_baru\";filename=\""+ foto_baru + "\"" + lineEnd);
+//                dos.writeBytes(lineEnd);
+//                bytesAvailable = fileInputStream.available();
+//                Log.i("Huzza", "Initial .available : " + bytesAvailable);
+//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//                buffer = new byte[bufferSize];
+//                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+//                while (bytesRead > 0) {
+//                    dos.write(buffer, 0, bufferSize);
+//                    bytesAvailable = fileInputStream.available();
+//                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+//                }
+//                dos.writeBytes(lineEnd);
+//                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+//                fileInputStream.close();
+//            }
 
 
 
@@ -260,27 +260,27 @@ public class UploadData {
             dos.writeBytes(id_tmp_usaha);
             dos.writeBytes(lineEnd);
 
-            String pat = foto;
-            File sourceFile = new File(pat);
-            FileInputStream fileInputStream = new FileInputStream(sourceFile);
-
-            dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"foto\";filename=\""+ pat + "\"" + lineEnd);
-            dos.writeBytes(lineEnd);
-            bytesAvailable = fileInputStream.available();
-            Log.i("Huzza", "Initial .available : " + bytesAvailable);
-            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            buffer = new byte[bufferSize];
-            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-            while (bytesRead > 0) {
-                dos.write(buffer, 0, bufferSize);
-                bytesAvailable = fileInputStream.available();
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-            }
-            dos.writeBytes(lineEnd);
-            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-            fileInputStream.close();
+//            String pat = foto;
+//            File sourceFile = new File(pat);
+//            FileInputStream fileInputStream = new FileInputStream(sourceFile);
+//
+//            dos.writeBytes(twoHyphens + boundary + lineEnd);
+//            dos.writeBytes("Content-Disposition: form-data; name=\"foto\";filename=\""+ pat + "\"" + lineEnd);
+//            dos.writeBytes(lineEnd);
+//            bytesAvailable = fileInputStream.available();
+//            Log.i("Huzza", "Initial .available : " + bytesAvailable);
+//            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//            buffer = new byte[bufferSize];
+//            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+//            while (bytesRead > 0) {
+//                dos.write(buffer, 0, bufferSize);
+//                bytesAvailable = fileInputStream.available();
+//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+//            }
+//            dos.writeBytes(lineEnd);
+//            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+//            fileInputStream.close();
 
             serverResponseCode = conn.getResponseCode();
             dos.flush();
