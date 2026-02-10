@@ -3,6 +3,7 @@ package com.dnhsolution.restokabmalang.utilities
 object Url {
     const val serverHtdoc = "pdrd/Android/AndroidJsonPOS_Dev2/"
     const val serverBase = "https://sipanji.id/"
+//    const val serverBase = "http://192.168.10.101/"
     const val serverPos = "$serverBase$serverHtdoc"
     const val serverFoto = "https://sipanji.id/pdrd/"
 
@@ -47,7 +48,8 @@ object Url {
     const val setHapusProduk = "${serverPos}setHapusProduk"
     const val setKeranjangTransaksi = "${serverPos}setKeranjangTransaksi"
     const val setKeranjangTransaksiTersimpan = "${serverPos}setKeranjangTransaksiTersimpan"
-    const val getProduk = "${serverPos}getProduk"
+//    const val getProduk = "${serverPos}getProduk"
+    const val getProduk = "${serverPos}getProdukNew"
     const val setSistemMaster = "${serverPos}setSistemMaster"
     const val getRekapHarian = "${serverPos}getRekapHarian"
     const val getDRekapHarian = "${serverPos}getRekapHarianDetail"

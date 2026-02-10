@@ -234,6 +234,7 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
                     val jsonArray = jsonObject.getJSONArray("result")
                     val json = jsonArray.getJSONObject(0)
                     val pesan = json.getString("pesan")
+                    Log.d("OTP", "sendAktivasi: "+pesan)
                     if (pesan.equals("0", ignoreCase = true)) {
                         Toast.makeText(
                             this@LoginActivity,
@@ -261,6 +262,8 @@ class LoginActivity : AppCompatActivity(),DownloadFileNetworkResult {
                 progressDialog.dismiss()
             }, Response.ErrorListener { error ->
                 progressDialog.dismiss()
+
+                Log.d("OTP", "sendAktivasi: "+error.toString())
                 Toast.makeText(this@LoginActivity, error.toString(), Toast.LENGTH_SHORT).show()
             }) {
                 override fun getParams(): Map<String, String> {

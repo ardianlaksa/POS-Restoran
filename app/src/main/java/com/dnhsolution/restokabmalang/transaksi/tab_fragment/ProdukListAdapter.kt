@@ -60,6 +60,15 @@ class ProdukListAdapter(
         return p0.toLong()
     }
 
+    fun resetMasterList(allItems: List<ProdukListElement>) {
+        mItemListSemua.clear()
+        mItemListSemua.addAll(allItems)
+    }
+
+    fun appendToMasterList(newItems: List<ProdukListElement>) {
+        mItemListSemua.addAll(newItems)
+    }
+
     override fun getView(position:Int, convertView: View?, parent: ViewGroup?): View {
         var cv = convertView
         val book = books[position]

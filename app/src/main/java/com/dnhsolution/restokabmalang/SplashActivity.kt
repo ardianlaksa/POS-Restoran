@@ -88,7 +88,15 @@ class SplashActivity : AppCompatActivity() {
         postServices.getPosts(value,value2).enqueue(object : Callback<CekUUIDPojo> {
 
             override fun onFailure(call: Call<CekUUIDPojo>, error: Throwable) {
-                Log.e(_tag, "errornya ${error.message}")
+                Log.e(_tag, "errornya ${error.message}", error)
+
+                // fallback: kalau gagal cek UUID, putuskan mau ke mana
+                if (status.equals("0", ignoreCase = true)) {
+                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
+                } else {
+                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                }
+                finish()
             }
 
             override fun onResponse(

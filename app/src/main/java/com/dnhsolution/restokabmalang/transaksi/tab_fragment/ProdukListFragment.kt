@@ -45,6 +45,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.min
+import android.widget.AbsListView
 
 class ProdukListFragment:Fragment(), ProdukOnTask {
 
@@ -105,6 +106,15 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         transaksiFragment = fm.findFragmentById(R.id.frameLayout) as TransaksiFragment
     }
 
+    private var currentPage = 1 // Halaman pertama yang akan dimuat
+
+    private val itemsPerPage = 20
+
+    private var nextPage = 1
+    private var isLoading = false
+    private var isLastPage = false
+    private var lastRequestedPage = 1
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -115,21 +125,37 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
         val jenisPajak = MainActivity.jenisPajak
         databaseHandler = DatabaseHandler(requireContext())
 
-        if(produkAdapter == null) {
-            if (CheckNetwork().checkingNetwork(requireContext())) {
-                startShimmering(true)
-                val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
-                        "jenisProduk=${arguments?.get(keyParams).toString()}&" +
-                        "idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak"
-                Log.i(_tag, stringUrl)
-                jsonTask = ProdukListJsonTask(this).execute(stringUrl)
-            } else {
-                startShimmering(false)
-                getDataLokal()
-            }
-        }else {
+//        if(produkAdapter == null) {
+//            if (CheckNetwork().checkingNetwork(requireContext())) {
+//                startShimmering(true)
+//                val stringUrl = "${Url.getProduk}?idTmpUsaha=$idTmpUsaha&" +
+//                        "jenisProduk=${arguments?.get(keyParams).toString()}&" +
+//                        "idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak"
+//                Log.i(_tag, stringUrl)
+//                jsonTask = ProdukListJsonTask(this).execute(stringUrl)
+//            } else {
+//                startShimmering(false)
+//                getDataLokal()
+//            }
+//        }else {
+//            startShimmering(false)
+//            binding.gvMainActivity.adapter = produkAdapter
+//        }
+
+        if (produkAdapter == null) {
+            setupInfiniteScroll()
+
+            // reset paging
+            nextPage = 1
+            isLastPage = false
+            isLoading = false
+
+            // load pertama (10 data)
+            loadPage(page = 1, showShimmer = true)
+        } else {
             startShimmering(false)
             binding.gvMainActivity.adapter = produkAdapter
+            setupInfiniteScroll()
         }
 
         binding.gvMainActivity.setOnItemClickListener { _, _, position, _ ->
@@ -188,58 +214,78 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
     }
 
     override fun produkOnTask(result: String?) {
-        if (result == null) {
-            Toast.makeText(context,R.string.error_get_data,Toast.LENGTH_SHORT).show()
-            return
-        } else if (result == "") {
-            Toast.makeText(context,R.string.empty_data,Toast.LENGTH_SHORT).show()
+        isLoading = false
+        showLoadMore(false) // ✅ selalu dimatikan setelah request selesai
+
+        if (result.isNullOrEmpty()) {
+            startShimmering(false)
+            Toast.makeText(context, R.string.error_get_data, Toast.LENGTH_SHORT).show()
             return
         }
 
-        Log.e("Debug", "Response from url:$result")
         try {
             val jsonObj = JSONObject(result)
             val success = jsonObj.getInt("success")
-            val message = jsonObj.getString("message")
+
             if (success == 1) {
-
+                val newItems = ArrayList<ProdukListElement>()
                 val rArray = jsonObj.getJSONArray("result")
-                for (i in 0 until rArray.length()) {
 
-                    val idBarang = rArray.getJSONObject(i).getInt("ID_BARANG")
-                    val harga = rArray.getJSONObject(i).getString("HARGA")
-                    val foto = rArray.getJSONObject(i).getString("FOTO")
-                    val nmBarang = rArray.getJSONObject(i).getString("NM_BARANG")
-                    val keterangan = rArray.getJSONObject(i).getString("KETERANGAN")
-                    val isPajak = rArray.getJSONObject(i).getString("ISPAJAK")
-                    val jnsProduk = rArray.getJSONObject(i).getString("JENIS_PRODUK")
-                    val kode = rArray.getJSONObject(i).getString("KODE")
+                for (i in 0 until rArray.length()) {
+                    val obj = rArray.getJSONObject(i)
+                    val idBarang = obj.getInt("ID_BARANG")
+                    val harga = obj.getString("HARGA")
+                    val foto = obj.getString("FOTO")
+                    val nmBarang = obj.getString("NM_BARANG")
+                    val keterangan = obj.getString("KETERANGAN")
+                    val isPajak = obj.getString("ISPAJAK")
+                    val jnsProduk = obj.getString("JENIS_PRODUK")
+                    val kode = obj.getString("KODE")
 
                     val keteranganLengkap = "$kode:$keterangan"
 
-                    produks.add(
-                        ProdukListElement(
-                            idBarang,nmBarang, harga, foto, keteranganLengkap,"server",isPajak,jnsProduk)
+                    newItems.add(
+                        ProdukListElement(idBarang, nmBarang, harga, foto, keteranganLengkap, "server", isPajak, jnsProduk)
                     )
                 }
 
-                if (produkAdapter != null) produkAdapter?.notifyDataSetChanged()
-                else produkAdapter =
-                    context?.let {
-                        ProdukListAdapter(it, produks)
+                // paging info dari response
+                val paging = jsonObj.optJSONObject("paging")
+                val nextVal = paging?.opt("next_page")
+                nextPage = if (paging != null && nextVal != null && nextVal != JSONObject.NULL) {
+                    paging.getInt("next_page")
+                } else 0
+
+                isLastPage = (nextPage == 0)
+
+                // kalau page pertama: reset list
+                if (lastRequestedPage == 1) {
+                    produks.clear()
+                    produks.addAll(newItems)
+
+                    if (produkAdapter == null) {
+                        produkAdapter = ProdukListAdapter(requireContext(), produks)
+                        binding.gvMainActivity.adapter = produkAdapter
+                    } else {
+                        produkAdapter?.notifyDataSetChanged()
                     }
 
-                binding.gvMainActivity.adapter = produkAdapter
-                startShimmering(false)
+                    // sync master list untuk search
+                    produkAdapter?.resetMasterList(produks)
+                    startShimmering(false)
+                } else {
+                    // page berikutnya: append (jangan reset)
+                    produks.addAll(newItems)
+                    produkAdapter?.appendToMasterList(newItems)
+                    produkAdapter?.notifyDataSetChanged()
+                }
 
             } else {
-//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 startShimmering(false)
             }
-        } catch (e: JSONException) {
-            e.printStackTrace()
-            Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
             startShimmering(false)
+            Toast.makeText(context, getString(R.string.error_data), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -512,6 +558,71 @@ class ProdukListFragment:Fragment(), ProdukOnTask {
 
         queue.add(stringRequest)
 
+    }
+
+    private fun buildProdukUrl(page: Int): String {
+        val jenisPajak = MainActivity.jenisPajak
+        val jenisProduk = arguments?.get(keyParams).toString()
+
+        return "${Url.getProduk}?idTmpUsaha=$idTmpUsaha" +
+                "&jenisProduk=$jenisProduk" +
+                "&idPengguna=$idPengguna&uuid=$uuid&jenisPajak=$jenisPajak" +
+                "&page=$page&per_page=$itemsPerPage"
+    }
+
+    private fun loadPage(page: Int, showShimmer: Boolean) {
+        if (isLoading || isLastPage) return
+        if (!CheckNetwork().checkingNetwork(requireContext())) {
+            // kalau offline, pakai data lokal saja
+            startShimmering(false)
+            getDataLokal()
+            return
+        }
+
+        isLoading = true
+        lastRequestedPage = page
+
+        if (page == 1) {
+            if (showShimmer) startShimmering(true)
+            showLoadMore(false)
+        } else {
+            showLoadMore(true)   // ✅ munculkan loader saat load next page
+        }
+
+        val url = buildProdukUrl(page)
+        Log.i(_tag, "Load page=$page : $url")
+        jsonTask = ProdukListJsonTask(this).execute(url)
+    }
+
+    private fun setupInfiniteScroll() {
+        binding.gvMainActivity.setOnScrollListener(object : AbsListView.OnScrollListener {
+
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+
+            override fun onScroll(
+                view: AbsListView?,
+                firstVisibleItem: Int,
+                visibleItemCount: Int,
+                totalItemCount: Int
+            ) {
+                // jangan load more saat user sedang search/filter
+                if (isSearch) return
+
+                if (isLoading || isLastPage) return
+                if (totalItemCount == 0) return
+
+                val threshold = 4 // jarak aman sebelum mentok bawah
+                val reachBottom = firstVisibleItem + visibleItemCount >= totalItemCount - threshold
+
+                if (reachBottom && nextPage > 0) {
+                    loadPage(nextPage, showShimmer = false)
+                }
+            }
+        })
+    }
+
+    private fun showLoadMore(show: Boolean) {
+        binding.llLoadMore.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
 
